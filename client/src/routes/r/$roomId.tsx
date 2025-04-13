@@ -1,13 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { socket } from "~/socket";
-import {
-  Piano,
-  sendNoteSignal,
-  type NoteSignalT,
-  NOTES,
-  OCTAVES,
-  getNoteString,
-} from "~/components/Piano";
+import { Piano, sendNoteSignal, type NoteSignalT } from "~/components/Piano";
 import { useEventBus } from "~/components/Event";
 import { useEffect, useState } from "react";
 import { Input, WebMidi } from "webmidi";
