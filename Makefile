@@ -8,3 +8,6 @@ lint:
 
 server:
 	cd server && fastapi dev
+
+run:
+	cd server && fastapi run
