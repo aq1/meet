@@ -5,4 +5,5 @@ const URL =
 
 export const socket = io(URL, {
   autoConnect: false,
+  path: "/ws/socket.io",
 });

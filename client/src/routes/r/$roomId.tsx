@@ -15,22 +15,6 @@ import * as Tone from "tone";
 
 export const Route = createFileRoute("/r/$roomId")({
   component: RouteComponent,
-  onEnter: ({ params }) => {
-    socket.connect();
-    socket.emit("join", params.roomId);
-    socket.on("note_down", (data: NoteSignalT) => {
-      delete data.local;
-      sendNoteSignal("noteDown", data);
-    });
-    socket.on("note_up", (data: NoteSignalT) => {
-      delete data.local;
-      sendNoteSignal("noteUp", data);
-    });
-  },
-  onLeave: ({ params }) => {
-    socket.emit("join", params.roomId);
-    socket.disconnect();
-  },
   head: ({ params }) => ({
     meta: [
       {
@@ -111,6 +95,17 @@ function RouteComponent({ roomId }: { roomId: string }) {
       updateDevices();
     });
     setShowDialog(false);
+
+    console.log(socket.connect());
+    socket.emit("join", roomId);
+    socket.on("note_down", (data: NoteSignalT) => {
+      delete data.local;
+      sendNoteSignal("noteDown", data);
+    });
+    socket.on("note_up", (data: NoteSignalT) => {
+      delete data.local;
+      sendNoteSignal("noteUp", data);
+    });
   };
 
   const updateDevices = () => {
@@ -120,6 +115,13 @@ function RouteComponent({ roomId }: { roomId: string }) {
         setActiveDevice(WebMidi.inputs[0]);
       }
     }
+    return () => {
+      WebMidi.disable();
+      if (socket) {
+        socket.emit("leave", roomId);
+        socket.disconnect();
+      }
+    };
   };
 
   useEffect(() => {
