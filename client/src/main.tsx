@@ -4,15 +4,35 @@ import "remixicon/fonts/remixicon.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { Theme } from "@radix-ui/themes";
+import { Heading, Theme } from "@radix-ui/themes";
 import { routeTree } from "./routeTree.gen";
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  defaultNotFoundComponent,
+  defaultErrorComponent,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
+}
+
+function defaultNotFoundComponent() {
+  return (
+    <div className="w-screen h-screen flex items-center justify-center">
+      <Heading>NOT FOUND</Heading>
+    </div>
+  );
+}
+
+function defaultErrorComponent() {
+  return (
+    <div className="w-screen h-screen flex items-center justify-center">
+      <Heading>ERROR, SORRY</Heading>
+    </div>
+  );
 }
 
 const rootElement = document.getElementById("root")!;
