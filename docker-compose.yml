@@ -4,14 +4,7 @@ networks:
 
 services:
   server:
-    image: caddy
-    volumes:
-      - ./configs/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
+    image: meet-server
     restart: always
-    ports:
-      - 80:80
-      - 443:443
     networks:
       - bond
