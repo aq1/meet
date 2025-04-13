@@ -4,7 +4,7 @@ networks:
 
 services:
   server:
-    image: meet-server
+    image: meet-server:${RELEASE}
     restart: always
     networks:
       - bond
