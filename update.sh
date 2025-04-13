@@ -4,7 +4,6 @@ set -e
 set -o allexport
 set +o allexport
 
-git pull
 export RELEASE=$(git rev-parse --short=8 HEAD)
 
 echo "Building release ${RELEASE}"
