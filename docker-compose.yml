@@ -5,6 +5,7 @@ networks:
 services:
   server:
     image: meet-server:${RELEASE}
+    container_name: meet-server
     restart: always
     networks:
       - bond
