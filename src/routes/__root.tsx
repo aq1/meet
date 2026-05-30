@@ -26,17 +26,18 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <p>Not Found</p>,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
       <body>
         {children}
-        <TanStackDevtools
+        {/*        <TanStackDevtools
           config={{
             position: "bottom-right",
           }}
@@ -47,6 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
+        */}
         <Scripts />
       </body>
     </html>

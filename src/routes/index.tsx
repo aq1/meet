@@ -1,14 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Piano } from "#/components/Piano";
+import { Controls } from "#/components/Controls";
+import { Panel } from "#/components/Panel";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  component: Home,
+});
 
 function Home() {
   return (
-    <div className="p-8">
-      <h1 className="text-4xl font-bold">Welcome to TanStack Start</h1>
-      <p className="mt-4 text-lg">
-        Edit <code>src/routes/index.tsx</code> to get started.
-      </p>
+    <div className="flex gap-6 h-dvh w-dvw">
+      <div
+        className="grow flex flex-col gap-6 justify-end h-full"
+        style={{ minWidth: 0 }}
+      >
+        <div className="h-fit w-full flex justify-center">
+          <Controls />
+        </div>
+        <Piano />
+      </div>
+      <Panel />
     </div>
   );
 }

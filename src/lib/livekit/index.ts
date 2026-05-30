@@ -1,0 +1,21 @@
+import { env } from "#/env";
+import { AccessToken } from "livekit-server-sdk";
+
+export const grantLivekitToken = async () => {
+  const roomName = "meet";
+  const participantName = Math.random().toString(36).slice(2, 12);
+  const at = new AccessToken(env.LIVEKIT_API_KEY, env.LIVEKIT_API_SECRET, {
+    identity: participantName,
+  });
+  at.addGrant({
+    room: roomName,
+    roomJoin: true,
+    canPublish: true,
+    canSubscribe: true,
+    canPublishData: true,
+  });
+  return {
+    token: await at.toJwt(),
+    wss: env.LIVEKIT_URL,
+  };
+};
