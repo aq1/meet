@@ -2,7 +2,6 @@ import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
 import { cva } from "class-variance-authority";
 import { useEffect, useRef } from "react";
-import { RoomEvent } from "livekit-client";
 import { usePiano } from "./piano-state";
 
 const noteVariant = cva(

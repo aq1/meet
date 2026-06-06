@@ -8,6 +8,7 @@ import {
 } from "@livekit/components-react";
 
 import { Track } from "livekit-client";
+import { Badge } from "../ui/badge";
 export const ParticipantVideoTile = ({
   isLocal = false,
 }: {
@@ -26,7 +27,7 @@ export const ParticipantVideoTile = ({
       <TrackLoop tracks={tracks}>
         <TrackRefContext.Consumer>
           {(trackRef) => (
-            <Card className="flex flex-col gap-1 size-full items-center overflow-hidden">
+            <Card className="relative flex flex-col gap-1 size-full items-center overflow-hidden">
               {trackRef?.publication ? (
                 <VideoTrack
                   trackRef={trackRef}
@@ -35,6 +36,9 @@ export const ParticipantVideoTile = ({
               ) : (
                 <div className="min-h-0 w-full flex-1 bg-muted" />
               )}
+              <Badge className="absolute right-4 bottom-4">
+                <ParticipantName />
+              </Badge>
             </Card>
           )}
         </TrackRefContext.Consumer>

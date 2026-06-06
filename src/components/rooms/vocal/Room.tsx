@@ -31,7 +31,7 @@ export const VocalRoom = () => {
     const connect = async () => {
       const { wss, token } = await grant({ data: { username } });
       await room.connect(wss, token);
-      await room.localParticipant.enableCameraAndMicrophone();
+      // await room.localParticipant.enableCameraAndMicrophone();
     };
 
     connect();
