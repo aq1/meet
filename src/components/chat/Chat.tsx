@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { useUser } from "@/lib/user-store";
 import { AnimatePresence, motion } from "motion/react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLivekit, type Message } from "../rooms/vocal/room-state";
+import { RoomEvent } from "livekit-client";
 
 type MessageT = {
   id: string;
@@ -37,90 +39,46 @@ const Message = ({
   );
 };
 
+const decoder = new TextDecoder();
+
 export const Chat = () => {
-  const [messages, setMessages] = useState<MessageT[]>([
-    {
-      id: "msg_001",
-      sender: "Teacher",
-      my: false,
-      text: "Hey, are we still on for the 3pm sync?",
-      date: "2026-06-06T14:42:13Z",
-    },
-    {
-      id: "msg_002",
-      sender: "Student",
-      my: true,
-      text: "Yep, dialing in now. Pushed the latest changes to the branch.",
-      date: "2026-06-06T14:43:01Z",
-    },
-    {
-      id: "msg_003",
-      sender: "Teacher",
-      my: false,
-      text: "Check this out",
-      date: "2026-06-06T14:45:30Z",
-    },
-    {
-      id: "msg_004",
-      sender: "Teacher",
-      my: false,
-      text: "Nice work. Editing the doc now.",
-      date: "2026-06-06T14:46:12Z",
-    },
-    {
-      id: "msg_005",
-      sender: "Student",
-      my: true,
-      text: "Let me know when it's ready for review.",
-      date: "2026-06-06T14:48:05Z",
-    },
-    {
-      id: "msg_006",
-      sender: "Teacher",
-      my: false,
-      text: "Almost done, give me five minutes.",
-      date: "2026-06-06T14:49:33Z",
-    },
-    {
-      id: "msg_007",
-      sender: "Teacher",
-      my: false,
-      text: "Sounds good, no rush.",
-      date: "2026-06-06T14:50:10Z",
-    },
-    {
-      id: "msg_008",
-      sender: "Student",
-      my: true,
-      text: "Did anyone update the changelog?",
-      date: "2026-06-06T14:52:47Z",
-    },
-    {
-      id: "msg_009",
-      sender: "Teacher",
-      my: false,
-      text: "I'll handle the changelog after the doc.",
-      date: "2026-06-06T14:53:20Z",
-    },
-    {
-      id: "msg_010",
-      sender: "Teacher",
-      my: false,
-      text: "Perfect. Thanks both!",
-      date: "2026-06-06T14:54:02Z",
-    },
-  ]);
+  const [messages, setMessages] = useState<MessageT[]>([]);
   const [draft, setDraft] = useState("");
   const username = useUser((state) => state.username);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const livekit = useLivekit();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+
+    const handleIncomingChat = (payload: Uint8Array) => {
+      const msg: Message = JSON.parse(decoder.decode(payload));
+      if (msg.type !== "chat") {
+        return;
+      }
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `${msg.username}-${Date.now()}`,
+          sender: msg.username,
+          text: msg.text,
+          my: false,
+          date: new Date().toISOString(),
+        },
+      ]);
+    };
+
+    livekit.room.on(RoomEvent.DataReceived, handleIncomingChat);
+    return () => {
+      livekit.room.off(RoomEvent.DataReceived, handleIncomingChat);
+    };
   }, [messages.length]);
 
   const sendMessage = () => {
     const text = draft.trim();
     if (!text) return;
+    livekit.sendChat(username, text);
+
     setMessages((prev) => [
       ...prev,
       {

@@ -10,7 +10,9 @@ export const useUser = create<UserStore>()(
   persist(
     (set) => ({
       username: "",
-      updateUsername: (username: string) => set({ username }),
+      updateUsername: (username: string) => {
+        set({ username });
+      },
     }),
     {
       name: "user",

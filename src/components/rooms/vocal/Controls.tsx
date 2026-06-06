@@ -1,8 +1,5 @@
 import { Button } from "#/components/ui/button";
 import { useControls } from "./controls-state";
-import { useLivekit } from "./room-state";
-import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { grantLivekitToken } from "#/lib/livekit";
 import {
   MicIcon,
   MicOffIcon,
@@ -13,24 +10,17 @@ import {
   PhoneOff,
 } from "lucide-react";
 import { Separator } from "#/components/ui/separator";
-const grantToken = createServerFn({ method: "POST" }).handler(
-  grantLivekitToken,
-);
+import { useUser } from "#/lib/user-store";
 export const Controls = () => {
   const controls = useControls();
-  const grant = useServerFn(grantToken);
-  const livekit = useLivekit();
+  const username = useUser((state) => state.username);
 
-  const connect = async () => {
-    if (livekit.room.state !== "disconnected") {
-      return;
-    }
-    const { wss, token } = await grant();
-    livekit.room.connect(wss, token);
-  };
   return (
-    <div className="flex flex-col justify-end">
-      <div className="w-full h-full flex justify-end items-center gap-6 px-6">
+    <div className="flex justify-between items-center px-6">
+      <div className="flex gap-6">
+        <span>@{username}</span>
+      </div>
+      <div className="w-full h-full flex justify-end items-center gap-6">
         <Button
           onClick={() => controls.toggle("micOn")}
           variant={controls.micOn ? "outline" : "destructive-outline"}
@@ -60,13 +50,7 @@ export const Controls = () => {
           <MessageCircleIcon />
         </Button>
         <Separator orientation="vertical" />
-        <Button
-          onClick={() => {
-            connect();
-          }}
-          variant="destructive-outline"
-          size="xl"
-        >
+        <Button onClick={() => {}} variant="destructive-outline" size="xl">
           <PhoneOff />
           <span>Leave</span>
         </Button>
