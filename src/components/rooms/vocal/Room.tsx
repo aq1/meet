@@ -1,9 +1,12 @@
 import { Chat } from "#/components/chat/Chat";
 import { ParticipantVideoTile } from "#/components/participant-video-tile/ParticipantVideoTile";
 import { Controls } from "./Controls";
+import { useControls } from "./controls-state";
 import { Piano } from "./Piano";
 
 export const VocalRoom = () => {
+  const controls = useControls();
+
   return (
     <div className="h-dvh w-dvw pt-4">
       <div className="size-full flex flex-col gap-4">
@@ -20,9 +23,11 @@ export const VocalRoom = () => {
             </div>
           </div>
         </div>
-        <div className="w-full basis-1/3">
-          <Piano />
-        </div>
+        {controls.showKeyboard ? (
+          <div className="w-full basis-1/3">
+            <Piano />
+          </div>
+        ) : null}
       </div>
     </div>
   );

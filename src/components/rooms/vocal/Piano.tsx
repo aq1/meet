@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useLivekit, type Message } from "./room-state";
 import { RoomEvent } from "livekit-client";
 import { usePiano } from "./piano-state";
-import { useControls } from "./controls-state";
 
 const noteVariant = cva(
   [
@@ -105,7 +104,6 @@ const decoder = new TextDecoder();
 export const Piano = () => {
   const livekit = useLivekit();
   const piano = usePiano();
-  const controls = useControls();
 
   useEffect(() => {
     if (!livekit.room) {
@@ -130,9 +128,6 @@ export const Piano = () => {
     };
   }, [livekit.room]);
 
-  if (!controls.showKeyboard) {
-    return;
-  }
   return (
     <div className="w-full h-[200px]">
       <ScrollArea fill>
