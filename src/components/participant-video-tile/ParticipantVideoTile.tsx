@@ -26,16 +26,15 @@ export const ParticipantVideoTile = ({
       <TrackLoop tracks={tracks}>
         <TrackRefContext.Consumer>
           {(trackRef) => (
-            <Card className="flex flex-col gap-1 size-full items-center">
+            <Card className="flex flex-col gap-1 size-full items-center overflow-hidden">
               {trackRef?.publication ? (
                 <VideoTrack
                   trackRef={trackRef}
-                  className="size-full object-cover"
+                  className="min-h-0 w-full flex-1 object-cover"
                 />
               ) : (
-                <div className="size-full bg-muted" />
+                <div className="min-h-0 w-full flex-1 bg-muted" />
               )}
-              <ParticipantName />
             </Card>
           )}
         </TrackRefContext.Consumer>

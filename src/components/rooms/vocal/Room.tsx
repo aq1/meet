@@ -49,8 +49,11 @@ export const VocalRoom = () => {
             <Controls />
           </div>
           <div className="size-full flex basis-full min-h-0">
-            <div className="flex-1">
+            <div className="relative flex-1">
               <ParticipantVideoTile />
+              <div className="absolute bottom-4 left-4 z-10 h-1/4 max-h-48 w-1/4 max-w-64">
+                <ParticipantVideoTile isLocal />
+              </div>
             </div>
             <div
               className={`flex basis-1/4 justify-end gap-4 min-h-0 ${
