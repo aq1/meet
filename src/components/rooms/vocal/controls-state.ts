@@ -9,7 +9,7 @@ interface ControlsState {
 }
 
 export const useControls = create<ControlsState>((set) => ({
-  showChat: false,
+  showChat: true,
   showKeyboard: true,
   micOn: true,
   cameraOn: true,

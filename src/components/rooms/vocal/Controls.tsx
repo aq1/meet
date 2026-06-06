@@ -1,5 +1,4 @@
 import { Button } from "#/components/ui/button";
-import { Card } from "#/components/ui/card";
 import { useControls } from "./controls-state";
 import { useLivekit } from "./room-state";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
@@ -11,7 +10,6 @@ import {
   VideoOffIcon,
   PianoIcon,
   MessageCircleIcon,
-  PowerIcon,
   PhoneOff,
 } from "lucide-react";
 import { Separator } from "#/components/ui/separator";
@@ -49,7 +47,7 @@ export const Controls = () => {
         </Button>
         <Button
           onClick={() => controls.toggle("showKeyboard")}
-          variant={controls.showKeyboard ? "outline" : "destructive-outline"}
+          variant={controls.showKeyboard ? "default" : "outline"}
           size="icon-xl"
         >
           <PianoIcon />

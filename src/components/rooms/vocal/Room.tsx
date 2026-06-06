@@ -17,11 +17,13 @@ export const VocalRoom = () => {
           <div className="flex-1">
             <ParticipantVideoTile />
           </div>
-          <div className="flex basis-1/4 justify-end gap-4 min-h-0">
-            <div className="size-full flex flex-col px-4 min-h-0">
-              <Chat />
+          {controls.showChat ? (
+            <div className="flex basis-1/4 justify-end gap-4 min-h-0">
+              <div className="size-full flex flex-col px-4 min-h-0">
+                <Chat />
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
         {controls.showKeyboard ? (
           <div className="w-full basis-1/3">

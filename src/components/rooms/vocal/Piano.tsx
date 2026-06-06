@@ -1,7 +1,7 @@
 import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
 import { cva } from "class-variance-authority";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLivekit, type Message } from "./room-state";
 import { RoomEvent } from "livekit-client";
 import { usePiano } from "./piano-state";
@@ -104,6 +104,12 @@ const decoder = new TextDecoder();
 export const Piano = () => {
   const livekit = useLivekit();
   const piano = usePiano();
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const key = contentRef.current?.querySelector<HTMLElement>("#C3");
+    key?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, []);
 
   useEffect(() => {
     if (!livekit.room) {
@@ -131,7 +137,7 @@ export const Piano = () => {
   return (
     <div className="w-full h-[200px]">
       <ScrollArea fill>
-        <div className="flex h-full pb-2.5">
+        <div ref={contentRef} className="flex h-full pb-2.5">
           {NOTES.map((n) => (
             <Key key={n.label} note={n} />
           ))}

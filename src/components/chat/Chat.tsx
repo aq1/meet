@@ -113,26 +113,9 @@ export const Chat = () => {
   const [draft, setDraft] = useState("");
   const username = useUser((state) => state.username);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const isAtBottomRef = useRef(true);
 
   useEffect(() => {
-    const viewport = bottomRef.current?.closest<HTMLElement>(
-      '[data-slot="scroll-area-viewport"]',
-    );
-    if (!viewport) return;
-    const onScroll = () => {
-      const distance =
-        viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight;
-      isAtBottomRef.current = distance < 80;
-    };
-    viewport.addEventListener("scroll", onScroll, { passive: true });
-    return () => viewport.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    if (isAtBottomRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages.length]);
 
   const sendMessage = () => {
