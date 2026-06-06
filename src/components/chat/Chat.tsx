@@ -1,12 +1,10 @@
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import { Button } from "../ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useUser } from "@/lib/user-store";
 import { AnimatePresence, motion } from "motion/react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLivekit, type Message } from "../rooms/vocal/room-state";
-import { RoomEvent } from "livekit-client";
 
 type MessageT = {
   id: string;
@@ -39,56 +37,15 @@ const Message = ({
   );
 };
 
-const decoder = new TextDecoder();
-
 export const Chat = () => {
   const [messages, setMessages] = useState<MessageT[]>([]);
   const [draft, setDraft] = useState("");
   const username = useUser((state) => state.username);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const livekit = useLivekit();
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-
-    const handleIncomingChat = (payload: Uint8Array) => {
-      const msg: Message = JSON.parse(decoder.decode(payload));
-      if (msg.type !== "chat") {
-        return;
-      }
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${msg.username}-${Date.now()}`,
-          sender: msg.username,
-          text: msg.text,
-          my: false,
-          date: new Date().toISOString(),
-        },
-      ]);
-    };
-
-    livekit.room.on(RoomEvent.DataReceived, handleIncomingChat);
-    return () => {
-      livekit.room.off(RoomEvent.DataReceived, handleIncomingChat);
-    };
-  }, [messages.length]);
 
   const sendMessage = () => {
     const text = draft.trim();
     if (!text) return;
-    livekit.sendChat(username, text);
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `msg_${Date.now()}`,
-        sender: username || "Me",
-        my: true,
-        text,
-        date: new Date().toISOString(),
-      },
-    ]);
     setDraft("");
   };
 

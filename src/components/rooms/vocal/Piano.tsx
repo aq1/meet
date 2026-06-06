@@ -2,7 +2,6 @@ import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
 import { cva } from "class-variance-authority";
 import { useEffect, useRef } from "react";
-import { useLivekit, type Message } from "./room-state";
 import { RoomEvent } from "livekit-client";
 import { usePiano } from "./piano-state";
 
@@ -99,10 +98,7 @@ const Key = ({ note }: { note: Note }) => {
   );
 };
 
-const decoder = new TextDecoder();
-
 export const Piano = () => {
-  const livekit = useLivekit();
   const piano = usePiano();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -111,28 +107,28 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
-  useEffect(() => {
-    if (!livekit.room) {
-      return;
-    }
-
-    const handleIncomingMidi = (payload: Uint8Array) => {
-      const msg: Message = JSON.parse(decoder.decode(payload));
-      if (msg.type !== "midi") {
-        return;
-      }
-      if (msg.on) {
-        piano.addPress(msg.midi, "remote");
-      } else {
-        piano.removePress(msg.midi, "remote");
-      }
-    };
-
-    livekit.room.on(RoomEvent.DataReceived, handleIncomingMidi);
-    return () => {
-      livekit.room.off(RoomEvent.DataReceived, handleIncomingMidi);
-    };
-  }, [livekit.room]);
+  // useEffect(() => {
+  //   if (!livekit.room) {
+  //     return;
+  //   }
+  //
+  //   const handleIncomingMidi = (payload: Uint8Array) => {
+  //     const msg: Message = JSON.parse(decoder.decode(payload));
+  //     if (msg.type !== "midi") {
+  //       return;
+  //     }
+  //     if (msg.on) {
+  //       piano.addPress(msg.midi, "remote");
+  //     } else {
+  //       piano.removePress(msg.midi, "remote");
+  //     }
+  //   };
+  //
+  //   livekit.room.on(RoomEvent.DataReceived, handleIncomingMidi);
+  //   return () => {
+  //     livekit.room.off(RoomEvent.DataReceived, handleIncomingMidi);
+  //   };
+  // }, [livekit.room]);
 
   return (
     <div className="w-full h-[200px]">
