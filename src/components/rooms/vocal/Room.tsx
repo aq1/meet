@@ -7,10 +7,9 @@ import { Piano } from "./Piano";
 import { RoomContext } from "@livekit/components-react";
 import { Room } from "livekit-client";
 
-import { useLivekit } from "./room-state";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
+import { grantLivekitToken } from "#/lib/livekit";
 
 const grantToken = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string }) => data)
@@ -26,13 +25,13 @@ export const VocalRoom = () => {
   );
   const controls = useControls();
   const grant = useServerFn(grantToken);
-  const livekit = useLivekit();
   const username = useUser((state) => state.username);
 
   useEffect(() => {
     const connect = async () => {
       const { wss, token } = await grant({ data: { username } });
       await room.connect(wss, token);
+      await room.localParticipant.enableCameraAndMicrophone();
     };
 
     connect();
@@ -40,7 +39,7 @@ export const VocalRoom = () => {
     return () => {
       room.disconnect();
     };
-  }, [username, livekit.room, grant]);
+  }, [username, grant]);
 
   return (
     <RoomContext.Provider value={room}>
