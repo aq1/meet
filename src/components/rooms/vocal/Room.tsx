@@ -10,12 +10,12 @@ export const VocalRoom = () => {
         <div>
           <Controls />
         </div>
-        <div className="size-full flex basis-full">
+        <div className="size-full flex basis-full min-h-0">
           <div className="flex-1">
             <ParticipantVideoTile />
           </div>
-          <div className="flex basis-1/4 justify-end gap-4">
-            <div className="size-full flex flex-col px-4">
+          <div className="flex basis-1/4 justify-end gap-4 min-h-0">
+            <div className="size-full flex flex-col px-4 min-h-0">
               <Chat />
             </div>
           </div>

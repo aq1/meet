@@ -1,9 +1,10 @@
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "@/lib/user-store";
 import { AnimatePresence, motion } from "motion/react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type MessageT = {
   id: string;
@@ -28,7 +29,7 @@ const Message = ({
       transition={{ duration: 0.2 }}
       className="flex flex-col gap text-sm"
     >
-      <span className="text-blue-500">
+      <span className={message.my ? "text-green-500" : "text-blue-500"}>
         {previousMessage?.my !== message.my ? message.sender : null}
       </span>
       <span>{message.text}</span>
@@ -111,6 +112,28 @@ export const Chat = () => {
   ]);
   const [draft, setDraft] = useState("");
   const username = useUser((state) => state.username);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
+
+  useEffect(() => {
+    const viewport = bottomRef.current?.closest<HTMLElement>(
+      '[data-slot="scroll-area-viewport"]',
+    );
+    if (!viewport) return;
+    const onScroll = () => {
+      const distance =
+        viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight;
+      isAtBottomRef.current = distance < 80;
+    };
+    viewport.addEventListener("scroll", onScroll, { passive: true });
+    return () => viewport.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages.length]);
 
   const sendMessage = () => {
     const text = draft.trim();
@@ -131,17 +154,20 @@ export const Chat = () => {
   return (
     <div className="size-full">
       <div className="size-full flex flex-col justify-between align-center">
-        <div className="flex flex-col">
-          <AnimatePresence initial={false}>
-            {messages.map((m, index) => (
-              <Message
-                key={m.id}
-                previousMessage={index ? messages.at(index - 1) : null}
-                message={m}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="flex flex-col">
+            <AnimatePresence initial={false}>
+              {messages.map((m, index) => (
+                <Message
+                  key={m.id}
+                  previousMessage={index ? messages.at(index - 1) : null}
+                  message={m}
+                />
+              ))}
+            </AnimatePresence>
+            <div ref={bottomRef} />
+          </div>
+        </ScrollArea>
         <div className="flex gap-4">
           <Input
             aria-label="Chat"
