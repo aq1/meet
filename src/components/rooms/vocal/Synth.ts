@@ -86,7 +86,7 @@ const useSampler = () => {
         new Tone.Sampler({
           urls: samplerUrls,
           release: 1,
-          baseUrl: "https://tonejs.github.io/audio/salamander/",
+          baseUrl: "/notes/",
         }).toDestination(),
       );
     });
