@@ -32,10 +32,10 @@ const DeviceSelect = () => {
   }
 
   return (
-    <Select onValueChange={(v) => setSelectedDevice(v)} aria-label="Select Midi device" defaultValue={selectedDevice} items={items}>
+    <Select onValueChange={(v) => setSelectedDevice(v)} aria-label="Select Midi device" value={selectedDevice} items={items}>
       <SelectTrigger>
         <SelectValue placeholder="Select MIDI device" >
-          {(item) => item.name}
+          {(item) => item?.name}
         </SelectValue>
       </SelectTrigger>
       <SelectPopup>
@@ -87,12 +87,10 @@ export const Controls = () => {
   const controls = useControls();
   const username = useUser((state) => state.username);
 
-  const { devices, selectedDevice, setSelectedDevice } = useSynth();
   return (
     <div className="flex justify-between items-center px-6">
       <div className="flex gap-6">
         <span>@{username}</span>
-        {selectedDevice?.name}
       </div>
       <div className="w-full h-full flex justify-end items-center gap-6">
         <div>

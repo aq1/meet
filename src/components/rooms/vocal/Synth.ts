@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { Input, WebMidi } from "webmidi";
+import { create } from "zustand";
 
 const samplerUrls = {
   A0: "A0.mp3",
@@ -35,18 +36,31 @@ const samplerUrls = {
   "F#7": "Fs7.mp3",
 } as const;
 
-const useMidi = () => {
-  const [devices, setDevices] = useState<Array<Input>>([]);
-  const [selectedDevice, setSelectedDevice] = useState<Input | null>(null);
+interface MidiStore {
+  devices: Array<Input>;
+  selectedDevice: Input | null;
+  setSelectedDevice: (device: Input | null) => void;
+  updateDevices: () => void;
+}
 
-  const updateDevices = () => {
+const useMidiStore = create<MidiStore>((set, get) => ({
+  devices: [],
+  selectedDevice: null,
+  setSelectedDevice: (selectedDevice) => set({ selectedDevice }),
+  updateDevices: () => {
     if (WebMidi.inputs) {
-      setDevices(WebMidi.inputs);
+      set({ devices: WebMidi.inputs });
     }
-    if (!selectedDevice) {
-      setSelectedDevice(WebMidi.inputs.at(0) ?? null);
+    if (!get().selectedDevice) {
+      set({ selectedDevice: WebMidi.inputs.at(0) ?? null });
     }
-  };
+  },
+}));
+
+
+const useMidi = () => {
+  const { devices, selectedDevice, setSelectedDevice, updateDevices } =
+    useMidiStore();
 
   useEffect(() => {
     WebMidi.enable().then(() => {
@@ -58,7 +72,7 @@ const useMidi = () => {
     return () => {
       WebMidi.disable();
     };
-  }, [WebMidi]);
+  }, [updateDevices]);
 
   return { devices, selectedDevice, setSelectedDevice };
 };

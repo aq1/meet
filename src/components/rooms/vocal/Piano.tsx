@@ -101,7 +101,18 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
-  useEffect(() => { }, [synth.selectedDevice])
+  useEffect(() => {
+    synth.selectedDevice?.addListener("noteon", (e) => {
+      addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`)
+    })
+    synth.selectedDevice?.addListener("noteoff", (e) => {
+      removePress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`)
+    })
+
+    return () => {
+      synth.selectedDevice?.removeListener()
+    }
+  }, [synth.selectedDevice])
 
   const addPress = (
     noteLabel: string,
@@ -143,7 +154,6 @@ export const Piano = () => {
 
   return (
     <div className="w-full h-[200px]">
-      {synth.selectedDevice?.name}
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
           {NOTES.map((note) => {
