@@ -12,11 +12,11 @@ import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { useUser } from "#/lib/user-store";
 
-export const LoginDialog = () => {
+export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
   const user = useUser();
 
   return (
-    <Dialog open={!user.username}>
+    <Dialog open={true}>
       <DialogPopup className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Choose username</DialogTitle>
@@ -27,11 +27,12 @@ export const LoginDialog = () => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
             user.updateUsername(fd.get("username"));
+            onSubmit()
           }}
         >
           <DialogPanel className="grid gap-4">
             <Field>
-              <Input type="text" name="username" required />
+              <Input defaultValue={user.username} type="text" name="username" required />
             </Field>
           </DialogPanel>
           <DialogFooter>
