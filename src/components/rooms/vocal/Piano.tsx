@@ -1,10 +1,9 @@
 import { ScrollArea } from "#/components/ui/scroll-area";
 import { useLocalParticipant } from "@livekit/components-react";
 
-import { NOTES, type Midi, type Note } from "./keys";
+import { NOTES, type Note } from "./keys";
 import { cva } from "class-variance-authority";
 import { useEffect, useRef, useState } from "react";
-import { usePiano } from "./piano-state";
 import { useDataChannel } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
 

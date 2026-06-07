@@ -11,6 +11,43 @@ import {
 } from "lucide-react";
 import { Separator } from "#/components/ui/separator";
 import { useUser } from "#/lib/user-store";
+import { Track } from "livekit-client";
+import { useTrackToggle } from "@livekit/components-react";
+
+const MicToggle = () => {
+  const { enabled, pending, toggle } = useTrackToggle({
+    source: Track.Source.Microphone,
+  });
+
+  return (
+    <Button
+      disabled={pending}
+      onClick={() => toggle()}
+      variant={enabled ? "outline" : "destructive-outline"}
+      size="icon-xl"
+    >
+      {enabled ? <MicIcon /> : <MicOffIcon />}
+    </Button>
+  );
+};
+
+const CameraToggle = () => {
+  const { enabled, pending, toggle } = useTrackToggle({
+    source: Track.Source.Camera,
+  });
+
+  return (
+    <Button
+      disabled={pending}
+      onClick={() => toggle()}
+      variant={enabled ? "outline" : "destructive-outline"}
+      size="icon-xl"
+    >
+      {enabled ? <VideoIcon /> : <VideoOffIcon />}
+    </Button>
+  );
+};
+
 export const Controls = () => {
   const controls = useControls();
   const username = useUser((state) => state.username);
@@ -21,20 +58,8 @@ export const Controls = () => {
         <span>@{username}</span>
       </div>
       <div className="w-full h-full flex justify-end items-center gap-6">
-        <Button
-          onClick={() => controls.toggle("micOn")}
-          variant={controls.micOn ? "outline" : "destructive-outline"}
-          size="icon-xl"
-        >
-          {controls.micOn ? <MicIcon /> : <MicOffIcon />}
-        </Button>
-        <Button
-          onClick={() => controls.toggle("cameraOn")}
-          variant={controls.cameraOn ? "outline" : "destructive-outline"}
-          size="icon-xl"
-        >
-          {controls.cameraOn ? <VideoIcon /> : <VideoOffIcon />}
-        </Button>
+        <MicToggle />
+        <CameraToggle />
         <Button
           onClick={() => controls.toggle("showKeyboard")}
           variant={controls.showKeyboard ? "default" : "outline"}
