@@ -1,5 +1,5 @@
-import { env } from "#/env";
 import { AccessToken } from "livekit-server-sdk";
+import { env } from "#/env";
 
 export const grantLivekitToken = async (username: string) => {
   const roomName = "meet";

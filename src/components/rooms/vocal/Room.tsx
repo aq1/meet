@@ -1,15 +1,14 @@
+import { RoomContext } from "@livekit/components-react";
+import { createServerFn, useServerFn } from "@tanstack/react-start";
+import { Room } from "livekit-client";
+import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
 import { ParticipantVideoTile } from "#/components/participant-video-tile/ParticipantVideoTile";
-import { useEffect, useState } from "react";
+import { grantLivekitToken } from "#/lib/livekit";
+import { useUser } from "#/lib/user-store";
 import { Controls } from "./Controls";
 import { useControls } from "./controls-state";
 import { Piano } from "./Piano";
-import { RoomContext } from "@livekit/components-react";
-import { Room } from "livekit-client";
-
-import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { useUser } from "#/lib/user-store";
-import { grantLivekitToken } from "#/lib/livekit";
 
 const grantToken = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string }) => data)
@@ -29,6 +28,9 @@ export const VocalRoom = () => {
 
   useEffect(() => {
     const connect = async () => {
+      if (!room || !username) {
+        return;
+      }
       const { wss, token } = await grant({ data: { username } });
       await room.connect(wss, token);
       // await room.localParticipant.enableCameraAndMicrophone();
@@ -39,7 +41,7 @@ export const VocalRoom = () => {
     return () => {
       room.disconnect();
     };
-  }, [username, grant]);
+  }, [room, username, grant]);
 
   return (
     <RoomContext.Provider value={room}>

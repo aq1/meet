@@ -1,18 +1,18 @@
-import { Button } from "#/components/ui/button";
-import { useControls } from "./controls-state";
+import { useTrackToggle } from "@livekit/components-react";
+import { Track } from "livekit-client";
 import {
+  MessageCircleIcon,
   MicIcon,
   MicOffIcon,
+  PhoneOff,
+  PianoIcon,
   VideoIcon,
   VideoOffIcon,
-  PianoIcon,
-  MessageCircleIcon,
-  PhoneOff,
 } from "lucide-react";
+import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
 import { useUser } from "#/lib/user-store";
-import { Track } from "livekit-client";
-import { useTrackToggle } from "@livekit/components-react";
+import { useControls } from "./controls-state";
 
 const MicToggle = () => {
   const { enabled, pending, toggle } = useTrackToggle({

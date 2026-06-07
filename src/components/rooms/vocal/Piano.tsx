@@ -1,11 +1,9 @@
-import { ScrollArea } from "#/components/ui/scroll-area";
-import { useLocalParticipant } from "@livekit/components-react";
-
-import { NOTES, type Note } from "./keys";
+import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import { cva } from "class-variance-authority";
-import { useEffect, useRef, useState } from "react";
-import { useDataChannel } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
+import { useEffect, useRef, useState } from "react";
+import { ScrollArea } from "#/components/ui/scroll-area";
+import { NOTES, type Note } from "./keys";
 
 const noteVariant = cva(
   [
@@ -73,8 +71,6 @@ const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-
-type PianoMessageT = number;
 
 export const Piano = () => {
   const { localParticipant } = useLocalParticipant();
@@ -146,7 +142,8 @@ export const Piano = () => {
           {NOTES.map((note) => {
             const pressed = !!keys[note.midi].length;
             return (
-              <div
+              <button
+                type="button"
                 key={note.label}
                 id={note.label}
                 className={noteVariant({
@@ -167,7 +164,7 @@ export const Piano = () => {
                 }}
               >
                 <NoteOverlay note={note} pressed={pressed} />
-              </div>
+              </button>
             );
           })}
         </div>

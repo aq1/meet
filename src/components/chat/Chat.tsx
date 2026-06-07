@@ -1,10 +1,10 @@
-import { Input } from "@/components/ui/input";
+import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
 import { Send } from "lucide-react";
-import { Button } from "../ui/button";
 import { AnimatePresence, motion } from "motion/react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useChat, type ReceivedChatMessage } from "@livekit/components-react";
 import { useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "../ui/button";
 
 type MessageT = {
   message: ReceivedChatMessage;
