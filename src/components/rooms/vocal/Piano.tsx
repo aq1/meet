@@ -1,8 +1,12 @@
 import { ScrollArea } from "#/components/ui/scroll-area";
-import { NOTES, type Note } from "./keys";
+import { useLocalParticipant } from "@livekit/components-react";
+
+import { NOTES, type Midi, type Note } from "./keys";
 import { cva } from "class-variance-authority";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePiano } from "./piano-state";
+import { useDataChannel } from "@livekit/components-react";
+import type { Participant } from "livekit-client";
 
 const noteVariant = cva(
   [
@@ -68,37 +72,31 @@ const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
   );
 };
 
-const Key = ({ note }: { note: Note }) => {
-  const pianoState = usePiano();
-  const pressed = !!pianoState.keys[note.midi]?.size;
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
-  return (
-    <div
-      id={note.label}
-      className={noteVariant({
-        color: note.color,
-      })}
-      onContextMenu={(e) => {
-        e.preventDefault();
-      }}
-      onMouseDown={() => pianoState.addPress(note.midi, "local")}
-      onMouseUp={() => pianoState.removePress(note.midi, "local")}
-      onMouseLeave={() => {
-        pianoState.removePress(note.midi, "local");
-      }}
-      onMouseEnter={(e) => {
-        if (e.buttons) {
-          pianoState.addPress(note.midi, "local");
-        }
-      }}
-    >
-      <NoteOverlay note={note} pressed={pressed} />
-    </div>
-  );
-};
+type PianoMessageT = number;
 
 export const Piano = () => {
-  const piano = usePiano();
+  const { localParticipant } = useLocalParticipant();
+
+  const [keys, setKeys] = useState<Record<number, Array<Participant>>>(
+    Object.fromEntries(NOTES.map((n) => [n.midi, []])),
+  );
+
+  const { send: sendPress } = useDataChannel("piano-press", (msg) => {
+    if (!msg.from) {
+      return;
+    }
+    addPress(Number(decoder.decode(msg.payload)), msg.from);
+  });
+  const { send: sendRelease } = useDataChannel("piano-release", (msg) => {
+    if (!msg.from) {
+      return;
+    }
+    removePress(Number(decoder.decode(msg.payload)), msg.from);
+  });
+
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -106,36 +104,73 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
-  // useEffect(() => {
-  //   if (!livekit.room) {
-  //     return;
-  //   }
-  //
-  //   const handleIncomingMidi = (payload: Uint8Array) => {
-  //     const msg: Message = JSON.parse(decoder.decode(payload));
-  //     if (msg.type !== "midi") {
-  //       return;
-  //     }
-  //     if (msg.on) {
-  //       piano.addPress(msg.midi, "remote");
-  //     } else {
-  //       piano.removePress(msg.midi, "remote");
-  //     }
-  //   };
-  //
-  //   livekit.room.on(RoomEvent.DataReceived, handleIncomingMidi);
-  //   return () => {
-  //     livekit.room.off(RoomEvent.DataReceived, handleIncomingMidi);
-  //   };
-  // }, [livekit.room]);
+  const addPress = (
+    midi: number,
+    participant: Participant = localParticipant,
+  ) => {
+    setKeys((prev) => {
+      if (prev[midi]) {
+        prev[midi] = [];
+      }
+      prev[midi].push(participant);
+      return { ...prev };
+    });
+    if (!participant.isLocal) {
+      return;
+    }
+    sendPress(encoder.encode(midi.toString()), { reliable: false });
+  };
+
+  const removePress = (
+    midi: number,
+    participant: Participant = localParticipant,
+  ) => {
+    setKeys((prev) => {
+      if (prev[midi]) {
+        prev[midi] = [];
+      }
+      prev[midi] = prev[midi].filter(
+        (p) => p.identity !== participant.identity,
+      );
+      return { ...prev };
+    });
+    if (!participant.isLocal) {
+      return;
+    }
+    sendRelease(encoder.encode(midi.toString()), { reliable: false });
+  };
 
   return (
     <div className="w-full h-[200px]">
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
-          {NOTES.map((n) => (
-            <Key key={n.label} note={n} />
-          ))}
+          {NOTES.map((note) => {
+            const pressed = !!keys[note.midi].length;
+            return (
+              <div
+                key={note.label}
+                id={note.label}
+                className={noteVariant({
+                  color: note.color,
+                })}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                }}
+                onMouseDown={() => addPress(note.midi)}
+                onMouseUp={() => removePress(note.midi)}
+                onMouseLeave={() => {
+                  removePress(note.midi);
+                }}
+                onMouseEnter={(e) => {
+                  if (e.buttons) {
+                    addPress(note.midi);
+                  }
+                }}
+              >
+                <NoteOverlay note={note} pressed={pressed} />
+              </div>
+            );
+          })}
         </div>
       </ScrollArea>
     </div>
