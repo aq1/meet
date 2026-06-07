@@ -4,6 +4,7 @@ import type { Participant } from "livekit-client";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
+import { useSynth } from "./Synth";
 
 const noteVariant = cva(
   [
@@ -73,23 +74,24 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 export const Piano = () => {
+  const synth = useSynth();
+
   const { localParticipant } = useLocalParticipant();
 
-  const [keys, setKeys] = useState<Record<number, Array<Participant>>>(
-    Object.fromEntries(NOTES.map((n) => [n.midi, []])),
-  );
+  const [keys, setKeys] = useState<Record<string, Array<Participant>>>({});
 
   const { send: sendPress } = useDataChannel("piano-press", (msg) => {
     if (!msg.from) {
       return;
     }
-    addPress(Number(decoder.decode(msg.payload)), msg.from);
+    addPress(decoder.decode(msg.payload), msg.from);
   });
+
   const { send: sendRelease } = useDataChannel("piano-release", (msg) => {
     if (!msg.from) {
       return;
     }
-    removePress(Number(decoder.decode(msg.payload)), msg.from);
+    removePress(decoder.decode(msg.payload), msg.from);
   });
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -99,32 +101,36 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
+  useEffect(() => { }, [synth.selectedDevice])
+
   const addPress = (
-    midi: number,
+    noteLabel: string,
     participant: Participant = localParticipant,
   ) => {
+    synth.startNote(noteLabel);
     setKeys((prev) => {
-      if (prev[midi]) {
-        prev[midi] = [];
+      if (!prev[noteLabel]) {
+        prev[noteLabel] = [];
       }
-      prev[midi].push(participant);
+      prev[noteLabel].push(participant);
       return { ...prev };
     });
     if (!participant.isLocal) {
       return;
     }
-    sendPress(encoder.encode(midi.toString()), { reliable: false });
+    sendPress(encoder.encode(noteLabel), { reliable: false });
   };
 
   const removePress = (
-    midi: number,
+    noteLabel: string,
     participant: Participant = localParticipant,
   ) => {
+    synth.stopNote(noteLabel);
     setKeys((prev) => {
-      if (prev[midi]) {
-        prev[midi] = [];
+      if (!prev[noteLabel]) {
+        prev[noteLabel] = [];
       }
-      prev[midi] = prev[midi].filter(
+      prev[noteLabel] = prev[noteLabel].filter(
         (p) => p.identity !== participant.identity,
       );
       return { ...prev };
@@ -132,15 +138,16 @@ export const Piano = () => {
     if (!participant.isLocal) {
       return;
     }
-    sendRelease(encoder.encode(midi.toString()), { reliable: false });
+    sendRelease(encoder.encode(noteLabel), { reliable: false });
   };
 
   return (
     <div className="w-full h-[200px]">
+      {synth.selectedDevice?.name}
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
           {NOTES.map((note) => {
-            const pressed = !!keys[note.midi].length;
+            const pressed = !!keys[note.label]?.length;
             return (
               <button
                 type="button"
@@ -152,14 +159,14 @@ export const Piano = () => {
                 onContextMenu={(e) => {
                   e.preventDefault();
                 }}
-                onMouseDown={() => addPress(note.midi)}
-                onMouseUp={() => removePress(note.midi)}
+                onMouseDown={() => addPress(note.label)}
+                onMouseUp={() => removePress(note.label)}
                 onMouseLeave={() => {
-                  removePress(note.midi);
+                  removePress(note.label);
                 }}
                 onMouseEnter={(e) => {
                   if (e.buttons) {
-                    addPress(note.midi);
+                    addPress(note.label);
                   }
                 }}
               >

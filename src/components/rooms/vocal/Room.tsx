@@ -1,4 +1,4 @@
-import { RoomContext } from "@livekit/components-react";
+import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
@@ -33,7 +33,7 @@ export const VocalRoom = () => {
       }
       const { wss, token } = await grant({ data: { username } });
       await room.connect(wss, token);
-      // await room.localParticipant.enableCameraAndMicrophone();
+      await room.localParticipant.enableCameraAndMicrophone();
     };
 
     connect();
@@ -45,6 +45,7 @@ export const VocalRoom = () => {
 
   return (
     <RoomContext.Provider value={room}>
+      <RoomAudioRenderer />
       <div className="h-dvh w-dvw pt-4">
         <div className="size-full flex flex-col gap-4">
           <div>

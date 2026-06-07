@@ -13,6 +13,41 @@ import { Button } from "#/components/ui/button";
 import { Separator } from "#/components/ui/separator";
 import { useUser } from "#/lib/user-store";
 import { useControls } from "./controls-state";
+import { useSynth } from "./Synth";
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from "#/components/ui/select";
+
+const DeviceSelect = () => {
+  const { devices, selectedDevice, setSelectedDevice } = useSynth();
+
+  const items = devices.map((d) => ({ label: d.name, value: d }));
+
+  if (!devices.length) {
+    return null;
+  }
+
+  return (
+    <Select onValueChange={(v) => setSelectedDevice(v)} aria-label="Select Midi device" defaultValue={selectedDevice} items={items}>
+      <SelectTrigger>
+        <SelectValue placeholder="Select MIDI device" >
+          {(item) => item.name}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectPopup>
+        {items.map(({ label, value }) => (
+          <SelectItem key={value.id} value={value}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectPopup>
+    </Select>
+  );
+};
 
 const MicToggle = () => {
   const { enabled, pending, toggle } = useTrackToggle({
@@ -52,12 +87,17 @@ export const Controls = () => {
   const controls = useControls();
   const username = useUser((state) => state.username);
 
+  const { devices, selectedDevice, setSelectedDevice } = useSynth();
   return (
     <div className="flex justify-between items-center px-6">
       <div className="flex gap-6">
         <span>@{username}</span>
+        {selectedDevice?.name}
       </div>
       <div className="w-full h-full flex justify-end items-center gap-6">
+        <div>
+          <DeviceSelect />
+        </div>
         <MicToggle />
         <CameraToggle />
         <Button
@@ -75,7 +115,7 @@ export const Controls = () => {
           <MessageCircleIcon />
         </Button>
         <Separator orientation="vertical" />
-        <Button onClick={() => {}} variant="destructive-outline" size="xl">
+        <Button onClick={() => { }} variant="destructive-outline" size="xl">
           <PhoneOff />
           <span>Leave</span>
         </Button>
