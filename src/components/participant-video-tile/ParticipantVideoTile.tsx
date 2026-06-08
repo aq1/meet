@@ -29,13 +29,14 @@ export const ParticipantVideoTile = ({
             <Card className="relative flex flex-col gap-1 size-full items-center overflow-hidden">
               {trackRef?.publication ? (
                 <VideoTrack
+
                   trackRef={trackRef}
-                  className="min-h-0 w-full flex-1 object-cover"
+                  className="min-h-0 w-full flex-1 object-fit"
                 />
               ) : (
                 <div className="min-h-0 w-full flex-1 bg-muted" />
               )}
-              <Badge className="absolute right-4 bottom-4">
+              <Badge className="absolute right-2 bottom-2">
                 <ParticipantName />
               </Badge>
             </Card>
