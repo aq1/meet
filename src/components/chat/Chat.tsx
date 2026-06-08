@@ -1,7 +1,7 @@
 import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
 import { Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
@@ -11,7 +11,11 @@ type MessageT = {
   previousMessage?: ReceivedChatMessage | null;
 };
 
-const Message = ({ message, previousMessage }: MessageT) => {
+const Message = memo(({ message, previousMessage }: MessageT) => {
+  const time = new Date(message.timestamp).toLocaleTimeString()
+  const prevTime = previousMessage ? new Date(previousMessage.timestamp).toLocaleTimeString() : null
+  const fromSameParticipant = previousMessage?.from?.identity === message.from?.identity
+
   return (
     <motion.div
       layout
@@ -25,18 +29,17 @@ const Message = ({ message, previousMessage }: MessageT) => {
         <span
           className={message.from?.isLocal ? "text-green-500" : "text-blue-500"}
         >
-          {previousMessage?.from?.identity !== message.from?.identity
-            ? message.from?.identity
-            : null}
+          {fromSameParticipant ? null : message.from?.identity}
         </span>
         <span>{message.message}</span>
       </div>
       <span className="text-xs opacity-50">
-        {new Date(message.timestamp).toLocaleTimeString()}
+        {fromSameParticipant && time === prevTime ? null : time}
       </span>
     </motion.div>
   );
-};
+});
+Message.displayName = "Message";
 
 export const Chat = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -61,7 +64,7 @@ export const Chat = () => {
             <AnimatePresence initial={false}>
               {chatMessages.map((m, index) => (
                 <Message
-                  key={m.timestamp}
+                  key={m.id}
                   message={m}
                   previousMessage={index ? chatMessages.at(index - 1) : null}
                 />
