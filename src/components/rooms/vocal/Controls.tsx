@@ -1,4 +1,5 @@
 import { useTrackToggle } from "@livekit/components-react";
+import { useState } from "react";
 import { Track } from "livekit-client";
 import {
   MessageCircleIcon,
@@ -7,6 +8,7 @@ import {
   PhoneOff,
   PianoIcon,
   Settings,
+  Volume2Icon,
   VideoIcon,
   VideoOffIcon,
 } from "lucide-react";
@@ -106,47 +108,92 @@ const ChatToggle = () => {
 }
 
 
+const VolumeSlider = ({
+  icon,
+  label,
+  defaultValue,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  defaultValue: number;
+}) => {
+  return (
+    <Slider defaultValue={defaultValue}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+          {icon}
+          {label}
+        </FieldLabel>
+        <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
+      </div>
+    </Slider>
+  );
+};
+
 const VolumeControls = () => {
-  return <div className="flex flex-col gap-4 w-full">
-    <Slider defaultValue={50}>
-      <div className="mb-2 flex items-center justify-between gap-1">
-        <FieldLabel className="font-medium text-sm">Microphone</FieldLabel>
-        <SliderValue />
-      </div>
-    </Slider>
-    <Slider defaultValue={50}>
-      <div className="mb-2 flex items-center justify-between gap-1">
-        <FieldLabel className="font-medium text-sm">Piano</FieldLabel>
-        <SliderValue />
-      </div>
-    </Slider>
-  </div>
-}
+  return (
+    <Field className="w-full gap-5">
+      <VolumeSlider icon={<MicIcon />} label="Microphone" defaultValue={50} />
+      <VolumeSlider icon={<PianoIcon />} label="Piano" defaultValue={50} />
+    </Field>
+  );
+};
+
+const SettingsSection = ({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="flex items-center gap-2 font-medium text-muted-foreground text-xs uppercase tracking-wider [&_svg]:size-3.5">
+        {icon}
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+};
 
 const SettingsPopover = () => {
-  return <Popover>
-    <PopoverTrigger render={<Button variant="outline" size="icon-xl" />}>
-      <Settings />
-    </PopoverTrigger>
-    <PopoverPopup className="w-80">
-      <div className="flex flex-col gap-6">
-        <PopoverTitle className="text-base">Settings</PopoverTitle>
-        <div className="flex flex-col gap-4">
-          <Field>
-            <FieldLabel>MIDI</FieldLabel>
-            <DeviceSelect />
-            <FieldDescription></FieldDescription>
-          </Field>
-          <Field>
-            <FieldLabel>Volume</FieldLabel>
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger render={<Button variant={open ? "default" : "outline"} size="icon-xl" />}>
+        <Settings />
+      </PopoverTrigger>
+      <PopoverPopup sideOffset={14} className="w-84">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <PopoverTitle>Settings</PopoverTitle>
+          </div>
+
+          <Separator />
+
+          <SettingsSection icon={<PianoIcon />} title="MIDI Device">
+            <Field>
+              <DeviceSelect />
+              <FieldDescription>
+                Connect a MIDI keyboard to play along.
+              </FieldDescription>
+            </Field>
+          </SettingsSection>
+
+          <Separator />
+
+          <SettingsSection icon={<Volume2Icon />} title="Volume">
             <VolumeControls />
-            <FieldDescription></FieldDescription>
-          </Field>
+          </SettingsSection>
         </div>
-      </div>
-    </PopoverPopup>
-  </Popover>
-}
+      </PopoverPopup>
+    </Popover>
+  );
+};
 
 
 const LeaveButton = () => {
