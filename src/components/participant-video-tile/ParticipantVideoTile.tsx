@@ -22,7 +22,7 @@ export const ParticipantVideoTile = ({
   ).filter((t) => t.participant.isLocal === isLocal);
 
   return (
-    <div className="size-full grid gap-1">
+    <div className="size-full grid gap-1 rounded-xl bg-muted">
       <TrackLoop tracks={tracks}>
         <TrackRefContext.Consumer>
           {(trackRef) => (
