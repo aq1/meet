@@ -169,12 +169,6 @@ const SettingsPopover = () => {
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
         <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-1">
-            <PopoverTitle>Settings</PopoverTitle>
-          </div>
-
-          <Separator />
-
           <SettingsSection icon={<PianoIcon />} title="MIDI Device">
             <Field>
               <DeviceSelect />
