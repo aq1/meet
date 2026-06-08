@@ -103,16 +103,16 @@ export const Piano = () => {
 
   useEffect(() => {
     synth.selectedDevice?.addListener("noteon", (e) => {
-      addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`)
-    })
+      addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
+    });
     synth.selectedDevice?.addListener("noteoff", (e) => {
-      removePress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`)
-    })
+      removePress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
+    });
 
     return () => {
-      synth.selectedDevice?.removeListener()
-    }
-  }, [synth.selectedDevice])
+      synth.selectedDevice?.removeListener();
+    };
+  }, [synth.selectedDevice]);
 
   const addPress = (
     noteLabel: string,

@@ -57,7 +57,6 @@ const useMidiStore = create<MidiStore>((set, get) => ({
   },
 }));
 
-
 const useMidi = () => {
   const { devices, selectedDevice, setSelectedDevice, updateDevices } =
     useMidiStore();

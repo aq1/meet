@@ -29,7 +29,6 @@ export const ParticipantVideoTile = ({
             <Card className="relative flex flex-col gap-1 size-full items-center overflow-hidden">
               {trackRef?.publication ? (
                 <VideoTrack
-
                   trackRef={trackRef}
                   className="min-h-0 w-full flex-1 object-fit"
                 />

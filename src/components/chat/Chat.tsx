@@ -12,9 +12,12 @@ type MessageT = {
 };
 
 const Message = memo(({ message, previousMessage }: MessageT) => {
-  const time = new Date(message.timestamp).toLocaleTimeString()
-  const prevTime = previousMessage ? new Date(previousMessage.timestamp).toLocaleTimeString() : null
-  const fromSameParticipant = previousMessage?.from?.identity === message.from?.identity
+  const time = new Date(message.timestamp).toLocaleTimeString();
+  const prevTime = previousMessage
+    ? new Date(previousMessage.timestamp).toLocaleTimeString()
+    : null;
+  const fromSameParticipant =
+    previousMessage?.from?.identity === message.from?.identity;
 
   return (
     <motion.div

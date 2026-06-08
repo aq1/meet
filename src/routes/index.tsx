@@ -9,8 +9,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const [start, setStart] = useState(false)
-  const username = useUser(state => state.username)
+  const [start, setStart] = useState(false);
+  const username = useUser((state) => state.username);
 
   if (start) {
     return <VocalRoom />;

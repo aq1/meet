@@ -32,9 +32,14 @@ const DeviceSelect = () => {
   }
 
   return (
-    <Select onValueChange={(v) => setSelectedDevice(v)} aria-label="Select Midi device" value={selectedDevice} items={items}>
+    <Select
+      onValueChange={(v) => setSelectedDevice(v)}
+      aria-label="Select Midi device"
+      value={selectedDevice}
+      items={items}
+    >
       <SelectTrigger>
-        <SelectValue placeholder="Select MIDI device" >
+        <SelectValue placeholder="Select MIDI device">
           {(item) => item?.name}
         </SelectValue>
       </SelectTrigger>
@@ -113,7 +118,7 @@ export const Controls = () => {
           <MessageCircleIcon />
         </Button>
         <Separator orientation="vertical" />
-        <Button onClick={() => { }} variant="destructive-outline" size="xl">
+        <Button onClick={() => {}} variant="destructive-outline" size="xl">
           <PhoneOff />
           <span>Leave</span>
         </Button>
