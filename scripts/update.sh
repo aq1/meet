@@ -35,8 +35,15 @@ notify() {
 trap 'notify "❌ meet update failed (line $LINENO). See server logs."' ERR
 
 echo "==> Fetching latest from git ($BRANCH)..."
+BEFORE="$(git rev-parse HEAD)"
 git fetch origin "$BRANCH"
 git reset --hard "origin/$BRANCH"
+AFTER="$(git rev-parse HEAD)"
+
+if [ "$BEFORE" = "$AFTER" ]; then
+  echo "==> Already up to date ($(git rev-parse --short HEAD)). Nothing to do."
+  exit 0
+fi
 
 echo "==> Building Docker image ($IMAGE)..."
 docker build -t "$IMAGE" .
