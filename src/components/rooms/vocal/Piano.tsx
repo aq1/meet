@@ -175,8 +175,10 @@ export const Piano = () => {
                 }}
                 onMouseDown={() => addPress(note.midi)}
                 onMouseUp={() => removePress(note.midi)}
-                onMouseLeave={() => {
-                  removePress(note.midi);
+                onMouseLeave={(e) => {
+                  if (e.buttons) {
+                    removePress(note.midi);
+                  }
                 }}
                 onMouseEnter={(e) => {
                   if (e.buttons) {
