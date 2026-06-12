@@ -2,12 +2,20 @@ import {
   ParticipantName,
   TrackRefContext,
   type TrackReferenceOrPlaceholder,
+  useConnectionQualityIndicator,
   useIsMuted,
   VideoTrack,
 } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
-import { Track } from "livekit-client";
-import { MicOff, VideoOff } from "lucide-react";
+import { ConnectionQuality, Track } from "livekit-client";
+import {
+  MicOff,
+  Signal,
+  SignalHigh,
+  SignalLow,
+  SignalMedium,
+  VideoOff,
+} from "lucide-react";
 import { Badge } from "#/components/ui/badge";
 import { Card } from "#/components/ui/card";
 import { cn } from "#/lib/utils";
@@ -16,6 +24,47 @@ const MicMutedIndicator = ({ participant }: { participant: Participant }) => {
   const isMuted = useIsMuted({ participant, source: Track.Source.Microphone });
   if (!isMuted) return null;
   return <MicOff className="size-3" aria-label="Microphone muted" />;
+};
+
+const ConnectionQualityIndicator = ({
+  participant,
+}: {
+  participant: Participant;
+}) => {
+  const { quality } = useConnectionQualityIndicator({ participant });
+
+  switch (quality) {
+    case ConnectionQuality.Excellent:
+      return (
+        <SignalHigh
+          className="size-3 text-emerald-500"
+          aria-label="Connection quality: excellent"
+        />
+      );
+    case ConnectionQuality.Good:
+      return (
+        <SignalMedium
+          className="size-3 text-yellow-500"
+          aria-label="Connection quality: good"
+        />
+      );
+    case ConnectionQuality.Poor:
+      return (
+        <SignalLow
+          className="size-3 text-red-500"
+          aria-label="Connection quality: poor"
+        />
+      );
+    case ConnectionQuality.Lost:
+      return (
+        <Signal
+          className="size-3 text-muted-foreground"
+          aria-label="Connection lost"
+        />
+      );
+    default:
+      return null;
+  }
 };
 
 const ParticipantTileContent = ({
@@ -52,7 +101,10 @@ const ParticipantTileContent = ({
       )}
       <Badge className="absolute right-2 bottom-2 flex items-center gap-1">
         {trackRef.participant && (
-          <MicMutedIndicator participant={trackRef.participant} />
+          <>
+            <ConnectionQualityIndicator participant={trackRef.participant} />
+            <MicMutedIndicator participant={trackRef.participant} />
+          </>
         )}
         <ParticipantName />
       </Badge>
