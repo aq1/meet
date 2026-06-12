@@ -90,7 +90,7 @@ export const Chat = () => {
               }
             }}
           />
-          <Button disabled={isSending} onClick={sendDraft}>
+          <Button disabled={isSending} onClick={sendDraft} title="Send message">
             <Send />
           </Button>
         </div>

@@ -57,16 +57,6 @@ export const VocalRoom = () => {
     };
   }, [room, username, grant]);
 
-  useEffect(() => {
-    console.log(isMobile, controls.showChat)
-    if (isMobile && controls.showChat) {
-      controls.toggle("showChat")
-    }
-    if (!isMobile && !controls.showChat) {
-      controls.toggle("showChat")
-    }
-  }, [isMobile, controls.toggle]);
-
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
@@ -84,8 +74,9 @@ export const VocalRoom = () => {
             </div>
             {isMobile ? null : (
               <div
-                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${controls.showChat ? "" : "hidden"
-                  }`}
+                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${
+                  controls.showChat ? "" : "hidden"
+                }`}
               >
                 <div className="size-full flex flex-col px-4 min-h-0">
                   <Chat />
@@ -115,7 +106,7 @@ export const VocalRoom = () => {
                 <DialogTitle>Chat</DialogTitle>
                 <DialogClose
                   aria-label="Close"
-                  render={<Button size="icon" variant="ghost" />}
+                  render={<Button size="icon" variant="ghost" title="Close" />}
                 >
                   <XIcon />
                 </DialogClose>

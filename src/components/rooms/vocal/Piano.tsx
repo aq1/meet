@@ -166,6 +166,7 @@ export const Piano = () => {
                 type="button"
                 key={note.label}
                 id={note.label}
+                title={note.label}
                 className={noteVariant({
                   color: note.color,
                 })}

@@ -119,6 +119,7 @@ const MicToggle = () => {
       onClick={() => toggle()}
       variant={enabled ? "outline" : "destructive-outline"}
       size="icon-xl"
+      title={enabled ? "Mute microphone" : "Unmute microphone"}
     >
       {enabled ? <MicIcon /> : <MicOffIcon />}
     </Button>
@@ -136,6 +137,7 @@ const CameraToggle = () => {
       onClick={() => toggle()}
       variant={enabled ? "outline" : "destructive-outline"}
       size="icon-xl"
+      title={enabled ? "Turn off camera" : "Turn on camera"}
     >
       {enabled ? <VideoIcon /> : <VideoOffIcon />}
     </Button>
@@ -153,6 +155,7 @@ const ScreenShareToggle = () => {
       onClick={() => toggle()}
       variant={enabled ? "default" : "outline"}
       size="icon-xl"
+      title={enabled ? "Stop sharing screen" : "Share screen"}
     >
       {enabled ? <ScreenShareOffIcon /> : <ScreenShareIcon />}
     </Button>
@@ -167,6 +170,7 @@ const PianoToggle = () => {
       onClick={() => controls.toggle("showKeyboard")}
       variant={controls.showKeyboard ? "default" : "outline"}
       size="icon-xl"
+      title={controls.showKeyboard ? "Hide piano" : "Show piano"}
     >
       <PianoIcon />
     </Button>
@@ -181,6 +185,7 @@ const ChatToggle = () => {
       onClick={() => controls.toggle("showChat")}
       variant={controls.showChat ? "default" : "outline"}
       size="icon-xl"
+      title={controls.showChat ? "Hide chat" : "Show chat"}
     >
       <MessageCircleIcon />
     </Button>
@@ -267,7 +272,11 @@ const SettingsPopover = () => {
     >
       <PopoverTrigger
         render={
-          <Button variant={open ? "default" : "outline"} size="icon-xl" />
+          <Button
+            variant={open ? "default" : "outline"}
+            size="icon-xl"
+            title="Settings"
+          />
         }
       >
         <Settings />
@@ -318,6 +327,7 @@ const LeaveButton = () => {
       onClick={() => {}}
       variant="destructive-outline"
       size={isMobile ? "icon-xl" : "xl"}
+      title="Leave"
     >
       <PhoneOff />
       {isMobile ? null : <span>Leave</span>}

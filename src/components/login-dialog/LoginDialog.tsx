@@ -41,7 +41,9 @@ export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
             </Field>
           </DialogPanel>
           <DialogFooter>
-            <Button type="submit">Enter the room</Button>
+            <Button type="submit" title="Enter the room">
+              Enter the room
+            </Button>
           </DialogFooter>
         </Form>
       </DialogPopup>
