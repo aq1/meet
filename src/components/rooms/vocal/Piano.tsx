@@ -1,9 +1,9 @@
 import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import { cva } from "class-variance-authority";
-import type { Participant } from "livekit-client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
+import { usePianoStore } from "./piano-state";
 import { useSynth } from "./Synth";
 
 const noteVariant = cva(
@@ -72,29 +72,80 @@ const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
   );
 };
 
-const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+const PianoKey = ({ note }: { note: Note }) => {
+  const pressed = usePianoStore((state) => !!state.keys[note.midi]?.length);
+  const addPress = usePianoStore((state) => state.addPress);
+  const removePress = usePianoStore((state) => state.removePress);
+
+  return (
+    <button
+      type="button"
+      id={note.label}
+      title={note.label}
+      className={noteVariant({
+        color: note.color,
+      })}
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+      onMouseDown={() => addPress(note.midi)}
+      onMouseUp={() => removePress(note.midi)}
+      onMouseLeave={(e) => {
+        if (e.buttons) {
+          removePress(note.midi);
+        }
+      }}
+      onMouseEnter={(e) => {
+        if (e.buttons) {
+          addPress(note.midi);
+        }
+      }}
+      onTouchStart={() => {
+        // Prevent the simulated mouse events so addPress isn't called twice
+        addPress(note.midi);
+      }}
+      onTouchEnd={() => {
+        removePress(note.midi);
+      }}
+      onTouchCancel={() => removePress(note.midi)}
+    >
+      <NoteOverlay note={note} pressed={pressed} />
+    </button>
+  );
+};
+
 export const Piano = () => {
-  const synth = useSynth();
+  const { selectedDevice } = useSynth();
 
   const { localParticipant } = useLocalParticipant();
-
-  const [keys, setKeys] = useState<Record<number, Array<Participant>>>({});
 
   const { send: sendPress } = useDataChannel("piano-press", (msg) => {
     if (!msg.from) {
       return;
     }
-    addPress(Number(decoder.decode(msg.payload)), msg.from);
+    usePianoStore
+      .getState()
+      .addPress(Number(decoder.decode(msg.payload)), msg.from);
   });
 
   const { send: sendRelease } = useDataChannel("piano-release", (msg) => {
     if (!msg.from) {
       return;
     }
-    removePress(Number(decoder.decode(msg.payload)), msg.from);
+    usePianoStore
+      .getState()
+      .removePress(Number(decoder.decode(msg.payload)), msg.from);
   });
+
+  // Feed the React-only dependencies into the store so its actions stay stable.
+  useEffect(() => {
+    usePianoStore.getState().bind({ localParticipant, sendPress, sendRelease });
+  }, [localParticipant, sendPress, sendRelease]);
+
+  // Clear any lingering presses when the keyboard unmounts.
+  useEffect(() => usePianoStore.getState().reset, []);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -103,101 +154,27 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: addPress/removePress are recreated every render; listeners should only re-register when the device changes
   useEffect(() => {
-    synth.selectedDevice?.addListener("noteon", (e) => {
+    const { addPress, removePress } = usePianoStore.getState();
+    selectedDevice?.addListener("noteon", (e) => {
       addPress(e.note.number);
     });
-    synth.selectedDevice?.addListener("noteoff", (e) => {
+    selectedDevice?.addListener("noteoff", (e) => {
       removePress(e.note.number);
     });
 
     return () => {
-      synth.selectedDevice?.removeListener();
+      selectedDevice?.removeListener();
     };
-  }, [synth.selectedDevice]);
-
-  const addPress = (
-    midi: number,
-    participant: Participant = localParticipant,
-  ) => {
-    synth.startNote(midi);
-    setKeys((prev) => {
-      if (!prev[midi]) {
-        prev[midi] = [];
-      }
-      prev[midi].push(participant);
-      return { ...prev };
-    });
-    if (!participant.isLocal) {
-      return;
-    }
-    sendPress(encoder.encode(midi.toString()), { reliable: false });
-  };
-
-  const removePress = (
-    midi: number,
-    participant: Participant = localParticipant,
-  ) => {
-    synth.stopNote(midi);
-    setKeys((prev) => {
-      if (!prev[midi]) {
-        prev[midi] = [];
-      }
-      prev[midi] = prev[midi].filter(
-        (p) => p.identity !== participant.identity,
-      );
-      return { ...prev };
-    });
-    if (!participant.isLocal) {
-      return;
-    }
-    sendRelease(encoder.encode(midi.toString()), { reliable: false });
-  };
+  }, [selectedDevice]);
 
   return (
     <div className="w-full h-[200px]">
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
-          {NOTES.map((note) => {
-            const pressed = !!keys[note.midi]?.length;
-            return (
-              <button
-                type="button"
-                key={note.label}
-                id={note.label}
-                title={note.label}
-                className={noteVariant({
-                  color: note.color,
-                })}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                }}
-                onMouseDown={() => addPress(note.midi)}
-                onMouseUp={() => removePress(note.midi)}
-                onMouseLeave={(e) => {
-                  if (e.buttons) {
-                    removePress(note.midi);
-                  }
-                }}
-                onMouseEnter={(e) => {
-                  if (e.buttons) {
-                    addPress(note.midi);
-                  }
-                }}
-                onTouchStart={() => {
-                  // Prevent the simulated mouse events so addPress isn't called twice
-                  addPress(note.midi);
-                }}
-                onTouchEnd={() => {
-                  removePress(note.midi);
-                }}
-                onTouchCancel={() => removePress(note.midi)}
-              >
-                <NoteOverlay note={note} pressed={pressed} />
-              </button>
-            );
-          })}
+          {NOTES.map((note) => (
+            <PianoKey key={note.label} note={note} />
+          ))}
         </div>
       </ScrollArea>
     </div>

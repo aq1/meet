@@ -90,7 +90,7 @@ interface SamplerStore {
 // Map a linear 0-100 slider value to decibels for Tone's volume param.
 const volumeToDb = (volume: number) => Tone.gainToDb(volume / 100);
 
-const useSamplerStore = create<SamplerStore>((set, get) => ({
+export const useSamplerStore = create<SamplerStore>((set, get) => ({
   sampler: null,
   volume: 50,
   initSampler: () => {
