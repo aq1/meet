@@ -1,7 +1,7 @@
 import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import { cva } from "class-variance-authority";
 import type { Participant } from "livekit-client";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "#/components/ui/scroll-area";
 import { NOTES, type Note } from "./keys";
 import { useSynth } from "./Synth";
@@ -72,55 +72,6 @@ const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
   );
 };
 
-const PianoKey = memo(
-  ({
-    note,
-    pressed,
-    onDown,
-    onUp,
-  }: {
-    note: Note;
-    pressed: boolean;
-    onDown: (midi: number) => void;
-    onUp: (midi: number) => void;
-  }) => {
-    return (
-      <button
-        type="button"
-        id={note.label}
-        title={note.label}
-        className={noteVariant({
-          color: note.color,
-        })}
-        onContextMenu={(e) => {
-          e.preventDefault();
-        }}
-        onMouseDown={() => onDown(note.midi)}
-        onMouseUp={() => onUp(note.midi)}
-        onMouseLeave={() => {
-          onUp(note.midi);
-        }}
-        onMouseEnter={(e) => {
-          if (e.buttons) {
-            onDown(note.midi);
-          }
-        }}
-        onTouchStart={() => {
-          // Prevent the simulated mouse events so addPress isn't called twice
-          onDown(note.midi);
-        }}
-        onTouchEnd={() => {
-          onUp(note.midi);
-        }}
-        onTouchCancel={() => onUp(note.midi)}
-      >
-        <NoteOverlay note={note} pressed={pressed} />
-      </button>
-    );
-  },
-);
-PianoKey.displayName = "PianoKey";
-
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -155,10 +106,10 @@ export const Piano = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: addPress/removePress are recreated every render; listeners should only re-register when the device changes
   useEffect(() => {
     synth.selectedDevice?.addListener("noteon", (e) => {
-      addPress(e.note.number);
+      addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
     });
     synth.selectedDevice?.addListener("noteoff", (e) => {
-      removePress(e.note.number);
+      removePress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
     });
 
     return () => {
@@ -171,14 +122,17 @@ export const Piano = () => {
     participant: Participant = localParticipant,
   ) => {
     synth.startNote(midi);
-    setKeys((prev) => ({
-      ...prev,
-      [midi]: [...(prev[midi] ?? []), participant],
-    }));
+    setKeys((prev) => {
+      if (!prev[midi]) {
+        prev[midi] = [];
+      }
+      prev[midi].push(participant);
+      return { ...prev };
+    });
     if (!participant.isLocal) {
       return;
     }
-    sendPress(encoder.encode(midi.toString()), { reliable: false });
+    sendPress(encoder.encode(midi), { reliable: false });
   };
 
   const removePress = (
@@ -188,12 +142,12 @@ export const Piano = () => {
     synth.stopNote(midi);
     setKeys((prev) => {
       if (!prev[midi]) {
-        return prev;
+        prev[midi] = [];
       }
-      return {
-        ...prev,
-        [midi]: prev[midi].filter((p) => p.identity !== participant.identity),
-      };
+      prev[midi] = prev[midi].filter(
+        (p) => p.identity !== participant.identity,
+      );
+      return { ...prev };
     });
     if (!participant.isLocal) {
       return;
@@ -201,31 +155,47 @@ export const Piano = () => {
     sendRelease(encoder.encode(midi.toString()), { reliable: false });
   };
 
-  const addPressRef = useRef(addPress);
-  const removePressRef = useRef(removePress);
-  addPressRef.current = addPress;
-  removePressRef.current = removePress;
-
-  const handleDown = useCallback((midi: number) => {
-    addPressRef.current(midi);
-  }, []);
-  const handleUp = useCallback((midi: number) => {
-    removePressRef.current(midi);
-  }, []);
-
   return (
     <div className="w-full h-[200px]">
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
-          {NOTES.map((note) => (
-            <PianoKey
-              key={note.label}
-              note={note}
-              pressed={!!keys[note.midi]?.length}
-              onDown={handleDown}
-              onUp={handleUp}
-            />
-          ))}
+          {NOTES.map((note) => {
+            const pressed = !!keys[note.midi]?.length;
+            return (
+              <button
+                type="button"
+                key={note.label}
+                id={note.label}
+                title={note.label}
+                className={noteVariant({
+                  color: note.color,
+                })}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                }}
+                onMouseDown={() => addPress(note.midi)}
+                onMouseUp={() => removePress(note.midi)}
+                onMouseLeave={() => {
+                  removePress(note.midi);
+                }}
+                onMouseEnter={(e) => {
+                  if (e.buttons) {
+                    addPress(note.midi);
+                  }
+                }}
+                onTouchStart={() => {
+                  // Prevent the simulated mouse events so addPress isn't called twice
+                  addPress(note.midi);
+                }}
+                onTouchEnd={() => {
+                  removePress(note.midi);
+                }}
+                onTouchCancel={() => removePress(note.midi)}
+              >
+                <NoteOverlay note={note} pressed={pressed} />
+              </button>
+            );
+          })}
         </div>
       </ScrollArea>
     </div>
