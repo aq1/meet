@@ -17,6 +17,7 @@ import {
   VideoIcon,
   VideoOffIcon,
   Volume2Icon,
+  VolumeIcon,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -77,7 +78,7 @@ const MediaDeviceSelect = ({
   kind,
   label,
 }: {
-  kind: "audioinput" | "videoinput";
+  kind: "audioinput" | "videoinput" | "audiooutput";
   label: string;
 }) => {
   const { devices, activeDeviceId, setActiveMediaDevice } =
@@ -297,9 +298,20 @@ const SettingsPopover = () => {
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
         <div className="flex flex-col gap-5">
-          <SettingsSection icon={<MicIcon />} title="Microphone">
+          <SettingsSection icon={<Volume2Icon />} title="Audio">
             <Field>
+              <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+                <MicIcon />
+                Microphone
+              </FieldLabel>
               <MediaDeviceSelect kind="audioinput" label="Microphone" />
+            </Field>
+            <Field>
+              <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+                <VolumeIcon />
+                Speaker
+              </FieldLabel>
+              <MediaDeviceSelect kind="audiooutput" label="Speaker" />
             </Field>
           </SettingsSection>
 
