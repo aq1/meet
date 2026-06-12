@@ -78,20 +78,20 @@ export const Piano = () => {
 
   const { localParticipant } = useLocalParticipant();
 
-  const [keys, setKeys] = useState<Record<string, Array<Participant>>>({});
+  const [keys, setKeys] = useState<Record<number, Array<Participant>>>({});
 
   const { send: sendPress } = useDataChannel("piano-press", (msg) => {
     if (!msg.from) {
       return;
     }
-    addPress(decoder.decode(msg.payload), msg.from);
+    addPress(Number(decoder.decode(msg.payload)), msg.from);
   });
 
   const { send: sendRelease } = useDataChannel("piano-release", (msg) => {
     if (!msg.from) {
       return;
     }
-    removePress(decoder.decode(msg.payload), msg.from);
+    removePress(Number(decoder.decode(msg.payload)), msg.from);
   });
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -115,33 +115,33 @@ export const Piano = () => {
   }, [synth.selectedDevice]);
 
   const addPress = (
-    noteLabel: string,
+    midi: number,
     participant: Participant = localParticipant,
   ) => {
-    synth.startNote(noteLabel);
+    synth.startNote(midi);
     setKeys((prev) => {
-      if (!prev[noteLabel]) {
-        prev[noteLabel] = [];
+      if (!prev[midi]) {
+        prev[midi] = [];
       }
-      prev[noteLabel].push(participant);
+      prev[midi].push(participant);
       return { ...prev };
     });
     if (!participant.isLocal) {
       return;
     }
-    sendPress(encoder.encode(noteLabel), { reliable: false });
+    sendPress(encoder.encode(midi), { reliable: false });
   };
 
   const removePress = (
-    noteLabel: string,
+    midi: number,
     participant: Participant = localParticipant,
   ) => {
-    synth.stopNote(noteLabel);
+    synth.stopNote(midi);
     setKeys((prev) => {
-      if (!prev[noteLabel]) {
-        prev[noteLabel] = [];
+      if (!prev[midi]) {
+        prev[midi] = [];
       }
-      prev[noteLabel] = prev[noteLabel].filter(
+      prev[midi] = prev[midi].filter(
         (p) => p.identity !== participant.identity,
       );
       return { ...prev };
@@ -149,7 +149,7 @@ export const Piano = () => {
     if (!participant.isLocal) {
       return;
     }
-    sendRelease(encoder.encode(noteLabel), { reliable: false });
+    sendRelease(encoder.encode(midi.toString()), { reliable: false });
   };
 
   return (
@@ -157,7 +157,7 @@ export const Piano = () => {
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
           {NOTES.map((note) => {
-            const pressed = !!keys[note.label]?.length;
+            const pressed = !!keys[note.midi]?.length;
             return (
               <button
                 type="button"
@@ -169,14 +169,14 @@ export const Piano = () => {
                 onContextMenu={(e) => {
                   e.preventDefault();
                 }}
-                onMouseDown={() => addPress(note.label)}
-                onMouseUp={() => removePress(note.label)}
+                onMouseDown={() => addPress(note.midi)}
+                onMouseUp={() => removePress(note.midi)}
                 onMouseLeave={() => {
-                  removePress(note.label);
+                  removePress(note.midi);
                 }}
                 onMouseEnter={(e) => {
                   if (e.buttons) {
-                    addPress(note.label);
+                    addPress(note.midi);
                   }
                 }}
               >

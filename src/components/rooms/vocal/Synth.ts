@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as Tone from "tone";
 import { Input, WebMidi } from "webmidi";
 import { create } from "zustand";
@@ -76,40 +76,50 @@ const useMidi = () => {
   return { devices, selectedDevice, setSelectedDevice };
 };
 
-const useSampler = () => {
-  const [sampler, setSampler] = useState<Tone.Sampler>();
+interface SamplerStore {
+  sampler: Tone.Sampler | null;
+  initSampler: () => void;
+  startNote: (midi: number) => void;
+  stopNote: (midi: number) => void;
+}
 
-  useEffect(() => {
+const useSamplerStore = create<SamplerStore>((set, get) => ({
+  sampler: null,
+  initSampler: () => {
+    if (get().sampler) {
+      return;
+    }
     Tone.start().then(() => {
-      setSampler(
-        new Tone.Sampler({
+      if (get().sampler) {
+        return;
+      }
+      set({
+        sampler: new Tone.Sampler({
           urls: samplerUrls,
           release: 1,
           baseUrl: "/notes/",
         }).toDestination(),
-      );
+      });
     });
-  }, [Tone, samplerUrls]);
+  },
+  startNote: (midi) => get().sampler?.triggerAttack(Tone.Frequency(midi, "midi").toNote()),
+  stopNote: (midi) => get().sampler?.triggerRelease(Tone.Frequency(midi, "midi").toNote()),
+}));
 
-  return { sampler };
+const useSampler = () => {
+  const initSampler = useSamplerStore((state) => state.initSampler);
+
+  useEffect(() => {
+    initSampler();
+  }, [initSampler]);
 };
 
 export const useSynth = () => {
-  const { sampler } = useSampler();
+  useSampler();
   const midi = useMidi();
 
-  const startNote = (noteLabel: string) => {
-    if (!sampler) {
-      return;
-    }
-    sampler.triggerAttack(noteLabel);
-  };
-  const stopNote = (noteLabel: string) => {
-    if (!sampler) {
-      return;
-    }
-    sampler.triggerRelease(noteLabel);
-  };
+  const startNote = useSamplerStore((state) => state.startNote);
+  const stopNote = useSamplerStore((state) => state.stopNote);
 
   return { ...midi, startNote, stopNote };
 };
