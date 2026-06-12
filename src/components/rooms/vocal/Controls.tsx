@@ -190,7 +190,13 @@ const SettingsPopover = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(nextOpen, eventDetails) => {
+        if (eventDetails.reason === "outside-press") return;
+        setOpen(nextOpen);
+      }}
+    >
       <PopoverTrigger
         render={
           <Button variant={open ? "default" : "outline"} size="icon-xl" />
