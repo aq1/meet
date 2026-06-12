@@ -25,6 +25,10 @@ const ParticipantTileContent = ({
 }) => {
   const isCameraMuted = useIsMuted(trackRef);
   const hasVideo = !!trackRef.publication && !isCameraMuted;
+  // Mirror only the local camera self-view (display-only, like a mirror).
+  // Remote video and screen share must never be flipped.
+  const isMirrored =
+    trackRef.participant?.isLocal && trackRef.source === Track.Source.Camera;
 
   return (
     <Card
@@ -36,7 +40,10 @@ const ParticipantTileContent = ({
       {hasVideo ? (
         <VideoTrack
           trackRef={trackRef}
-          className="min-h-0 w-full flex-1 object-fit"
+          className={cn(
+            "min-h-0 w-full flex-1 object-fit",
+            isMirrored && "-scale-x-100",
+          )}
         />
       ) : (
         <div className="flex min-h-0 w-full flex-1 items-center justify-center">
