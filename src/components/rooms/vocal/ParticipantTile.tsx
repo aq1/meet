@@ -4,6 +4,7 @@ import {
   type TrackReferenceOrPlaceholder,
   useConnectionQualityIndicator,
   useIsMuted,
+  useIsSpeaking,
   VideoTrack,
 } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
@@ -74,6 +75,7 @@ const ParticipantTileContent = ({
 }) => {
   const isCameraMuted = useIsMuted(trackRef);
   const hasVideo = !!trackRef.publication && !isCameraMuted;
+  const isSpeaking = useIsSpeaking(trackRef.participant);
   // Mirror only the local camera self-view (display-only, like a mirror).
   // Remote video and screen share must never be flipped.
   const isMirrored =
@@ -81,8 +83,11 @@ const ParticipantTileContent = ({
 
   return (
     <Card
+      data-speaking={isSpeaking}
       className={cn(
         "relative flex flex-col gap-1 size-full items-center overflow-hidden rounded-xl",
+        "ring-2 ring-transparent transition-colors",
+        isSpeaking && "ring-emerald-500",
         hasVideo ? "bg-muted" : "bg-transparent",
       )}
     >
