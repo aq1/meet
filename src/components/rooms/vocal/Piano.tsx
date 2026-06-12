@@ -106,10 +106,10 @@ export const Piano = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: addPress/removePress are recreated every render; listeners should only re-register when the device changes
   useEffect(() => {
     synth.selectedDevice?.addListener("noteon", (e) => {
-      addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
+      addPress(e.note.number);
     });
     synth.selectedDevice?.addListener("noteoff", (e) => {
-      removePress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
+      removePress(e.note.number);
     });
 
     return () => {
@@ -132,7 +132,7 @@ export const Piano = () => {
     if (!participant.isLocal) {
       return;
     }
-    sendPress(encoder.encode(midi), { reliable: false });
+    sendPress(encoder.encode(midi.toString()), { reliable: false });
   };
 
   const removePress = (
