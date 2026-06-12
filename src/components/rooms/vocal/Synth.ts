@@ -58,8 +58,10 @@ const useMidiStore = create<MidiStore>((set, get) => ({
 }));
 
 const useMidi = () => {
-  const { devices, selectedDevice, setSelectedDevice, updateDevices } =
-    useMidiStore();
+  const devices = useMidiStore((state) => state.devices);
+  const selectedDevice = useMidiStore((state) => state.selectedDevice);
+  const setSelectedDevice = useMidiStore((state) => state.setSelectedDevice);
+  const updateDevices = useMidiStore((state) => state.updateDevices);
 
   useEffect(() => {
     WebMidi.enable().then(() => {

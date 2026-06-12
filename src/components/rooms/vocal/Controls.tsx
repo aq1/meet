@@ -163,14 +163,15 @@ const ScreenShareToggle = () => {
 };
 
 const PianoToggle = () => {
-  const controls = useControls();
+  const showKeyboard = useControls((state) => state.showKeyboard);
+  const toggle = useControls((state) => state.toggle);
 
   return (
     <Button
-      onClick={() => controls.toggle("showKeyboard")}
-      variant={controls.showKeyboard ? "default" : "outline"}
+      onClick={() => toggle("showKeyboard")}
+      variant={showKeyboard ? "default" : "outline"}
       size="icon-xl"
-      title={controls.showKeyboard ? "Hide piano" : "Show piano"}
+      title={showKeyboard ? "Hide piano" : "Show piano"}
     >
       <PianoIcon />
     </Button>
@@ -178,14 +179,15 @@ const PianoToggle = () => {
 };
 
 const ChatToggle = () => {
-  const controls = useControls();
+  const showChat = useControls((state) => state.showChat);
+  const toggle = useControls((state) => state.toggle);
 
   return (
     <Button
-      onClick={() => controls.toggle("showChat")}
-      variant={controls.showChat ? "default" : "outline"}
+      onClick={() => toggle("showChat")}
+      variant={showChat ? "default" : "outline"}
       size="icon-xl"
-      title={controls.showChat ? "Hide chat" : "Show chat"}
+      title={showChat ? "Hide chat" : "Show chat"}
     >
       <MessageCircleIcon />
     </Button>
@@ -212,7 +214,8 @@ const PianoVolumeSlider = () => {
 };
 
 const ParticipantsVolumeSlider = () => {
-  const { volume, setVolume } = useParticipantVolume();
+  const volume = useParticipantVolume((state) => state.volume);
+  const setVolume = useParticipantVolume((state) => state.setVolume);
 
   return (
     <Slider

@@ -34,7 +34,9 @@ export const VocalRoom = () => {
         dynacast: true,
       }),
   );
-  const controls = useControls();
+  const showChat = useControls((state) => state.showChat);
+  const showKeyboard = useControls((state) => state.showKeyboard);
+  const toggle = useControls((state) => state.toggle);
   const isMobile = useIsMobile();
   const setShowChat = useControls((state) => state.set);
   const participantVolume = useParticipantVolume((state) => state.volume);
@@ -81,7 +83,7 @@ export const VocalRoom = () => {
             {isMobile ? null : (
               <div
                 className={`flex basis-1/4 justify-end gap-4 min-h-0 ${
-                  controls.showChat ? "" : "hidden"
+                  showChat ? "" : "hidden"
                 }`}
               >
                 <div className="size-full flex flex-col px-4 min-h-0">
@@ -91,17 +93,14 @@ export const VocalRoom = () => {
             )}
           </div>
           <div
-            className={`w-full basis-1/3 ${controls.showKeyboard ? "" : "hidden"}`}
+            className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}
           >
             <Piano />
           </div>
         </div>
       </div>
       {isMobile ? (
-        <Dialog
-          open={controls.showChat}
-          onOpenChange={() => controls.toggle("showChat")}
-        >
+        <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
           <DialogPortal keepMounted>
             <DialogBackdrop />
             <DialogPrimitive.Popup
