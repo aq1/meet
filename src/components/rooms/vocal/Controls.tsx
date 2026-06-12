@@ -7,6 +7,7 @@ import {
   PhoneOff,
   PianoIcon,
   Settings,
+  UsersIcon,
   VideoIcon,
   VideoOffIcon,
   Volume2Icon,
@@ -25,7 +26,7 @@ import {
 import { Separator } from "#/components/ui/separator";
 import { Slider, SliderValue } from "#/components/ui/slider";
 import { useIsMobile } from "#/hooks/use-media-query";
-import { useControls } from "./controls-state";
+import { useControls, useParticipantVolume } from "./controls-state";
 import { useSynth } from "./Synth";
 
 const DeviceSelect = () => {
@@ -137,13 +138,18 @@ const PianoVolumeSlider = () => {
   );
 };
 
-const MicVolumeSlider = () => {
+const ParticipantsVolumeSlider = () => {
+  const { volume, setVolume } = useParticipantVolume();
+
   return (
-    <Slider defaultValue={50}>
+    <Slider
+      value={volume}
+      onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
+    >
       <div className="mb-3.5 flex items-center justify-between gap-2">
         <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          <MicIcon />
-          Microphone
+          <UsersIcon />
+          Participants
         </FieldLabel>
         <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
       </div>
@@ -154,7 +160,7 @@ const MicVolumeSlider = () => {
 const VolumeControls = () => {
   return (
     <Field className="w-full gap-5">
-      <MicVolumeSlider />
+      <ParticipantsVolumeSlider />
       <PianoVolumeSlider />
     </Field>
   );

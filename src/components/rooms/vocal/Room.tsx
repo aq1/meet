@@ -6,7 +6,7 @@ import { Chat } from "#/components/chat/Chat";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { Controls } from "./Controls";
-import { useControls } from "./controls-state";
+import { useControls, useParticipantVolume } from "./controls-state";
 import { LocalParticipantTile } from "./LocalParticipantTile";
 import { ParticipantsGrid } from "./ParticipantsGrid";
 import { Piano } from "./Piano";
@@ -24,6 +24,7 @@ export const VocalRoom = () => {
       }),
   );
   const controls = useControls();
+  const participantVolume = useParticipantVolume((state) => state.volume);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
 
@@ -46,7 +47,7 @@ export const VocalRoom = () => {
 
   return (
     <RoomContext.Provider value={room}>
-      <RoomAudioRenderer />
+      <RoomAudioRenderer volume={participantVolume / 100} />
       <div className="h-dvh w-dvw pt-4">
         <div className="size-full flex flex-col gap-4">
           <div>
