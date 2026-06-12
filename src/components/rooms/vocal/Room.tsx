@@ -1,8 +1,19 @@
 import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
+import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
+import { Button } from "#/components/ui/button";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogClose,
+  DialogPortal,
+  DialogPrimitive,
+  DialogTitle,
+} from "#/components/ui/dialog";
+import { useIsMobile } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { Controls } from "./Controls";
@@ -24,6 +35,7 @@ export const VocalRoom = () => {
       }),
   );
   const controls = useControls();
+  const isMobile = useIsMobile();
   const participantVolume = useParticipantVolume((state) => state.volume);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
@@ -45,6 +57,16 @@ export const VocalRoom = () => {
     };
   }, [room, username, grant]);
 
+  useEffect(() => {
+    console.log(isMobile, controls.showChat)
+    if (isMobile && controls.showChat) {
+      controls.toggle("showChat")
+    }
+    if (!isMobile && !controls.showChat) {
+      controls.toggle("showChat")
+    }
+  }, [isMobile, controls.toggle]);
+
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
@@ -60,14 +82,16 @@ export const VocalRoom = () => {
                 <LocalParticipantTile />
               </div>
             </div>
-            <div
-              className={`flex basis-1/4 justify-end gap-4 min-h-0 ${controls.showChat ? "" : "hidden"
-                }`}
-            >
-              <div className="size-full flex flex-col px-4 min-h-0">
-                <Chat />
+            {isMobile ? null : (
+              <div
+                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${controls.showChat ? "" : "hidden"
+                  }`}
+              >
+                <div className="size-full flex flex-col px-4 min-h-0">
+                  <Chat />
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div
             className={`w-full basis-1/3 ${controls.showKeyboard ? "" : "hidden"}`}
@@ -76,6 +100,33 @@ export const VocalRoom = () => {
           </div>
         </div>
       </div>
+      {isMobile ? (
+        <Dialog
+          open={controls.showChat}
+          onOpenChange={() => controls.toggle("showChat")}
+        >
+          <DialogPortal keepMounted>
+            <DialogBackdrop />
+            <DialogPrimitive.Popup
+              className="fixed inset-0 z-50 flex flex-col gap-2 bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] outline-none transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0"
+              data-slot="dialog-popup"
+            >
+              <div className="flex items-center justify-between">
+                <DialogTitle>Chat</DialogTitle>
+                <DialogClose
+                  aria-label="Close"
+                  render={<Button size="icon" variant="ghost" />}
+                >
+                  <XIcon />
+                </DialogClose>
+              </div>
+              <div className="flex-1 min-h-0">
+                <Chat />
+              </div>
+            </DialogPrimitive.Popup>
+          </DialogPortal>
+        </Dialog>
+      ) : null}
     </RoomContext.Provider>
   );
 };
