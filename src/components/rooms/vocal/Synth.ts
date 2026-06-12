@@ -78,13 +78,19 @@ const useMidi = () => {
 
 interface SamplerStore {
   sampler: Tone.Sampler | null;
+  volume: number;
   initSampler: () => void;
+  setVolume: (volume: number) => void;
   startNote: (midi: number) => void;
   stopNote: (midi: number) => void;
 }
 
+// Map a linear 0-100 slider value to decibels for Tone's volume param.
+const volumeToDb = (volume: number) => Tone.gainToDb(volume / 100);
+
 const useSamplerStore = create<SamplerStore>((set, get) => ({
   sampler: null,
+  volume: 50,
   initSampler: () => {
     if (get().sampler) {
       return;
@@ -93,14 +99,21 @@ const useSamplerStore = create<SamplerStore>((set, get) => ({
       if (get().sampler) {
         return;
       }
-      set({
-        sampler: new Tone.Sampler({
-          urls: samplerUrls,
-          release: 1,
-          baseUrl: "/notes/",
-        }).toDestination(),
-      });
+      const sampler = new Tone.Sampler({
+        urls: samplerUrls,
+        release: 1,
+        baseUrl: "/notes/",
+      }).toDestination();
+      sampler.volume.value = volumeToDb(get().volume);
+      set({ sampler });
     });
+  },
+  setVolume: (volume) => {
+    const { sampler } = get();
+    if (sampler) {
+      sampler.volume.value = volumeToDb(volume);
+    }
+    set({ volume });
   },
   startNote: (midi) =>
     get().sampler?.triggerAttack(Tone.Frequency(midi, "midi").toNote()),
@@ -122,6 +135,8 @@ export const useSynth = () => {
 
   const startNote = useSamplerStore((state) => state.startNote);
   const stopNote = useSamplerStore((state) => state.stopNote);
+  const volume = useSamplerStore((state) => state.volume);
+  const setVolume = useSamplerStore((state) => state.setVolume);
 
-  return { ...midi, startNote, stopNote };
+  return { ...midi, startNote, stopNote, volume, setVolume };
 };

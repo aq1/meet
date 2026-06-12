@@ -118,21 +118,32 @@ const ChatToggle = () => {
   );
 };
 
-const VolumeSlider = ({
-  icon,
-  label,
-  defaultValue,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  defaultValue: number;
-}) => {
+const PianoVolumeSlider = () => {
+  const { volume, setVolume } = useSynth();
+
   return (
-    <Slider defaultValue={defaultValue}>
-      <div className="mb-2 flex items-center justify-between gap-2">
+    <Slider
+      value={volume}
+      onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
+    >
+      <div className="mb-3.5 flex items-center justify-between gap-2">
         <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          {icon}
-          {label}
+          <PianoIcon />
+          Piano
+        </FieldLabel>
+        <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
+      </div>
+    </Slider>
+  );
+};
+
+const MicVolumeSlider = () => {
+  return (
+    <Slider defaultValue={50}>
+      <div className="mb-3.5 flex items-center justify-between gap-2">
+        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+          <MicIcon />
+          Microphone
         </FieldLabel>
         <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
       </div>
@@ -143,8 +154,8 @@ const VolumeSlider = ({
 const VolumeControls = () => {
   return (
     <Field className="w-full gap-5">
-      <VolumeSlider icon={<MicIcon />} label="Microphone" defaultValue={50} />
-      <VolumeSlider icon={<PianoIcon />} label="Piano" defaultValue={50} />
+      <MicVolumeSlider />
+      <PianoVolumeSlider />
     </Field>
   );
 };
