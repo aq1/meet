@@ -1,4 +1,7 @@
-import { useTrackToggle } from "@livekit/components-react";
+import {
+  useMediaDeviceSelect,
+  useTrackToggle,
+} from "@livekit/components-react";
 import { Track } from "livekit-client";
 import {
   MessageCircleIcon,
@@ -49,6 +52,52 @@ const DeviceSelect = () => {
       <SelectPopup>
         {items.map(({ label, value }) => (
           <SelectItem key={value.id} value={value}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectPopup>
+    </Select>
+  );
+};
+
+const MediaDeviceSelect = ({
+  kind,
+  label,
+}: {
+  kind: "audioinput" | "videoinput";
+  label: string;
+}) => {
+  const { devices, activeDeviceId, setActiveMediaDevice } =
+    useMediaDeviceSelect({ kind, requestPermissions: true });
+
+  const items = devices
+    .filter((d) => d.deviceId)
+    .map((d, index) => ({
+      label: d.label || `${label} ${index + 1}`,
+      value: d.deviceId,
+    }));
+
+  return (
+    <Select
+      aria-label={`Select ${label.toLowerCase()}`}
+      items={items}
+      onValueChange={(value) => {
+        if (value) setActiveMediaDevice(value);
+      }}
+      value={activeDeviceId}
+    >
+      <SelectTrigger disabled={!items.length}>
+        <SelectValue
+          placeholder={
+            items.length
+              ? `Select ${label.toLowerCase()}`
+              : `No ${label.toLowerCase()} detected`
+          }
+        />
+      </SelectTrigger>
+      <SelectPopup>
+        {items.map(({ label, value }) => (
+          <SelectItem key={value} value={value}>
             {label}
           </SelectItem>
         ))}
@@ -206,6 +255,22 @@ const SettingsPopover = () => {
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
         <div className="flex flex-col gap-5">
+          <SettingsSection icon={<MicIcon />} title="Microphone">
+            <Field>
+              <MediaDeviceSelect kind="audioinput" label="Microphone" />
+            </Field>
+          </SettingsSection>
+
+          <Separator />
+
+          <SettingsSection icon={<VideoIcon />} title="Camera">
+            <Field>
+              <MediaDeviceSelect kind="videoinput" label="Camera" />
+            </Field>
+          </SettingsSection>
+
+          <Separator />
+
           <SettingsSection icon={<PianoIcon />} title="MIDI Device">
             <Field>
               <DeviceSelect />
