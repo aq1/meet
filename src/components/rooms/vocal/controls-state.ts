@@ -4,12 +4,14 @@ interface ControlsState {
   showChat: boolean;
   showKeyboard: boolean;
   toggle: (name: keyof ControlsState) => void;
+  set: (name: keyof ControlsState, value: boolean) => void;
 }
 
 export const useControls = create<ControlsState>((set) => ({
   showChat: true,
   showKeyboard: true,
   toggle: (name) => set((state) => ({ ...state, [name]: !state[name] })),
+  set: (name, value) => set((state) => ({ ...state, [name]: value })),
 }));
 
 interface ParticipantVolumeState {

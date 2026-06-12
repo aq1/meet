@@ -36,6 +36,7 @@ export const VocalRoom = () => {
   );
   const controls = useControls();
   const isMobile = useIsMobile();
+  const setShowChat = useControls((state) => state.set);
   const participantVolume = useParticipantVolume((state) => state.volume);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
@@ -56,6 +57,11 @@ export const VocalRoom = () => {
       room.disconnect();
     };
   }, [room, username, grant]);
+
+  // Chat is visible by default on desktop, hidden on mobile.
+  useEffect(() => {
+    setShowChat("showChat", !isMobile);
+  }, [isMobile, setShowChat]);
 
   return (
     <RoomContext.Provider value={room}>
