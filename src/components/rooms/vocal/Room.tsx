@@ -48,7 +48,7 @@ export const VocalRoom = () => {
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
-      <div className="h-dvh w-dvw pt-4">
+      <div className="h-dvh w-dvw md:pt-4 pb-24 md:pb-0">
         <div className="size-full flex flex-col gap-4">
           <div>
             <Controls />
@@ -61,9 +61,8 @@ export const VocalRoom = () => {
               </div>
             </div>
             <div
-              className={`flex basis-1/4 justify-end gap-4 min-h-0 ${
-                controls.showChat ? "" : "hidden"
-              }`}
+              className={`flex basis-1/4 justify-end gap-4 min-h-0 ${controls.showChat ? "" : "hidden"
+                }`}
             >
               <div className="size-full flex flex-col px-4 min-h-0">
                 <Chat />

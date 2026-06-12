@@ -243,8 +243,8 @@ const LeaveButton = () => {
 
 export const Controls = () => {
   return (
-    <div className="flex items-center px-6">
-      <div className="w-full h-full flex justify-end items-center gap-6">
+    <div className="fixed inset-x-0 bottom-0 z-20 flex items-center border-t bg-background/80 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:static md:z-auto md:border-0 md:bg-transparent md:px-6 md:py-0 md:pb-0 md:backdrop-blur-none">
+      <div className="w-full h-full flex justify-center items-center gap-3 md:justify-end md:gap-6">
         <MicToggle />
         <CameraToggle />
         <PianoToggle />
