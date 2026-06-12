@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import * as Tone from "tone";
-import { Input, WebMidi } from "webmidi";
+import { type Input, WebMidi } from "webmidi";
 import { create } from "zustand";
 
 const samplerUrls = {
@@ -102,8 +102,10 @@ const useSamplerStore = create<SamplerStore>((set, get) => ({
       });
     });
   },
-  startNote: (midi) => get().sampler?.triggerAttack(Tone.Frequency(midi, "midi").toNote()),
-  stopNote: (midi) => get().sampler?.triggerRelease(Tone.Frequency(midi, "midi").toNote()),
+  startNote: (midi) =>
+    get().sampler?.triggerAttack(Tone.Frequency(midi, "midi").toNote()),
+  stopNote: (midi) =>
+    get().sampler?.triggerRelease(Tone.Frequency(midi, "midi").toNote()),
 }));
 
 const useSampler = () => {

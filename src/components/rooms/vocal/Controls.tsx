@@ -1,5 +1,4 @@
 import { useTrackToggle } from "@livekit/components-react";
-import { useState } from "react";
 import { Track } from "livekit-client";
 import {
   MessageCircleIcon,
@@ -8,14 +7,14 @@ import {
   PhoneOff,
   PianoIcon,
   Settings,
-  Volume2Icon,
   VideoIcon,
   VideoOffIcon,
+  Volume2Icon,
 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "#/components/ui/button";
-import { Separator } from "#/components/ui/separator";
-import { useControls } from "./controls-state";
-import { useSynth } from "./Synth";
+import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
+import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
 import {
   Select,
   SelectItem,
@@ -23,10 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
-import { useIsMobile } from "#/hooks/use-media-query";
-import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "#/components/ui/popover";
-import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
+import { Separator } from "#/components/ui/separator";
 import { Slider, SliderValue } from "#/components/ui/slider";
+import { useIsMobile } from "#/hooks/use-media-query";
+import { useControls } from "./controls-state";
+import { useSynth } from "./Synth";
 
 const DeviceSelect = () => {
   const { devices, selectedDevice, setSelectedDevice } = useSynth();
@@ -34,9 +34,16 @@ const DeviceSelect = () => {
   const items = devices.map((d) => ({ label: d.name, value: d }));
 
   return (
-    <Select aria-label="Select MIDI" items={items} onValueChange={setSelectedDevice} value={selectedDevice}>
+    <Select
+      aria-label="Select MIDI"
+      items={items}
+      onValueChange={setSelectedDevice}
+      value={selectedDevice}
+    >
       <SelectTrigger disabled>
-        <SelectValue placeholder={items.length ? "Select MIDI" : "No MIDI detected"} />
+        <SelectValue
+          placeholder={items.length ? "Select MIDI" : "No MIDI detected"}
+        />
       </SelectTrigger>
       <SelectPopup>
         {items.map(({ label, value }) => (
@@ -45,7 +52,8 @@ const DeviceSelect = () => {
           </SelectItem>
         ))}
       </SelectPopup>
-    </Select>);
+    </Select>
+  );
 };
 
 const MicToggle = () => {
@@ -85,28 +93,30 @@ const CameraToggle = () => {
 const PianoToggle = () => {
   const controls = useControls();
 
-  return <Button
-    onClick={() => controls.toggle("showKeyboard")}
-    variant={controls.showKeyboard ? "default" : "outline"}
-    size="icon-xl"
-  >
-    <PianoIcon />
-  </Button>
-
-}
+  return (
+    <Button
+      onClick={() => controls.toggle("showKeyboard")}
+      variant={controls.showKeyboard ? "default" : "outline"}
+      size="icon-xl"
+    >
+      <PianoIcon />
+    </Button>
+  );
+};
 
 const ChatToggle = () => {
   const controls = useControls();
 
-  return <Button
-    onClick={() => controls.toggle("showChat")}
-    variant={controls.showChat ? "default" : "outline"}
-    size="icon-xl"
-  >
-    <MessageCircleIcon />
-  </Button>
-}
-
+  return (
+    <Button
+      onClick={() => controls.toggle("showChat")}
+      variant={controls.showChat ? "default" : "outline"}
+      size="icon-xl"
+    >
+      <MessageCircleIcon />
+    </Button>
+  );
+};
 
 const VolumeSlider = ({
   icon,
@@ -164,7 +174,11 @@ const SettingsPopover = () => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger render={<Button variant={open ? "default" : "outline"} size="icon-xl" />}>
+      <PopoverTrigger
+        render={
+          <Button variant={open ? "default" : "outline"} size="icon-xl" />
+        }
+      >
         <Settings />
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
@@ -189,15 +203,20 @@ const SettingsPopover = () => {
   );
 };
 
-
 const LeaveButton = () => {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
 
-  return <Button onClick={() => { }} variant="destructive-outline" size={isMobile ? "icon-xl" : "xl"}>
-    <PhoneOff />
-    {isMobile ? null : <span>Leave</span>}
-  </Button >
-}
+  return (
+    <Button
+      onClick={() => {}}
+      variant="destructive-outline"
+      size={isMobile ? "icon-xl" : "xl"}
+    >
+      <PhoneOff />
+      {isMobile ? null : <span>Leave</span>}
+    </Button>
+  );
+};
 
 export const Controls = () => {
   return (

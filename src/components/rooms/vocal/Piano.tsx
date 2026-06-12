@@ -101,6 +101,7 @@ export const Piano = () => {
     key?.scrollIntoView({ inline: "center", block: "nearest" });
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: addPress/removePress are recreated every render; listeners should only re-register when the device changes
   useEffect(() => {
     synth.selectedDevice?.addListener("noteon", (e) => {
       addPress(`${e.note.name}${e.note.accidental ?? ""}${e.note.octave}`);
