@@ -9,6 +9,8 @@ import {
   MicOffIcon,
   PhoneOff,
   PianoIcon,
+  ScreenShareIcon,
+  ScreenShareOffIcon,
   Settings,
   UsersIcon,
   VideoIcon,
@@ -136,6 +138,23 @@ const CameraToggle = () => {
       size="icon-xl"
     >
       {enabled ? <VideoIcon /> : <VideoOffIcon />}
+    </Button>
+  );
+};
+
+const ScreenShareToggle = () => {
+  const { enabled, pending, toggle } = useTrackToggle({
+    source: Track.Source.ScreenShare,
+  });
+
+  return (
+    <Button
+      disabled={pending}
+      onClick={() => toggle()}
+      variant={enabled ? "default" : "outline"}
+      size="icon-xl"
+    >
+      {enabled ? <ScreenShareOffIcon /> : <ScreenShareIcon />}
     </Button>
   );
 };
@@ -307,11 +326,14 @@ const LeaveButton = () => {
 };
 
 export const Controls = () => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 flex items-center border-t bg-background/80 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:static md:z-auto md:border-0 md:bg-transparent md:px-6 md:py-0 md:pb-0 md:backdrop-blur-none">
       <div className="w-full h-full flex justify-center items-center gap-3 md:justify-end md:gap-6">
         <MicToggle />
         <CameraToggle />
+        {isMobile ? null : <ScreenShareToggle />}
         <PianoToggle />
         <ChatToggle />
         <SettingsPopover />
