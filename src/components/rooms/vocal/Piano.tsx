@@ -9,6 +9,8 @@ import { useSynth } from "./Synth";
 const noteVariant = cva(
   [
     "select-none",
+    "touch-none",
+    "[-webkit-touch-callout:none]",
     "flex",
     "gap-1",
     "flex-col",
@@ -180,6 +182,14 @@ export const Piano = () => {
                     addPress(note.midi);
                   }
                 }}
+                onTouchStart={() => {
+                  // Prevent the simulated mouse events so addPress isn't called twice
+                  addPress(note.midi);
+                }}
+                onTouchEnd={() => {
+                  removePress(note.midi);
+                }}
+                onTouchCancel={() => removePress(note.midi)}
               >
                 <NoteOverlay note={note} pressed={pressed} />
               </button>
