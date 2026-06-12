@@ -3,11 +3,12 @@ import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
-import { ParticipantVideoTile } from "#/components/participant-video-tile/ParticipantVideoTile";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { Controls } from "./Controls";
 import { useControls } from "./controls-state";
+import { LocalParticipantTile } from "./LocalParticipantTile";
+import { ParticipantsGrid } from "./ParticipantsGrid";
 import { Piano } from "./Piano";
 
 const grantToken = createServerFn({ method: "POST" })
@@ -53,9 +54,9 @@ export const VocalRoom = () => {
           </div>
           <div className="size-full flex basis-full min-h-0">
             <div className="relative flex-1">
-              <ParticipantVideoTile />
+              <ParticipantsGrid />
               <div className="absolute bottom-4 left-4 z-10 h-1/4 max-h-48 w-1/4 max-w-64">
-                <ParticipantVideoTile isLocal />
+                <LocalParticipantTile />
               </div>
             </div>
             <div
