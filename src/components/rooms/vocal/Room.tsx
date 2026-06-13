@@ -23,10 +23,12 @@ import { ParticipantsGrid } from "./ParticipantsGrid";
 import { Piano } from "./Piano";
 
 const grantToken = createServerFn({ method: "POST" })
-  .inputValidator((data: { username: string }) => data)
-  .handler(async ({ data }) => await grantLivekitToken(data.username));
+  .inputValidator((data: { username: string; roomId: string }) => data)
+  .handler(
+    async ({ data }) => await grantLivekitToken(data.username, data.roomId),
+  );
 
-export const VocalRoom = () => {
+export const VocalRoom = ({ roomId }: { roomId: string }) => {
   const [room] = useState(
     () =>
       new Room({
@@ -48,7 +50,7 @@ export const VocalRoom = () => {
       if (!room || !username) {
         return;
       }
-      const { wss, token } = await grant({ data: { username } });
+      const { wss, token } = await grant({ data: { username, roomId } });
       await room.connect(wss, token);
       await room.localParticipant.enableCameraAndMicrophone();
     };
@@ -58,7 +60,7 @@ export const VocalRoom = () => {
     return () => {
       room.disconnect();
     };
-  }, [room, username, grant]);
+  }, [room, username, roomId, grant]);
 
   // Chat is visible by default on desktop, hidden on mobile.
   useEffect(() => {

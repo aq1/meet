@@ -1,19 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { LoginDialog } from "#/components/login-dialog/LoginDialog";
-import { VocalRoom } from "#/components/rooms/vocal/Room";
-import { useUser } from "#/lib/user-store";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: Home,
+  beforeLoad: () => {
+    throw redirect({ to: "/room/$roomId", params: { roomId: "meet" } });
+  },
 });
-
-function Home() {
-  const [start, setStart] = useState(false);
-  const username = useUser((state) => state.username);
-
-  if (start) {
-    return <VocalRoom />;
-  }
-  return <LoginDialog onSubmit={() => setStart(!!username)} />;
-}
