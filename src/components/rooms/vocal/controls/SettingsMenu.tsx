@@ -57,7 +57,7 @@ const VolumeControls = () => {
   );
 };
 
-export const SettingsPopover = () => {
+export const SettingsMenu = () => {
   const [open, setOpen] = useState(false);
 
   return (
