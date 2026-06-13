@@ -7,7 +7,7 @@ import {
   VideoOffIcon,
 } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { Field } from "#/components/ui/field";
+import { Field, FieldLabel } from "#/components/ui/field";
 import { Group, GroupSeparator } from "#/components/ui/group";
 import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
 import { useIsMobile } from "#/hooks/use-media-query";
@@ -16,6 +16,10 @@ import { MediaDeviceSelect } from "./MediaDeviceSelect";
 const CameraSettings = () => {
   return (
     <Field>
+      <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+        <VideoIcon />
+        Camera
+      </FieldLabel>
       <MediaDeviceSelect kind="videoinput" label="Camera" />
     </Field>
   );

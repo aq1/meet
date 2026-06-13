@@ -2,8 +2,13 @@ import { PianoIcon, Settings, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldLabel } from "#/components/ui/field";
-import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
-import { Slider, SliderValue } from "#/components/ui/slider";
+import {
+  Popover,
+  PopoverPopup,
+  PopoverTitle,
+  PopoverTrigger,
+} from "#/components/ui/popover";
+import { Slider } from "#/components/ui/slider";
 import { useParticipantVolume } from "../controls-state";
 import { useSynth } from "../Synth";
 
@@ -15,13 +20,10 @@ const PianoVolumeSlider = () => {
       value={volume}
       onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
     >
-      <div className="mb-3.5 flex items-center justify-between gap-2">
-        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          <PianoIcon />
-          Piano
-        </FieldLabel>
-        <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
-      </div>
+      <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+        <PianoIcon />
+        Piano
+      </FieldLabel>
     </Slider>
   );
 };
@@ -35,23 +37,23 @@ const ParticipantsVolumeSlider = () => {
       value={volume}
       onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}
     >
-      <div className="mb-3.5 flex items-center justify-between gap-2">
-        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          <UsersIcon />
-          Participants
-        </FieldLabel>
-        <SliderValue className="font-medium text-foreground text-xs tabular-nums" />
-      </div>
+      <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+        <UsersIcon />
+        Participants
+      </FieldLabel>
     </Slider>
   );
 };
 
 const VolumeControls = () => {
   return (
-    <Field className="w-full gap-5">
-      <ParticipantsVolumeSlider />
-      <PianoVolumeSlider />
-    </Field>
+    <div className="flex flex-col gap-4">
+      <PopoverTitle>Volume</PopoverTitle>
+      <Field className="w-full gap-5">
+        <ParticipantsVolumeSlider />
+        <PianoVolumeSlider />
+      </Field>
+    </div>
   );
 };
 

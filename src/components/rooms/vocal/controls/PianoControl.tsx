@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon, PianoIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { Field, FieldDescription } from "#/components/ui/field";
+import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
 import { Group, GroupSeparator } from "#/components/ui/group";
 import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
 import { useIsMobile } from "#/hooks/use-media-query";
@@ -45,6 +45,10 @@ const DeviceSelect = () => {
 const MidiSettings = () => {
   return (
     <Field>
+      <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+        <PianoIcon />
+        MIDI
+      </FieldLabel>
       <DeviceSelect />
       <FieldDescription>
         Connect a MIDI keyboard to play along.
