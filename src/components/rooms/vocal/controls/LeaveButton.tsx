@@ -1,4 +1,5 @@
 import { useRoomContext } from "@livekit/components-react";
+import { useNavigate } from "@tanstack/react-router";
 import { PhoneOff } from "lucide-react";
 import {
   AlertDialog,
@@ -16,6 +17,7 @@ import { useIsMobile } from "#/hooks/use-media-query";
 export const LeaveButton = () => {
   const isMobile = useIsMobile();
   const room = useRoomContext();
+  const navigate = useNavigate();
 
   return (
     <AlertDialog>
@@ -44,7 +46,10 @@ export const LeaveButton = () => {
           />
           <AlertDialogClose
             render={<Button variant="destructive" />}
-            onClick={() => room.disconnect()}
+            onClick={async () => {
+              await room.disconnect();
+              navigate({ to: "/" });
+            }}
           >
             Leave
           </AlertDialogClose>
