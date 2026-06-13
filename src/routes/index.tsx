@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginDialog } from "#/components/login-dialog/LoginDialog";
 import { Button } from "#/components/ui/button";
 import {
@@ -20,10 +20,12 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const username = useUser((state) => state.username);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(true);
 
-  if (!loggedIn) {
-    return <LoginDialog onSubmit={() => setLoggedIn(!!username)} />;
+  useEffect(() => { setShowLoginDialog(!username) }, [username])
+
+  if (showLoginDialog) {
+    return <LoginDialog />;
   }
 
   return <Welcome />;

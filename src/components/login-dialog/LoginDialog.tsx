@@ -12,7 +12,7 @@ import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { useUser } from "#/lib/user-store";
 
-export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
+export const LoginDialog = () => {
   const user = useUser();
 
   return (
@@ -28,7 +28,6 @@ export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
             const fd = new FormData(e.currentTarget);
             const username = String(fd.get("username") ?? "");
             user.updateUsername(username);
-            onSubmit();
           }}
         >
           <DialogPanel className="grid gap-4">
