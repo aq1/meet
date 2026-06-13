@@ -106,9 +106,7 @@ export const VocalRoom = () => {
               </div>
             )}
           </div>
-          <div
-            className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}
-          >
+          <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
             <Piano />
           </div>
         </div>

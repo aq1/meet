@@ -4,7 +4,6 @@ import { CameraControl } from "./CameraControl";
 import { ChatToggle } from "./ChatToggle";
 import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
-import { PianoControl } from "./PianoControl";
 import { ScreenShareToggle } from "./ScreenShareToggle";
 import { SettingsMenu } from "./SettingsMenu";
 
@@ -17,7 +16,6 @@ export const Controls = () => {
         <MicControl />
         <CameraControl />
         {isMobile ? null : <ScreenShareToggle />}
-        <PianoControl />
         <ChatToggle />
         <SettingsMenu />
         <Separator orientation="vertical" />

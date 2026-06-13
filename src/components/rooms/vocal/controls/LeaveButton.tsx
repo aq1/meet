@@ -39,7 +39,9 @@ export const LeaveButton = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogClose render={<Button variant="outline">Cancel</Button>} />
+          <AlertDialogClose
+            render={<Button variant="outline">Cancel</Button>}
+          />
           <AlertDialogClose
             render={<Button variant="destructive" />}
             onClick={() => room.disconnect()}
