@@ -6,7 +6,7 @@ import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
 import { PianoControl } from "./PianoControl";
 import { ScreenShareToggle } from "./ScreenShareToggle";
-import { SettingsMenu } from "./SettingsMenu";
+import { SettingsPopover } from "./SettingsPopover";
 
 export const Controls = () => {
   const isMobile = useIsMobile();
@@ -19,7 +19,7 @@ export const Controls = () => {
         {isMobile ? null : <ScreenShareToggle />}
         <PianoControl />
         <ChatToggle />
-        <SettingsMenu />
+        <SettingsPopover />
         <Separator orientation="vertical" />
         <LeaveButton />
       </div>
