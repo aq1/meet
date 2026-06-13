@@ -16,7 +16,7 @@ import {
 import { useIsMobile } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
-import { Controls } from "./Controls";
+import { Controls } from "./controls";
 import { useControls, useParticipantVolume } from "./controls-state";
 import { LocalParticipantTile } from "./LocalParticipantTile";
 import { ParticipantsGrid } from "./ParticipantsGrid";
