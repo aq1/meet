@@ -5,6 +5,7 @@ import {
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import {
+  ChevronUpIcon,
   MessageCircleIcon,
   MicIcon,
   MicOffIcon,
@@ -16,7 +17,6 @@ import {
   UsersIcon,
   VideoIcon,
   VideoOffIcon,
-  Volume2Icon,
   VolumeIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -32,6 +32,7 @@ import {
 } from "#/components/ui/alert-dialog";
 import { Button } from "#/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
+import { Group, GroupSeparator } from "#/components/ui/group";
 import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
 import {
   Select,
@@ -120,39 +121,113 @@ const MediaDeviceSelect = ({
   );
 };
 
-const MicToggle = () => {
-  const { enabled, pending, toggle } = useTrackToggle({
-    source: Track.Source.Microphone,
-  });
+const MicMenu = ({
+  variant,
+}: {
+  variant: "outline" | "destructive-outline";
+}) => {
 
   return (
-    <Button
-      disabled={pending}
-      onClick={() => toggle()}
-      variant={enabled ? "outline" : "destructive-outline"}
-      size="icon-xl"
-      title={enabled ? "Mute microphone" : "Unmute microphone"}
+    <Popover
     >
-      {enabled ? <MicIcon /> : <MicOffIcon />}
-    </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant={variant}
+            size="icon-xl"
+            className="w-7 sm:w-6"
+            aria-label="Select microphone"
+            title="Select microphone"
+          />
+        }
+      >
+        <ChevronUpIcon aria-hidden="true" />
+      </PopoverTrigger>
+      <PopoverPopup side="top" sideOffset={14} align="end" className="w-72">
+        <AudioSettings />
+      </PopoverPopup>
+    </Popover>
   );
 };
 
-const CameraToggle = () => {
+const MicControl = () => {
+  const { enabled, pending, toggle } = useTrackToggle({
+    source: Track.Source.Microphone,
+  });
+  const variant = enabled ? "outline" : "destructive-outline";
+
+  return (
+    <Group aria-label="Microphone controls">
+      <Button
+        disabled={pending}
+        onClick={() => toggle()}
+        variant={variant}
+        size="icon-xl"
+        title={enabled ? "Mute microphone" : "Unmute microphone"}
+      >
+        {enabled ? <MicIcon /> : <MicOffIcon />}
+      </Button>
+      <GroupSeparator />
+      <MicMenu variant={variant} />
+    </Group>
+  );
+};
+
+const CameraSettings = () => {
+  return (
+    <Field>
+      <MediaDeviceSelect kind="videoinput" label="Camera" />
+    </Field>
+  );
+};
+
+const VideoMenu = ({
+  variant,
+}: {
+  variant: "outline" | "destructive-outline";
+}) => {
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <Button
+            variant={variant}
+            size="icon-xl"
+            className="w-7 sm:w-6"
+            aria-label="Select camera"
+            title="Select camera"
+          />
+        }
+      >
+        <ChevronUpIcon aria-hidden="true" />
+      </PopoverTrigger>
+      <PopoverPopup side="top" sideOffset={14} align="end" className="w-72">
+        <CameraSettings />
+      </PopoverPopup>
+    </Popover>
+  );
+};
+
+const CameraControl = () => {
   const { enabled, pending, toggle } = useTrackToggle({
     source: Track.Source.Camera,
   });
+  const variant = enabled ? "outline" : "destructive-outline";
 
   return (
-    <Button
-      disabled={pending}
-      onClick={() => toggle()}
-      variant={enabled ? "outline" : "destructive-outline"}
-      size="icon-xl"
-      title={enabled ? "Turn off camera" : "Turn on camera"}
-    >
-      {enabled ? <VideoIcon /> : <VideoOffIcon />}
-    </Button>
+    <Group aria-label="Camera controls">
+      <Button
+        disabled={pending}
+        onClick={() => toggle()}
+        variant={variant}
+        size="icon-xl"
+        title={enabled ? "Turn off camera" : "Turn on camera"}
+      >
+        {enabled ? <VideoIcon /> : <VideoOffIcon />}
+      </Button>
+      <GroupSeparator />
+      <VideoMenu variant={variant} />
+    </Group>
   );
 };
 
@@ -174,19 +249,62 @@ const ScreenShareToggle = () => {
   );
 };
 
-const PianoToggle = () => {
+const MidiSettings = () => {
+  return (
+    <Field>
+      <DeviceSelect />
+      <FieldDescription>
+        Connect a MIDI keyboard to play along.
+      </FieldDescription>
+    </Field>
+  );
+};
+
+const MidiMenu = ({
+  variant,
+}: {
+  variant: "default" | "outline";
+}) => {
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <Button
+            variant={variant}
+            size="icon-xl"
+            className="w-7 sm:w-6"
+            aria-label="Select MIDI device"
+            title="Select MIDI device"
+          />
+        }
+      >
+        <ChevronUpIcon aria-hidden="true" />
+      </PopoverTrigger>
+      <PopoverPopup side="top" sideOffset={14} align="end" className="w-72">
+        <MidiSettings />
+      </PopoverPopup>
+    </Popover>
+  );
+};
+
+const PianoControl = () => {
   const showKeyboard = useControls((state) => state.showKeyboard);
   const toggle = useControls((state) => state.toggle);
+  const variant = showKeyboard ? "default" : "outline";
 
   return (
-    <Button
-      onClick={() => toggle("showKeyboard")}
-      variant={showKeyboard ? "default" : "outline"}
-      size="icon-xl"
-      title={showKeyboard ? "Hide piano" : "Show piano"}
-    >
-      <PianoIcon />
-    </Button>
+    <Group aria-label="Piano controls">
+      <Button
+        onClick={() => toggle("showKeyboard")}
+        variant={variant}
+        size="icon-xl"
+        title={showKeyboard ? "Hide piano" : "Show piano"}
+      >
+        <PianoIcon />
+      </Button>
+      <GroupSeparator />
+      <MidiMenu variant={variant} />
+    </Group>
   );
 };
 
@@ -254,23 +372,24 @@ const VolumeControls = () => {
   );
 };
 
-const SettingsSection = ({
-  icon,
-  title,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}) => {
+const AudioSettings = () => {
   return (
-    <section className="flex flex-col gap-3">
-      <h3 className="flex items-center gap-2 font-medium text-muted-foreground text-xs uppercase tracking-wider [&_svg]:size-3.5">
-        {icon}
-        {title}
-      </h3>
-      {children}
-    </section>
+    <div className="flex flex-col gap-3">
+      <Field>
+        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+          <MicIcon />
+          Microphone
+        </FieldLabel>
+        <MediaDeviceSelect kind="audioinput" label="Microphone" />
+      </Field>
+      <Field>
+        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+          <VolumeIcon />
+          Speaker
+        </FieldLabel>
+        <MediaDeviceSelect kind="audiooutput" label="Speaker" />
+      </Field>
+    </div>
   );
 };
 
@@ -280,10 +399,7 @@ const SettingsPopover = () => {
   return (
     <Popover
       open={open}
-      onOpenChange={(nextOpen, eventDetails) => {
-        if (eventDetails.reason === "outside-press") return;
-        setOpen(nextOpen);
-      }}
+      onOpenChange={setOpen}
     >
       <PopoverTrigger
         render={
@@ -297,49 +413,7 @@ const SettingsPopover = () => {
         <Settings />
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
-        <div className="flex flex-col gap-5">
-          <SettingsSection icon={<Volume2Icon />} title="Audio">
-            <Field>
-              <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-                <MicIcon />
-                Microphone
-              </FieldLabel>
-              <MediaDeviceSelect kind="audioinput" label="Microphone" />
-            </Field>
-            <Field>
-              <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-                <VolumeIcon />
-                Speaker
-              </FieldLabel>
-              <MediaDeviceSelect kind="audiooutput" label="Speaker" />
-            </Field>
-          </SettingsSection>
-
-          <Separator />
-
-          <SettingsSection icon={<VideoIcon />} title="Camera">
-            <Field>
-              <MediaDeviceSelect kind="videoinput" label="Camera" />
-            </Field>
-          </SettingsSection>
-
-          <Separator />
-
-          <SettingsSection icon={<PianoIcon />} title="MIDI Device">
-            <Field>
-              <DeviceSelect />
-              <FieldDescription>
-                Connect a MIDI keyboard to play along.
-              </FieldDescription>
-            </Field>
-          </SettingsSection>
-
-          <Separator />
-
-          <SettingsSection icon={<Volume2Icon />} title="Volume">
-            <VolumeControls />
-          </SettingsSection>
-        </div>
+        <VolumeControls />
       </PopoverPopup>
     </Popover>
   );
@@ -390,10 +464,10 @@ export const Controls = () => {
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 flex items-center border-t bg-background/80 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm md:static md:z-auto md:border-0 md:bg-transparent md:px-6 md:py-0 md:pb-0 md:backdrop-blur-none">
       <div className="w-full h-full flex justify-center items-center gap-3 md:justify-end md:gap-6">
-        <MicToggle />
-        <CameraToggle />
+        <MicControl />
+        <CameraControl />
         {isMobile ? null : <ScreenShareToggle />}
-        <PianoToggle />
+        <PianoControl />
         <ChatToggle />
         <SettingsPopover />
         <Separator orientation="vertical" />
