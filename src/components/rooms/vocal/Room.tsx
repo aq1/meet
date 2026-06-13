@@ -100,9 +100,8 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             </div>
             {isMobile ? null : (
               <div
-                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${
-                  showChat ? "" : "hidden"
-                }`}
+                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${showChat ? "" : "hidden"
+                  }`}
               >
                 <div className="size-full flex flex-col px-4 min-h-0">
                   <Chat />

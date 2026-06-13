@@ -17,8 +17,7 @@ import {
 } from "#/components/ui/select";
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
-import { Switch } from "#/components/ui/switch";
-import { useControls, useParticipantVolume } from "../controls-state";
+import { useParticipantVolume } from "../controls-state";
 import { useSynth } from "../Synth";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
@@ -55,24 +54,6 @@ const ParticipantsVolumeSlider = () => {
         Participants
       </FieldLabel>
     </Slider>
-  );
-};
-
-const ShowKeyboardSwitch = () => {
-  const showKeyboard = useControls((state) => state.showKeyboard);
-  const toggle = useControls((state) => state.toggle);
-
-  return (
-    <FieldLabel className="-mx-2 w-[calc(100%+1rem)] justify-between gap-2 rounded-md px-2 py-1.5 font-normal text-foreground transition-colors hover:bg-accent [&_svg]:size-4 [&_svg]:text-muted-foreground">
-      <span className="inline-flex items-center gap-2">
-        <PianoIcon />
-        Show keyboard
-      </span>
-      <Switch
-        checked={showKeyboard}
-        onCheckedChange={() => toggle("showKeyboard")}
-      />
-    </FieldLabel>
   );
 };
 
@@ -122,7 +103,6 @@ const VolumeControls = () => {
       <section className="flex flex-col gap-3">
         <SectionLabel>Piano</SectionLabel>
         <Field className="w-full gap-2.5">
-          <ShowKeyboardSwitch />
           <DeviceSelect />
           <FieldDescription>
             Connect a MIDI keyboard to play along.

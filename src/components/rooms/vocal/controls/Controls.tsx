@@ -2,6 +2,7 @@ import { Separator } from "#/components/ui/separator";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { CameraControl } from "./CameraControl";
 import { ChatToggle } from "./ChatToggle";
+import { KeyboardToggle } from "./KeyboardToggle";
 import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
 import { ScreenShareToggle } from "./ScreenShareToggle";
@@ -16,6 +17,7 @@ export const Controls = () => {
         <MicControl />
         <CameraControl />
         {isMobile ? null : <ScreenShareToggle />}
+        <KeyboardToggle />
         <ChatToggle />
         <SettingsMenu />
         <Separator orientation="vertical" />
