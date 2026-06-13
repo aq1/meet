@@ -19,14 +19,14 @@ export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
     <Dialog open={true}>
       <DialogPopup className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Choose username</DialogTitle>
+          <DialogTitle>Sign in</DialogTitle>
         </DialogHeader>
         <Form
           className="contents"
           onSubmit={(e) => {
             e.preventDefault();
             const fd = new FormData(e.currentTarget);
-            user.updateUsername(fd.get("username"));
+            user.updateUsername(String(fd.get("username") ?? ""));
             onSubmit();
           }}
         >
@@ -39,10 +39,13 @@ export const LoginDialog = ({ onSubmit }: { onSubmit: () => void }) => {
                 required
               />
             </Field>
+            <Field>
+              <Input type="text" name="password" placeholder="Password" />
+            </Field>
           </DialogPanel>
           <DialogFooter>
-            <Button type="submit" title="Enter the room">
-              Enter the room
+            <Button type="submit" title="Sign in">
+              Sign in
             </Button>
           </DialogFooter>
         </Form>
