@@ -65,7 +65,7 @@ const noteVariant = cva(
 const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
   return (
     <div
-      className={`rounded-b size-full flex flex-col justify-end px-1 size-full transition-colors shadow-xl text-gray-500 ${pressed ? "text-white bg-linear-to-b from-indigo-500 to-blue-500" : null}`}
+      className={`flex size-full size-full flex-col justify-end rounded-b px-1 text-gray-500 shadow-xl transition-colors ${pressed ? "bg-linear-to-b from-indigo-500 to-blue-500 text-white" : null}`}
     >
       {note.name === "C" ? note.label : ""}
     </div>
@@ -169,7 +169,7 @@ export const Piano = () => {
   }, [selectedDevice]);
 
   return (
-    <div className="w-full h-[200px]">
+    <div className="h-[200px] w-full">
       <ScrollArea fill>
         <div ref={contentRef} className="flex h-full pb-2.5">
           {NOTES.map((note) => (

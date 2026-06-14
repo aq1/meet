@@ -15,6 +15,7 @@ export const ScreenShareToggle = () => {
       variant={enabled ? "default" : "outline"}
       size="icon-xl"
       title={enabled ? "Stop sharing screen" : "Share screen"}
+      className="hidden sm:flex"
     >
       {enabled ? <ScreenShareOffIcon /> : <ScreenShareIcon />}
     </Button>

@@ -14,7 +14,7 @@ export const ParticipantsGrid = () => {
   return (
     <GridLayout
       tracks={tracks}
-      className="grid size-full gap-1 rounded-xl bg-muted auto-rows-fr grid-cols-[repeat(auto-fit,minmax(min(16rem,100%),1fr))]"
+      className="grid size-full auto-rows-fr grid-cols-[repeat(auto-fit,minmax(min(16rem,100%),1fr))] gap-1 rounded-xl bg-muted"
     >
       <ParticipantTile />
     </GridLayout>

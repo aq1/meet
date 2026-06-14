@@ -85,7 +85,7 @@ const ParticipantTileContent = ({
     <Card
       data-speaking={isSpeaking}
       className={cn(
-        "relative flex flex-col gap-1 size-full items-center overflow-hidden rounded-xl",
+        "relative flex size-full flex-col items-center gap-1 overflow-hidden rounded-xl",
         "ring-2 ring-transparent transition-colors",
         isSpeaking && "ring-emerald-500",
         hasVideo ? "bg-muted" : "bg-transparent",

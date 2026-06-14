@@ -87,12 +87,14 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
-      <div className="h-dvh w-dvw md:pt-4 pb-24 md:pb-0">
-        <div className="size-full flex flex-col gap-4">
-          <div>
-            <Controls />
-          </div>
-          <div className="size-full flex basis-full min-h-0">
+      <div className="h-dvh w-dvw md:pt-4">
+        <div className="flex size-full flex-col md:gap-4">
+          {isMobile ? null : (
+            <div>
+              <Controls />
+            </div>
+          )}
+          <div className="flex size-full min-h-0 basis-full">
             <div className="relative flex-1">
               {isMobile ? <ActiveSpeakerPanel /> : <ParticipantsGrid />}
               <div className="absolute bottom-4 left-4 z-10 h-1/4 max-h-48 w-1/4 max-w-64">
@@ -101,10 +103,11 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             </div>
             {isMobile ? null : (
               <div
-                className={`flex basis-1/4 justify-end gap-4 min-h-0 ${showChat ? "" : "hidden"
-                  }`}
+                className={`flex min-h-0 basis-1/4 justify-end gap-4 ${
+                  showChat ? "" : "hidden"
+                }`}
               >
-                <div className="size-full flex flex-col px-4 min-h-0">
+                <div className="flex size-full min-h-0 flex-col px-4">
                   <Chat />
                 </div>
               </div>
@@ -113,6 +116,11 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
           <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
             <Piano />
           </div>
+          {isMobile ? (
+            <div>
+              <Controls />
+            </div>
+          ) : null}
         </div>
       </div>
       {isMobile ? (
@@ -132,7 +140,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
                   <XIcon />
                 </DialogClose>
               </div>
-              <div className="flex-1 min-h-0">
+              <div className="min-h-0 flex-1">
                 <Chat />
               </div>
             </DialogPrimitive.Popup>

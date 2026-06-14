@@ -22,7 +22,9 @@ function Home() {
   const username = useUser((state) => state.username);
   const [showLoginDialog, setShowLoginDialog] = useState(true);
 
-  useEffect(() => { setShowLoginDialog(!username) }, [username])
+  useEffect(() => {
+    setShowLoginDialog(!username);
+  }, [username]);
 
   if (showLoginDialog) {
     return <LoginDialog />;

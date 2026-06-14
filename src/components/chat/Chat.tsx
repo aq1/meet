@@ -26,7 +26,7 @@ const Message = memo(({ message, previousMessage }: MessageT) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.2 }}
-      className="flex justify-between items-center text-sm"
+      className="flex items-center justify-between text-sm"
     >
       <div className="flex flex-col">
         <span
@@ -61,8 +61,8 @@ export const Chat = () => {
 
   return (
     <div className="size-full">
-      <div className="size-full flex flex-col justify-between align-center">
-        <ScrollArea className="flex-1 min-h-0">
+      <div className="flex size-full flex-col justify-between align-center">
+        <ScrollArea className="min-h-0 flex-1">
           <div className="flex flex-col gap-1">
             <AnimatePresence initial={false}>
               {chatMessages.map((m, index) => (
