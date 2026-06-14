@@ -12,7 +12,6 @@ export const KeyboardToggle = () => {
       variant={showKeyboard ? "default" : "outline"}
       size="icon-xl"
       title={showKeyboard ? "Hide keyboard" : "Show keyboard"}
-      className="hidden md:flex"
     >
       <PianoIcon />
     </Button>

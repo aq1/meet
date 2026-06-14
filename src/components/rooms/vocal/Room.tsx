@@ -74,11 +74,11 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
       <div className="h-dvh w-dvw md:pt-4">
-        <div className="flex size-full flex-col-reverse md:flex-col md:gap-2">
-          <div>
+        <div className="flex size-full flex-col md:gap-2">
+          <div className="order-last md:order-none">
             <Controls />
           </div>
-          <div className="flex size-full min-h-0 basis-full">
+          <div className="order-first flex size-full min-h-0 basis-full md:order-none">
             <div className="relative flex-1">
               {isMobile ? <ActiveSpeakerPanel /> : <ParticipantsGrid />}
               <div className="absolute bottom-4 left-4 z-10 h-1/4 max-h-48 w-1/4 max-w-64">
@@ -87,10 +87,9 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             </div>
             <Chat />
           </div>
-          {isMobile ? null : <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
+          <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
             <Piano />
           </div>
-          }
         </div>
       </div>
     </RoomContext.Provider>
