@@ -6,11 +6,9 @@ import { Chat } from "#/components/chat/Chat";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
-import { ActiveSpeakerPanel } from "./ActiveSpeakerPanel";
 import { Controls } from "./controls";
 import { useControls, useParticipantVolume } from "./controls-state";
-import { LocalParticipantTile } from "./LocalParticipantTile";
-import { ParticipantsGrid } from "./ParticipantsGrid";
+import { Participants } from "./Participants";
 import { Piano } from "./Piano";
 
 const grantToken = createServerFn({ method: "POST" })
@@ -79,12 +77,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             <Controls />
           </div>
           <div className="order-first flex size-full min-h-0 basis-full md:order-none">
-            <div className="relative flex-1">
-              {isMobile ? <ActiveSpeakerPanel /> : <ParticipantsGrid />}
-              <div className="absolute bottom-4 left-4 z-10 h-1/4 max-h-48 w-1/4 max-w-64">
-                <LocalParticipantTile />
-              </div>
-            </div>
+            <Participants />
             <Chat />
           </div>
           <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
