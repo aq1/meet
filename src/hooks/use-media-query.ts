@@ -7,7 +7,7 @@ const BREAKPOINTS = {
   "3xl": 1600,
   "4xl": 2000,
   lg: 1024,
-  md: 800,
+  md: 768,
   sm: 640,
   xl: 1280,
 } as const;
@@ -75,7 +75,7 @@ export function useMediaQuery(
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      if (typeof window === "undefined") return () => {};
+      if (typeof window === "undefined") return () => { };
       const mql = window.matchMedia(mediaQuery);
       mql.addEventListener("change", callback);
       return () => mql.removeEventListener("change", callback);

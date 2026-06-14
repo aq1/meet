@@ -65,12 +65,10 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     };
   }, [room, username, roomId, grant]);
 
-  // Chat is visible by default on desktop, hidden on mobile.
   useEffect(() => {
     setShowChat("showChat", !isMobile);
   }, [isMobile, setShowChat]);
 
-  // Warn before leaving while connected to the room.
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
@@ -87,7 +85,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
-      <div className="h-dvh w-dvw md:pt-4">
+      <div className="bg-green-200 sm:bg-red-200 h-dvh w-dvw md:pt-4">
         <div className="flex size-full flex-col md:gap-4">
           {isMobile ? null : (
             <div>
@@ -103,9 +101,8 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             </div>
             {isMobile ? null : (
               <div
-                className={`flex min-h-0 basis-1/4 justify-end gap-4 ${
-                  showChat ? "" : "hidden"
-                }`}
+                className={`flex min-h-0 basis-1/4 justify-end gap-4 ${showChat ? "" : "hidden"
+                  }`}
               >
                 <div className="flex size-full min-h-0 flex-col px-4">
                   <Chat />
