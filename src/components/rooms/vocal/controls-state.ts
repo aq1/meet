@@ -21,6 +21,6 @@ interface ParticipantVolumeState {
 }
 
 export const useParticipantVolume = create<ParticipantVolumeState>((set) => ({
-  volume: 50,
+  volume: 100,
   setVolume: (volume) => set({ volume }),
 }));

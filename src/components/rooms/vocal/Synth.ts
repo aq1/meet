@@ -92,7 +92,7 @@ const volumeToDb = (volume: number) => Tone.gainToDb(volume / 100);
 
 export const useSamplerStore = create<SamplerStore>((set, get) => ({
   sampler: null,
-  volume: 50,
+  volume: 100,
   initSampler: () => {
     if (get().sampler) {
       return;
