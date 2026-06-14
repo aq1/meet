@@ -1,4 +1,4 @@
-import { PianoIcon, Settings, UsersIcon } from "lucide-react";
+import { CheckIcon, PianoIcon, Settings, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "#/components/ui/field";
@@ -8,15 +8,9 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "#/components/ui/popover";
-import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
+import { cn } from "#/lib/utils";
 import { useParticipantVolume } from "../controls-state";
 import { useSynth } from "../Synth";
 
@@ -60,28 +54,35 @@ const ParticipantsVolumeSlider = () => {
 const DeviceSelect = () => {
   const { devices, selectedDevice, setSelectedDevice } = useSynth();
 
-  const items = devices.map((d) => ({ label: d.name, value: d }));
+  if (!devices.length) {
+    return (
+      <p className="px-2 py-1.5 text-muted-foreground text-sm">
+        No MIDI detected
+      </p>
+    );
+  }
 
   return (
-    <Select
-      aria-label="Select MIDI"
-      items={items}
-      onValueChange={setSelectedDevice}
-      value={selectedDevice}
-    >
-      <SelectTrigger disabled>
-        <SelectValue
-          placeholder={items.length ? "Select MIDI" : "No MIDI detected"}
-        />
-      </SelectTrigger>
-      <SelectPopup>
-        {items.map(({ label, value }) => (
-          <SelectItem key={value.id} value={value}>
-            {label}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+    <ul aria-label="Select MIDI" className="flex flex-col">
+      {devices.map((device) => {
+        const selected = device.id === selectedDevice?.id;
+
+        return (
+          <li key={device.id}>
+            <button
+              type="button"
+              onClick={() => setSelectedDevice(device)}
+              className="grid w-full grid-cols-[1rem_1fr] items-center gap-2 rounded-sm px-2 py-1.5 text-start text-foreground text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+            >
+              <CheckIcon
+                className={cn("size-4 opacity-80", !selected && "invisible")}
+              />
+              {device.name}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
   );
 };
 

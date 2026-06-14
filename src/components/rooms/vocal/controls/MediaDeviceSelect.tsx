@@ -1,54 +1,59 @@
 import { useMediaDeviceSelect } from "@livekit/components-react";
+import type * as React from "react";
 import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
+  MenuGroup,
+  MenuGroupLabel,
+  MenuItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+} from "#/components/ui/menu";
 
 export const MediaDeviceSelect = ({
   kind,
   label,
+  icon,
 }: {
   kind: "audioinput" | "videoinput" | "audiooutput";
   label: string;
+  icon: React.ReactNode;
 }) => {
   const { devices, activeDeviceId, setActiveMediaDevice } =
     useMediaDeviceSelect({ kind, requestPermissions: true });
 
   const items = devices
-    .filter((d) => d.deviceId)
+    .filter(
+      (d) =>
+        d.deviceId &&
+        d.deviceId !== "default" &&
+        d.deviceId !== "communications",
+    )
     .map((d, index) => ({
       label: d.label || `${label} ${index + 1}`,
       value: d.deviceId,
     }));
 
   return (
-    <Select
-      aria-label={`Select ${label.toLowerCase()}`}
-      items={items}
-      onValueChange={(value) => {
-        if (value) setActiveMediaDevice(value);
-      }}
-      value={activeDeviceId}
-    >
-      <SelectTrigger disabled={!items.length}>
-        <SelectValue
-          placeholder={
-            items.length
-              ? `Select ${label.toLowerCase()}`
-              : `No ${label.toLowerCase()} detected`
-          }
-        />
-      </SelectTrigger>
-      <SelectPopup>
-        {items.map(({ label, value }) => (
-          <SelectItem key={value} value={value}>
-            {label}
-          </SelectItem>
-        ))}
-      </SelectPopup>
-    </Select>
+    <MenuGroup>
+      <MenuGroupLabel className="flex items-center gap-2 [&_svg]:size-4 [&_svg]:opacity-80">
+        {icon}
+        {label}
+      </MenuGroupLabel>
+      {items.length ? (
+        <MenuRadioGroup
+          value={activeDeviceId}
+          onValueChange={(value) => {
+            if (value) setActiveMediaDevice(value);
+          }}
+        >
+          {items.map(({ label, value }) => (
+            <MenuRadioItem closeOnClick key={value} value={value}>
+              {label}
+            </MenuRadioItem>
+          ))}
+        </MenuRadioGroup>
+      ) : (
+        <MenuItem disabled>No {label.toLowerCase()} detected</MenuItem>
+      )}
+    </MenuGroup>
   );
 };

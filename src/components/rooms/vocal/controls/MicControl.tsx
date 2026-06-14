@@ -8,32 +8,15 @@ import {
   VolumeIcon,
 } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { Field, FieldLabel } from "#/components/ui/field";
 import { Group, GroupSeparator } from "#/components/ui/group";
-import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
+import {
+  Menu,
+  MenuPopup,
+  MenuSeparator,
+  MenuTrigger,
+} from "#/components/ui/menu";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
-
-const AudioSettings = () => {
-  return (
-    <div className="flex flex-col gap-3">
-      <Field>
-        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          <MicIcon />
-          Microphone
-        </FieldLabel>
-        <MediaDeviceSelect kind="audioinput" label="Microphone" />
-      </Field>
-      <Field>
-        <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-          <VolumeIcon />
-          Speaker
-        </FieldLabel>
-        <MediaDeviceSelect kind="audiooutput" label="Speaker" />
-      </Field>
-    </div>
-  );
-};
 
 const MicMenu = ({
   variant,
@@ -43,8 +26,8 @@ const MicMenu = ({
   const isMobile = useIsMobile();
 
   return (
-    <Popover>
-      <PopoverTrigger
+    <Menu>
+      <MenuTrigger
         render={
           <Button
             variant={variant}
@@ -60,11 +43,21 @@ const MicMenu = ({
         ) : (
           <ChevronDownIcon aria-hidden="true" />
         )}
-      </PopoverTrigger>
-      <PopoverPopup side="top" sideOffset={14} align="end" className="w-72">
-        <AudioSettings />
-      </PopoverPopup>
-    </Popover>
+      </MenuTrigger>
+      <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
+        <MediaDeviceSelect
+          kind="audioinput"
+          label="Microphone"
+          icon={<MicIcon />}
+        />
+        <MenuSeparator />
+        <MediaDeviceSelect
+          kind="audiooutput"
+          label="Speaker"
+          icon={<VolumeIcon />}
+        />
+      </MenuPopup>
+    </Menu>
   );
 };
 

@@ -7,23 +7,10 @@ import {
   VideoOffIcon,
 } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { Field, FieldLabel } from "#/components/ui/field";
 import { Group, GroupSeparator } from "#/components/ui/group";
-import { Popover, PopoverPopup, PopoverTrigger } from "#/components/ui/popover";
+import { Menu, MenuPopup, MenuTrigger } from "#/components/ui/menu";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
-
-const CameraSettings = () => {
-  return (
-    <Field>
-      <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
-        <VideoIcon />
-        Camera
-      </FieldLabel>
-      <MediaDeviceSelect kind="videoinput" label="Camera" />
-    </Field>
-  );
-};
 
 const VideoMenu = ({
   variant,
@@ -33,8 +20,8 @@ const VideoMenu = ({
   const isMobile = useIsMobile();
 
   return (
-    <Popover>
-      <PopoverTrigger
+    <Menu>
+      <MenuTrigger
         render={
           <Button
             variant={variant}
@@ -50,11 +37,15 @@ const VideoMenu = ({
         ) : (
           <ChevronDownIcon aria-hidden="true" />
         )}
-      </PopoverTrigger>
-      <PopoverPopup side="top" sideOffset={14} align="end" className="w-72">
-        <CameraSettings />
-      </PopoverPopup>
-    </Popover>
+      </MenuTrigger>
+      <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
+        <MediaDeviceSelect
+          kind="videoinput"
+          label="Camera"
+          icon={<VideoIcon />}
+        />
+      </MenuPopup>
+    </Menu>
   );
 };
 
