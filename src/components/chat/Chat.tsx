@@ -1,9 +1,19 @@
 import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
-import { Send } from "lucide-react";
+import { Send, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useRef, useState } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogClose,
+  DialogPortal,
+  DialogPrimitive,
+  DialogTitle,
+} from "#/components/ui/dialog";
+import { useIsMobile } from "#/hooks/use-media-query";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useControls } from "../rooms/vocal/controls-state";
 import { Button } from "../ui/button";
 
 type MessageT = {
@@ -44,7 +54,7 @@ const Message = memo(({ message, previousMessage }: MessageT) => {
 });
 Message.displayName = "Message";
 
-export const Chat = () => {
+const ChatContent = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const { chatMessages, send, isSending } = useChat();
 
@@ -96,5 +106,50 @@ export const Chat = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+export const Chat = () => {
+  const isMobile = useIsMobile();
+  const showChat = useControls((state) => state.showChat);
+  const toggle = useControls((state) => state.toggle);
+
+  if (!isMobile) {
+    return (
+      <div
+        className={`flex min-h-0 basis-1/4 justify-end gap-4 ${
+          showChat ? "" : "hidden"
+        }`}
+      >
+        <div className="flex size-full min-h-0 flex-col px-4">
+          <ChatContent />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
+      <DialogPortal keepMounted>
+        <DialogBackdrop />
+        <DialogPrimitive.Popup
+          className="fixed inset-0 z-50 flex flex-col gap-2 bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] outline-none transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0"
+          data-slot="dialog-popup"
+        >
+          <div className="flex items-center justify-between">
+            <DialogTitle>Chat</DialogTitle>
+            <DialogClose
+              aria-label="Close"
+              render={<Button size="icon" variant="ghost" title="Close" />}
+            >
+              <XIcon />
+            </DialogClose>
+          </div>
+          <div className="min-h-0 flex-1">
+            <ChatContent />
+          </div>
+        </DialogPrimitive.Popup>
+      </DialogPortal>
+    </Dialog>
   );
 };

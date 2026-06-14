@@ -1,18 +1,8 @@
 import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
-import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
-import { Button } from "#/components/ui/button";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogClose,
-  DialogPortal,
-  DialogPrimitive,
-  DialogTitle,
-} from "#/components/ui/dialog";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
@@ -37,9 +27,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
         dynacast: true,
       }),
   );
-  const showChat = useControls((state) => state.showChat);
   const showKeyboard = useControls((state) => state.showKeyboard);
-  const toggle = useControls((state) => state.toggle);
   const isMobile = useIsMobile();
   const setShowChat = useControls((state) => state.set);
   const participantVolume = useParticipantVolume((state) => state.volume);
@@ -99,16 +87,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
                 <LocalParticipantTile />
               </div>
             </div>
-            {isMobile ? null : (
-              <div
-                className={`flex min-h-0 basis-1/4 justify-end gap-4 ${showChat ? "" : "hidden"
-                  }`}
-              >
-                <div className="flex size-full min-h-0 flex-col px-4">
-                  <Chat />
-                </div>
-              </div>
-            )}
+            <Chat />
           </div>
           <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
             <Piano />
@@ -120,30 +99,6 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
           ) : null}
         </div>
       </div>
-      {isMobile ? (
-        <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
-          <DialogPortal keepMounted>
-            <DialogBackdrop />
-            <DialogPrimitive.Popup
-              className="fixed inset-0 z-50 flex flex-col gap-2 bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] outline-none transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0"
-              data-slot="dialog-popup"
-            >
-              <div className="flex items-center justify-between">
-                <DialogTitle>Chat</DialogTitle>
-                <DialogClose
-                  aria-label="Close"
-                  render={<Button size="icon" variant="ghost" title="Close" />}
-                >
-                  <XIcon />
-                </DialogClose>
-              </div>
-              <div className="min-h-0 flex-1">
-                <Chat />
-              </div>
-            </DialogPrimitive.Popup>
-          </DialogPortal>
-        </Dialog>
-      ) : null}
     </RoomContext.Provider>
   );
 };
