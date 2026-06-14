@@ -1,4 +1,4 @@
-import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
+import { RoomContext } from "@livekit/components-react";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
-import { useControls, useParticipantVolume } from "./controls-state";
+import { useControls } from "./controls-state";
 import { Participants } from "./Participants";
 import { Piano } from "./Piano";
 
@@ -29,7 +29,6 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   const showKeyboard = useControls((state) => state.showKeyboard);
   const isMobile = useIsMobile();
   const setShowChat = useControls((state) => state.set);
-  const participantVolume = useParticipantVolume((state) => state.volume);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
 
@@ -59,7 +58,6 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -71,7 +69,6 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
 
   return (
     <RoomContext.Provider value={room}>
-      <RoomAudioRenderer volume={participantVolume / 100} />
       <div className="h-dvh w-dvw md:pt-4">
         <div className="flex size-full flex-col md:gap-2">
           <div className="order-last md:order-none">
