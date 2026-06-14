@@ -85,7 +85,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer volume={participantVolume / 100} />
-      <div className="bg-green-200 sm:bg-red-200 h-dvh w-dvw md:pt-4">
+      <div className="h-dvh w-dvw md:pt-4">
         <div className="flex size-full flex-col md:gap-4">
           {isMobile ? null : (
             <div>

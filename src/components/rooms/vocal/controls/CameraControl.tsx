@@ -26,7 +26,7 @@ const VideoMenu = ({
           <Button
             variant={variant}
             size="icon-xl"
-            className="w-7 sm:w-6"
+            className="w-7 md:w-6"
             aria-label="Select camera"
             title="Select camera"
           />

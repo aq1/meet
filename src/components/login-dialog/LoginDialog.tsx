@@ -17,7 +17,7 @@ export const LoginDialog = () => {
 
   return (
     <Dialog open={true}>
-      <DialogPopup className="sm:max-w-sm">
+      <DialogPopup className="md:max-w-sm">
         <DialogHeader>
           <DialogTitle>Sign in</DialogTitle>
         </DialogHeader>
