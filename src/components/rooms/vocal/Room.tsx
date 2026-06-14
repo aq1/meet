@@ -6,6 +6,7 @@ import { Chat } from "#/components/chat/Chat";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
+import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls, useParticipantVolume } from "./controls-state";
 import { Participants } from "./Participants";
@@ -80,7 +81,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             <Participants />
             <Chat />
           </div>
-          <div className={`w-full basis-1/3 ${showKeyboard ? "" : "hidden"}`}>
+          <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
             <Piano />
           </div>
         </div>

@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "#/components/ui/dialog";
 import { useIsMobile } from "#/hooks/use-media-query";
+import { cn } from "#/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useControls } from "../rooms/vocal/controls-state";
@@ -117,9 +118,10 @@ export const Chat = () => {
   if (!isMobile) {
     return (
       <div
-        className={`flex min-h-0 basis-1/4 justify-end gap-4 ${
-          showChat ? "" : "hidden"
-        }`}
+        className={cn(
+          "flex min-h-0 basis-1/4 justify-end gap-4",
+          !showChat && "hidden",
+        )}
       >
         <div className="flex size-full min-h-0 flex-col px-4">
           <ChatContent />

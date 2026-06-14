@@ -2,6 +2,7 @@ import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import { cva } from "class-variance-authority";
 import { useEffect, useRef } from "react";
 import { ScrollArea } from "#/components/ui/scroll-area";
+import { cn } from "#/lib/utils";
 import { NOTES, type Note } from "./keys";
 import { usePianoStore } from "./piano-state";
 import { useSynth } from "./Synth";
@@ -65,7 +66,10 @@ const noteVariant = cva(
 const NoteOverlay = ({ note, pressed }: { note: Note; pressed: boolean }) => {
   return (
     <div
-      className={`flex size-full size-full flex-col justify-end rounded-b px-1 text-gray-500 shadow-xl transition-colors ${pressed ? "bg-linear-to-b from-indigo-500 to-blue-500 text-white" : null}`}
+      className={cn(
+        "flex size-full flex-col justify-end rounded-b px-1 text-gray-500 shadow-xl transition-colors",
+        pressed && "bg-linear-to-b from-indigo-500 to-blue-500 text-white",
+      )}
     >
       {note.name === "C" ? note.label : ""}
     </div>
