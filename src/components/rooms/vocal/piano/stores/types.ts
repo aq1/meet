@@ -3,6 +3,7 @@ import * as Tone from "tone";
 import type { Input } from "webmidi";
 
 export type MidiSliceT = {
+  midiEnabled: boolean;
   inputs: Array<Input>;
   selectedInput: Input | null;
   setSelectedInput: (input: Input | null) => void;

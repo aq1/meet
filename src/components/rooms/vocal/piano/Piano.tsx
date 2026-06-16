@@ -56,6 +56,7 @@ export const Piano = () => {
   );
 
   useEffect(() => {
+    console.log("PIANO INIT")
     document.body?.scrollIntoView({ inline: "center", block: "nearest" });
 
     const { enable, disable } = usePianoStore.getState();

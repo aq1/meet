@@ -20,20 +20,6 @@ export const createMidiSlice: StateCreator<PianoStoreT, [], [], MidiSliceT> = (
     }
   };
 
-  const enableMidi = async () => {
-    if (WebMidi.enabled) {
-      return;
-    }
-    try {
-      await WebMidi.enable();
-    } catch {
-      return;
-    }
-    WebMidi.addListener("connected", updateDevices);
-    WebMidi.addListener("disconnected", updateDevices);
-    updateDevices();
-  };
-
   const setSelectedInput = (input: Input | null) => {
     get().selectedInput?.removeListener();
     set({ selectedInput: input });
@@ -48,6 +34,27 @@ export const createMidiSlice: StateCreator<PianoStoreT, [], [], MidiSliceT> = (
     });
   };
 
+  const enableMidi = async () => {
+    if (get().midiEnabled) {
+      return
+    }
+
+    set({ midiEnabled: true })
+
+    console.log("MIDI INIT")
+    try {
+      await WebMidi.enable();
+      WebMidi.addListener("connected", updateDevices);
+      WebMidi.addListener("disconnected", updateDevices);
+    } catch {
+      console.warn("Could not enable WebMidi")
+      set({ midiEnabled: false })
+      return;
+    } finally {
+      updateDevices();
+    }
+  };
+
   const disableMidi = async () => {
     setSelectedInput(null);
     set({ inputs: [] });
@@ -55,6 +62,7 @@ export const createMidiSlice: StateCreator<PianoStoreT, [], [], MidiSliceT> = (
   };
 
   return {
+    midiEnabled: false,
     inputs: [],
     selectedInput: null,
     setSelectedInput,

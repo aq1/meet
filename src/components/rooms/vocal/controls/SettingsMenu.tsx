@@ -12,7 +12,7 @@ import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { useParticipantVolume } from "../controls-state";
 import { Fieldset, FieldsetLegend } from "#/components/ui/fieldset";
-import { usePianoStore } from "../piano/piano";
+import { usePianoStore } from "../piano/stores/piano";
 
 const PianoVolumeSlider = () => {
   const volume = usePianoStore((s) => s.volume);

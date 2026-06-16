@@ -74,7 +74,7 @@ const keyOverlayVariant = cva(
 type KeyOverlayPropsT = { note: Note };
 
 const KeyOverlay = ({ note }: KeyOverlayPropsT) => {
-  const pressed = usePianoStore(s => !!s.keys[note.midi].length);
+  const pressed = usePianoStore(s => !!s.keys[note.midi]?.length);
 
   return (
     <div

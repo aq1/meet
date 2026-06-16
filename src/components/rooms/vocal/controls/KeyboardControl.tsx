@@ -9,7 +9,7 @@ import {
   MenuRadioItem,
   MenuTrigger,
 } from "#/components/ui/menu";
-import { usePianoStore } from "../piano/piano";
+import { usePianoStore } from "../piano/stores/piano";
 
 const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
   const inputs = usePianoStore((s) => s.inputs);
