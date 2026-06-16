@@ -1,9 +1,12 @@
-import { useLocalParticipant } from "@livekit/components-react";
+import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
 import { useCallback, useEffect } from "react";
 import { useKeysStore } from "./keys";
 import { useMidiStore } from "./midi";
 import { useSamplerStore } from "./sampler";
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 export const usePiano = () => {
   const { localParticipant } = useLocalParticipant();
@@ -18,6 +21,23 @@ export const usePiano = () => {
   const addKeyPress = useKeysStore((s) => s.addKeyPress);
   const removeKeyPress = useKeysStore((s) => s.removeKeyPress);
 
+  const { send: liveKitSendPress } = useDataChannel("piano-press", (msg) => {
+    if (!msg.from) {
+      return;
+    }
+    onPress(Number(decoder.decode(msg.payload)), msg.from);
+  });
+
+  const { send: liveKitSendRelease } = useDataChannel(
+    "piano-release",
+    (msg) => {
+      if (!msg.from) {
+        return;
+      }
+      onRelease(Number(decoder.decode(msg.payload)), msg.from);
+    },
+  );
+
   const onPress = useCallback(
     (midi: number, from: Participant) => {
       addKeyPress(midi, from);
@@ -25,8 +45,9 @@ export const usePiano = () => {
       if (!from.isLocal) {
         return;
       }
+      liveKitSendPress(encoder.encode(midi.toString()), { reliable: false });
     },
-    [addKeyPress, startNote,],
+    [addKeyPress, startNote, liveKitSendPress],
   );
 
   const onRelease = useCallback(
@@ -38,8 +59,9 @@ export const usePiano = () => {
       if (!from.isLocal) {
         return;
       }
+      liveKitSendRelease(encoder.encode(midi.toString()), { reliable: false });
     },
-    [removeKeyPress, stopNote],
+    [removeKeyPress, stopNote, liveKitSendRelease],
   );
 
   const onNote = useCallback(
