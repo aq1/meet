@@ -1,3 +1,4 @@
+import type { ReceivedDataMessage } from "@livekit/components-core";
 import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
 import { useCallback, useEffect } from "react";
@@ -21,33 +22,12 @@ export const usePiano = () => {
   const addKeyPress = useKeysStore((s) => s.addKeyPress);
   const removeKeyPress = useKeysStore((s) => s.removeKeyPress);
 
-  const { send: liveKitSendPress } = useDataChannel("piano-press", (msg) => {
-    if (!msg.from) {
-      return;
-    }
-    onPress(Number(decoder.decode(msg.payload)), msg.from);
-  });
-
-  const { send: liveKitSendRelease } = useDataChannel(
-    "piano-release",
-    (msg) => {
-      if (!msg.from) {
-        return;
-      }
-      onRelease(Number(decoder.decode(msg.payload)), msg.from);
-    },
-  );
-
   const onPress = useCallback(
     (midi: number, from: Participant) => {
       addKeyPress(midi, from);
       startNote(midi);
-      if (!from.isLocal) {
-        return;
-      }
-      liveKitSendPress(encoder.encode(midi.toString()), { reliable: false });
     },
-    [addKeyPress, startNote, liveKitSendPress],
+    [addKeyPress, startNote],
   );
 
   const onRelease = useCallback(
@@ -56,24 +36,60 @@ export const usePiano = () => {
       if (!keys.length) {
         stopNote(midi);
       }
-      if (!from.isLocal) {
+    },
+    [removeKeyPress, stopNote],
+  );
+
+  const lkPressCallback = useCallback(
+    (msg: ReceivedDataMessage<"piano-press">) => {
+      if (!msg.from) {
         return;
       }
-      liveKitSendRelease(encoder.encode(midi.toString()), { reliable: false });
+      onPress(Number(decoder.decode(msg.payload)), msg.from);
     },
-    [removeKeyPress, stopNote, liveKitSendRelease],
+    [onPress],
+  );
+
+  const lkReleaseCallback = useCallback(
+    (msg: ReceivedDataMessage<"piano-release">) => {
+      if (!msg.from) {
+        return;
+      }
+      onRelease(Number(decoder.decode(msg.payload)), msg.from);
+    },
+    [onRelease],
+  );
+
+  const { send: liveKitSendPress } = useDataChannel(
+    "piano-press",
+    lkPressCallback,
+  );
+
+  const { send: liveKitSendRelease } = useDataChannel(
+    "piano-release",
+    lkReleaseCallback,
   );
 
   const onNote = useCallback(
     (kind: "press" | "release", midi: number) => {
       if (kind === "press") {
         onPress(midi, localParticipant);
+        liveKitSendPress(encoder.encode(midi.toString()), { reliable: false });
       }
       if (kind === "release") {
         onRelease(midi, localParticipant);
+        liveKitSendRelease(encoder.encode(midi.toString()), {
+          reliable: false,
+        });
       }
     },
-    [localParticipant, onPress, onRelease],
+    [
+      localParticipant,
+      onPress,
+      onRelease,
+      liveKitSendPress,
+      liveKitSendRelease,
+    ],
   );
 
   useEffect(() => {
