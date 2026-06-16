@@ -1,6 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon, PianoIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { useControls } from "../controls-state";
 import { Group, GroupSeparator } from "#/components/ui/group";
 import {
   Menu,
@@ -9,12 +8,13 @@ import {
   MenuRadioItem,
   MenuTrigger,
 } from "#/components/ui/menu";
-import { usePianoStore } from "../piano/stores/piano";
+import { useControls } from "../controls-state";
+import { useMidiStore } from "../piano/midi";
 
 const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
-  const inputs = usePianoStore((s) => s.inputs);
-  const selectedInput = usePianoStore((s) => s.selectedInput);
-  const setSelectedInput = usePianoStore((s) => s.setSelectedInput);
+  const inputs = useMidiStore((s) => s.inputs);
+  const selectedInput = useMidiStore((s) => s.selectedInput);
+  const setSelectedInput = useMidiStore((s) => s.setSelectedInput);
 
   return (
     <Menu>
@@ -33,9 +33,12 @@ const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
         <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
-        <MenuRadioGroup value={selectedInput} onValueChange={setSelectedInput}>
+        <MenuRadioGroup
+          value={selectedInput?.id}
+          onValueChange={setSelectedInput}
+        >
           {inputs.map((i) => (
-            <MenuRadioItem closeOnClick key={i.id} value={i}>
+            <MenuRadioItem closeOnClick key={i.id} value={i.id}>
               {i.name}
             </MenuRadioItem>
           ))}
@@ -49,7 +52,8 @@ export const KeyboardControl = () => {
   const showKeyboard = useControls((state) => state.showKeyboard);
   const toggle = useControls((state) => state.toggle);
   const variant = showKeyboard ? "default" : "outline";
-  const inputs = usePianoStore((s) => s.inputs);
+  const inputs = useMidiStore((s) => s.inputs);
+  const status = useMidiStore((s) => s.status);
 
   return (
     <Group aria-label="Microphone controls">
@@ -61,7 +65,7 @@ export const KeyboardControl = () => {
       >
         <PianoIcon />
       </Button>
-      {inputs.length ? (
+      {status === "enabled" && inputs.length ? (
         <>
           <GroupSeparator />
           <MidiMenu variant={variant} />

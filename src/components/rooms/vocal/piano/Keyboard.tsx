@@ -1,7 +1,7 @@
-import { usePianoStore } from "./stores/piano";
 import { cva } from "class-variance-authority";
 import { ScrollArea } from "#/components/ui/scroll-area";
-import { NOTES, type Note } from "./stores/keys";
+import { NOTES, type Note } from "./constants";
+import { useKeysStore } from "./keys";
 
 const keyVariant = cva(
   [
@@ -74,7 +74,7 @@ const keyOverlayVariant = cva(
 type KeyOverlayPropsT = { note: Note };
 
 const KeyOverlay = ({ note }: KeyOverlayPropsT) => {
-  const pressed = usePianoStore(s => !!s.keys[note.midi]?.length);
+  const pressed = useKeysStore((s) => !!s.keys[note.midi]?.length);
 
   return (
     <div
@@ -88,13 +88,12 @@ const KeyOverlay = ({ note }: KeyOverlayPropsT) => {
 };
 
 type KeyboardPropsT = {
-  onPress: (midi: number) => void;
-  onRelease: (midi: number) => void;
+  callback: (kind: "press" | "release", midi: number) => void;
 };
 
 type PianoKeyPropsT = KeyboardPropsT & { note: Note };
 
-const PianoKey = ({ note, onPress, onRelease }: PianoKeyPropsT) => {
+const PianoKey = ({ note, callback }: PianoKeyPropsT) => {
   return (
     <button
       type="button"
@@ -106,44 +105,39 @@ const PianoKey = ({ note, onPress, onRelease }: PianoKeyPropsT) => {
       onContextMenu={(e) => {
         e.preventDefault();
       }}
-      onMouseDown={() => onPress(note.midi)}
-      onMouseUp={() => onRelease(note.midi)}
+      onMouseDown={() => callback("press", note.midi)}
+      onMouseUp={() => callback("release", note.midi)}
       onMouseLeave={(e) => {
         if (e.buttons) {
-          onRelease(note.midi);
+          callback("release", note.midi);
         }
       }}
       onMouseEnter={(e) => {
         if (e.buttons) {
-          onPress(note.midi);
+          callback("press", note.midi);
         }
       }}
       onTouchStart={() => {
         // Prevent the simulated mouse events so addPress isn't called twice
-        onPress(note.midi);
+        callback("press", note.midi);
       }}
       onTouchEnd={() => {
-        onRelease(note.midi);
+        callback("release", note.midi);
       }}
-      onTouchCancel={() => onRelease(note.midi)}
+      onTouchCancel={() => callback("release", note.midi)}
     >
       <KeyOverlay note={note} />
     </button>
   );
 };
 
-export const Keyboard = ({ onPress, onRelease }: KeyboardPropsT) => {
+export const Keyboard = ({ callback }: KeyboardPropsT) => {
   return (
     <div className="h-[200px] w-full">
       <ScrollArea fill>
         <div className="flex h-full pb-2.5">
           {NOTES.map((note) => (
-            <PianoKey
-              key={note.label}
-              note={note}
-              onPress={onPress}
-              onRelease={onRelease}
-            />
+            <PianoKey key={note.label} note={note} callback={callback} />
           ))}
         </div>
       </ScrollArea>

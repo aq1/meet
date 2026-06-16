@@ -2,6 +2,7 @@ import { PianoIcon, Settings, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldLabel } from "#/components/ui/field";
+import { Fieldset, FieldsetLegend } from "#/components/ui/fieldset";
 import {
   Popover,
   PopoverPopup,
@@ -11,20 +12,18 @@ import {
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { useParticipantVolume } from "../controls-state";
-import { Fieldset, FieldsetLegend } from "#/components/ui/fieldset";
-import { usePianoStore } from "../piano/stores/piano";
 
 const PianoVolumeSlider = () => {
-  const volume = usePianoStore((s) => s.volume);
-  const setVolume = usePianoStore((s) => s.setVolume);
+  // const volume = usePianoStore((s) => s.volume);
+  // const setVolume = usePianoStore((s) => s.setVolume);
 
   return (
     <Field>
       <Slider
-        value={volume}
-        onValueChange={(next) =>
-          setVolume(Array.isArray(next) ? next[0] : next)
-        }
+        value={100}
+        // onValueChange={(next) =>
+        //   setVolume(Array.isArray(next) ? next[0] : next)
+        // }
       >
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <PianoIcon />

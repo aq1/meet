@@ -1,71 +1,94 @@
+import type { ReceivedDataMessage } from "@livekit/components-core";
 import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import { useCallback, useEffect } from "react";
-import { usePianoStore } from "./stores/piano";
-import type { Participant } from "livekit-client";
 import { Keyboard } from "./Keyboard";
+import { useKeysStore } from "./keys";
+import { useMidiStore } from "./midi";
+import { useSamplerStore } from "./sampler";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 export const Piano = () => {
   const { localParticipant } = useLocalParticipant();
+  const enableMidi = useMidiStore((s) => s.enable);
+  const disableMidi = useMidiStore((s) => s.disable);
 
-  const { send: liveKitSendPress } = useDataChannel("piano-press", (msg) => {
-    if (!msg.from) {
-      return;
-    }
-    usePianoStore
-      .getState()
-      .addPress(Number(decoder.decode(msg.payload)), msg.from);
-  });
+  const enableSampler = useSamplerStore((s) => s.enable);
+  const disableSampler = useSamplerStore((s) => s.disable);
+  const startNote = useSamplerStore((s) => s.startNote);
+  const stopNote = useSamplerStore((s) => s.stopNote);
 
-  const { send: liveKitSendRelease } = useDataChannel(
-    "piano-release",
-    (msg) => {
+  const addKeyPress = useKeysStore((s) => s.addKeyPress);
+  const removeKeyPress = useKeysStore((s) => s.removeKeyPress);
+
+  const onRemotePress = useCallback(
+    (msg: ReceivedDataMessage) => {
       if (!msg.from) {
         return;
       }
-      usePianoStore
-        .getState()
-        .removePress(Number(decoder.decode(msg.payload)), msg.from);
+      const midi = Number(decoder.decode(msg.payload));
+      addKeyPress(midi, msg.from);
+      startNote(midi);
     },
+    [addKeyPress, startNote],
   );
 
-  const onPress = useCallback(
-    async (midi: number, participant: Participant) => {
-      if (!participant.isLocal) {
+  const onRemoteRelease = useCallback(
+    (msg: ReceivedDataMessage) => {
+      if (!msg.from) {
         return;
       }
-      await liveKitSendPress(encoder.encode(midi.toString()), {
-        reliable: false,
-      });
+      const midi = Number(decoder.decode(msg.payload));
+      removeKeyPress(midi, msg.from);
+      stopNote(midi);
     },
-    [liveKitSendPress],
+    [removeKeyPress, stopNote],
   );
 
-  const onRelease = useCallback(
-    async (midi: number, participant: Participant) => {
-      if (!participant.isLocal) {
-        return;
+  const { send: liveKitSendPress } = useDataChannel(
+    "piano-press",
+    onRemotePress,
+  );
+  const { send: liveKitSendRelease } = useDataChannel(
+    "piano-release",
+    onRemoteRelease,
+  );
+
+  const onNote = useCallback(
+    (kind: "press" | "release", midi: number) => {
+      if (kind === "press") {
+        addKeyPress(midi, localParticipant);
+        startNote(midi);
+        liveKitSendPress(encoder.encode(midi.toString()), { reliable: false });
       }
-      await liveKitSendRelease(encoder.encode(midi.toString()), {
-        reliable: false,
-      });
+      if (kind === "release") {
+        removeKeyPress(midi, localParticipant);
+        stopNote(midi);
+        liveKitSendRelease(encoder.encode(midi.toString()), {
+          reliable: false,
+        });
+      }
     },
-    [liveKitSendRelease],
+    [
+      localParticipant,
+      addKeyPress,
+      removeKeyPress,
+      startNote,
+      stopNote,
+      liveKitSendPress,
+      liveKitSendRelease,
+    ],
   );
 
   useEffect(() => {
-    console.log("PIANO INIT")
-    document.body?.scrollIntoView({ inline: "center", block: "nearest" });
-
-    const { enable, disable } = usePianoStore.getState();
-    enable(localParticipant, onPress, onRelease);
-
+    enableMidi(onNote);
+    enableSampler();
     return () => {
-      disable();
+      disableMidi();
+      disableSampler();
     };
-  }, [localParticipant, onPress, onRelease]);
+  }, [enableMidi, enableSampler, disableMidi, disableSampler, onNote]);
 
-  return <Keyboard onPress={() => { }} onRelease={() => { }} />;
+  return <Keyboard callback={onNote} />;
 };
