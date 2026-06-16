@@ -5,9 +5,6 @@ import { useKeysStore } from "./keys";
 import { useMidiStore } from "./midi";
 import { useSamplerStore } from "./sampler";
 
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-
 export const usePiano = () => {
   const { localParticipant } = useLocalParticipant();
   const enableMidi = useMidiStore((s) => s.enable);
