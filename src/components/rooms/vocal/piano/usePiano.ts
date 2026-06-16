@@ -1,35 +1,12 @@
-import type { ReceivedDataMessage } from "@livekit/components-core";
-import { setupDataMessageHandler } from "@livekit/components-core";
-import { useLocalParticipant, useRoomContext } from "@livekit/components-react";
+import { useLocalParticipant } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { useKeysStore } from "./keys";
 import { useMidiStore } from "./midi";
 import { useSamplerStore } from "./sampler";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-
-export function useMyDataChannel<T extends string>(
-  topic: T,
-  callback: (msg: ReceivedDataMessage<T>) => void,
-) {
-  const room = useRoomContext();
-  const cbRef = useRef(callback);
-  cbRef.current = callback;
-
-  const { send, messageObservable } = useMemo(
-    () => setupDataMessageHandler(room, topic),
-    [room, topic],
-  );
-
-  useEffect(() => {
-    const sub = messageObservable.subscribe((msg) => cbRef.current(msg));
-    return () => sub.unsubscribe();
-  }, [messageObservable]);
-
-  return send;
-}
 
 export const usePiano = () => {
   const { localParticipant } = useLocalParticipant();
@@ -44,13 +21,6 @@ export const usePiano = () => {
   const addKeyPress = useKeysStore((s) => s.addKeyPress);
   const removeKeyPress = useKeysStore((s) => s.removeKeyPress);
 
-  const sendLiveKitPress = useMyDataChannel("piano-press", (msg) => {
-    if (!msg.from) {
-      return;
-    }
-    onPress(Number(decoder.decode(msg.payload)), msg.from);
-  });
-
   const onPress = useCallback(
     (midi: number, from: Participant) => {
       addKeyPress(midi, from);
@@ -58,9 +28,8 @@ export const usePiano = () => {
       if (!from.isLocal) {
         return;
       }
-      sendLiveKitPress(encoder.encode(midi.toString()), { reliable: false });
     },
-    [addKeyPress, startNote, sendLiveKitPress],
+    [addKeyPress, startNote,],
   );
 
   const onRelease = useCallback(
@@ -97,6 +66,5 @@ export const usePiano = () => {
     };
   }, [enableMidi, enableSampler, disableMidi, disableSampler, onNote]);
 
-  console.log("yo");
   return onNote;
 };
