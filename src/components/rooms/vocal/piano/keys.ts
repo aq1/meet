@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 type KeysStoreT = {
   keys: Record<number, Array<Participant>>;
-  addKeyPress: (midi: number, from: Participant) => void;
-  removeKeyPress: (midi: number, from: Participant) => void;
+  addKeyPress: (midi: number, from: Participant) => Array<Participant>;
+  removeKeyPress: (midi: number, from: Participant) => Array<Participant>;
 };
 
 export const useKeysStore = create<KeysStoreT>()((set, get) => ({
@@ -18,15 +18,17 @@ export const useKeysStore = create<KeysStoreT>()((set, get) => ({
     keys[midi].push(from);
 
     set({ keys });
+    return keys[midi];
   },
   removeKeyPress: (midi: number, from: Participant) => {
     const keys = { ...get().keys };
     if (!keys[midi]) {
-      return;
+      return [];
     }
 
     keys[midi] = keys[midi].filter((p) => p.identity !== from.identity);
 
     set({ keys });
+    return keys[midi];
   },
 }));
