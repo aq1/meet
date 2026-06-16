@@ -15,7 +15,6 @@ import {
   MenuSeparator,
   MenuTrigger,
 } from "#/components/ui/menu";
-import { useIsMobile } from "#/hooks/use-media-query";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
 
 const MicMenu = ({
@@ -23,8 +22,6 @@ const MicMenu = ({
 }: {
   variant: "outline" | "destructive-outline";
 }) => {
-  const isMobile = useIsMobile();
-
   return (
     <Menu>
       <MenuTrigger
@@ -38,11 +35,8 @@ const MicMenu = ({
           />
         }
       >
-        {isMobile ? (
-          <ChevronUpIcon aria-hidden="true" />
-        ) : (
-          <ChevronDownIcon aria-hidden="true" />
-        )}
+        <ChevronUpIcon className="inline md:hidden" aria-hidden="true" />
+        <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
         <MediaDeviceSelect

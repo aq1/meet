@@ -9,7 +9,6 @@ import {
 import { Button } from "#/components/ui/button";
 import { Group, GroupSeparator } from "#/components/ui/group";
 import { Menu, MenuPopup, MenuTrigger } from "#/components/ui/menu";
-import { useIsMobile } from "#/hooks/use-media-query";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
 
 const VideoMenu = ({
@@ -17,8 +16,6 @@ const VideoMenu = ({
 }: {
   variant: "outline" | "destructive-outline";
 }) => {
-  const isMobile = useIsMobile();
-
   return (
     <Menu>
       <MenuTrigger
@@ -32,11 +29,8 @@ const VideoMenu = ({
           />
         }
       >
-        {isMobile ? (
-          <ChevronUpIcon aria-hidden="true" />
-        ) : (
-          <ChevronDownIcon aria-hidden="true" />
-        )}
+        <ChevronUpIcon className="inline md:hidden" aria-hidden="true" />
+        <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
         <MediaDeviceSelect

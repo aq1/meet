@@ -10,7 +10,7 @@ import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls-state";
 import { Participants } from "./Participants";
-import { Piano } from "./Piano";
+import { Piano } from "./piano/Piano";
 
 const grantToken = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; roomId: string }) => data)
@@ -41,7 +41,9 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
         data: { username, roomId },
       });
       await room.connect(wss, token);
-      await room.localParticipant.enableCameraAndMicrophone();
+      try {
+        await room.localParticipant.enableCameraAndMicrophone();
+      } catch {}
     };
 
     connect();

@@ -1,7 +1,7 @@
 import { Separator } from "#/components/ui/separator";
 import { CameraControl } from "./CameraControl";
 import { ChatToggle } from "./ChatToggle";
-import { KeyboardToggle } from "./KeyboardToggle";
+import { KeyboardControl } from "./KeyboardControl";
 import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
 import { ScreenShareToggle } from "./ScreenShareToggle";
@@ -13,7 +13,7 @@ export const Controls = () => {
       <MicControl />
       <CameraControl />
       <ScreenShareToggle />
-      <KeyboardToggle />
+      <KeyboardControl />
       <ChatToggle />
       <SettingsMenu />
       <Separator orientation="vertical" />
