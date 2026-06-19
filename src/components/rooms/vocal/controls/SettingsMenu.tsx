@@ -12,18 +12,19 @@ import {
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { useParticipantVolume } from "../controls-state";
+import { useSamplerStore } from "../piano/sampler";
 
 const PianoVolumeSlider = () => {
-  // const volume = usePianoStore((s) => s.volume);
-  // const setVolume = usePianoStore((s) => s.setVolume);
+  const volume = useSamplerStore((s) => s.volume);
+  const setVolume = useSamplerStore((s) => s.setVolume);
 
   return (
     <Field>
       <Slider
-        value={100}
-        // onValueChange={(next) =>
-        //   setVolume(Array.isArray(next) ? next[0] : next)
-        // }
+        value={volume}
+        onValueChange={(next) =>
+          setVolume(Array.isArray(next) ? next[0] : next)
+        }
       >
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <PianoIcon />
