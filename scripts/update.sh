@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Update the meet app: fetch latest from git, rebuild the Docker image, and
-# restart the container under the name "meet".
-
 cd "$(dirname "$0")/.."
 
 IMAGE="meet"
 CONTAINER="meet"
 NETWORK="bond"
 BRANCH="${BRANCH:-main}"
+STATE_FILE=".last-deployed-commit"
 
-# Load env (TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID) if present.
 if [ -f .env ]; then
   set -a
   # shellcheck disable=SC1091
@@ -19,7 +16,6 @@ if [ -f .env ]; then
   set +a
 fi
 
-# Send a Telegram message if credentials are configured; otherwise no-op.
 notify() {
   local message="$1"
   if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
@@ -31,17 +27,16 @@ notify() {
   fi
 }
 
-# Notify on any failure before exiting.
 trap 'notify "❌ meet update failed (line $LINENO). See server logs."' ERR
 
 echo "==> Fetching latest from git ($BRANCH)..."
-BEFORE="$(git rev-parse HEAD)"
 git fetch origin "$BRANCH"
 git reset --hard "origin/$BRANCH"
 AFTER="$(git rev-parse HEAD)"
+DEPLOYED="$(cat "$STATE_FILE" 2>/dev/null || true)"
 
-if [ "$BEFORE" = "$AFTER" ]; then
-  echo "==> Already up to date ($(git rev-parse --short HEAD)). Nothing to do."
+if [ "$AFTER" = "$DEPLOYED" ]; then
+  echo "==> Already built and deployed ($(git rev-parse --short HEAD)). Nothing to do."
   exit 0
 fi
 
@@ -61,6 +56,8 @@ docker run -d \
 
 echo "==> Cleaning up dangling images..."
 docker image prune -f
+
+echo "$AFTER" > "$STATE_FILE"
 
 COMMIT="$(git rev-parse --short HEAD)"
 SUBJECT="$(git log -1 --pretty=%s)"
