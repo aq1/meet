@@ -9,6 +9,7 @@ import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls-state";
+import { useDeviceSetup } from "./device-setup-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
 import { PreConnectDialog } from "./PreConnectDialog";
@@ -20,7 +21,7 @@ const grantToken = createServerFn({ method: "POST" })
   );
 
 export const VocalRoom = ({ roomId }: { roomId: string }) => {
-  const [isReady, setIsReady] = useState(false)
+  const [isReady, setIsReady] = useState(false);
 
   const [room] = useState(
     () =>
@@ -39,14 +40,33 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     if (!room || !username) {
       return;
     }
-    setIsReady(true)
+    setIsReady(true);
     const { wss, token } = await grant({
       data: { username, roomId },
     });
     await room.connect(wss, token);
+    const {
+      cameraEnabled,
+      micEnabled,
+      cameraDeviceId,
+      micDeviceId,
+      speakerDeviceId,
+    } = useDeviceSetup.getState();
     try {
-      await room.localParticipant.enableCameraAndMicrophone();
-    } catch { }
+      if (micEnabled) {
+        await room.localParticipant.setMicrophoneEnabled(true, {
+          deviceId: micDeviceId,
+        });
+      }
+      if (cameraEnabled) {
+        await room.localParticipant.setCameraEnabled(true, {
+          deviceId: cameraDeviceId,
+        });
+      }
+      if (speakerDeviceId) {
+        await room.switchActiveDevice("audiooutput", speakerDeviceId);
+      }
+    } catch {}
   };
 
   useEffect(() => {
@@ -62,7 +82,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      room.disconnect()
+      room.disconnect();
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [room]);
@@ -79,9 +99,11 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             <Participants />
             <Chat />
           </div>
-          <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
-            <Piano />
-          </div>
+          {isReady ? (
+            <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
+              <Piano />
+            </div>
+          ) : null}
         </div>
       </div>
     </RoomContext.Provider>

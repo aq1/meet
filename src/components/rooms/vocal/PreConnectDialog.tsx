@@ -12,6 +12,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useUser } from "#/lib/user-store";
+import { DeviceSetup } from "./DeviceSetup";
 
 type PreConnectDialogProps = {
   open: boolean;
@@ -36,11 +37,13 @@ export const PreConnectDialog = ({ open, onSubmit }: PreConnectDialogProps) => {
         <DialogHeader>
           <DialogTitle>Join room</DialogTitle>
           <DialogDescription>
-            Choose a name to display to others before you connect.
+            Check your camera and microphone, then choose a name to display to
+            others.
           </DialogDescription>
         </DialogHeader>
         <Form className="contents" onSubmit={handleSubmit}>
           <DialogPanel className="grid gap-4">
+            <DeviceSetup />
             <Field>
               <FieldLabel>Name</FieldLabel>
               <Input
