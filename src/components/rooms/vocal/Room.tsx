@@ -9,7 +9,6 @@ import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
-import { useDeviceSetup } from "./device-setup-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
 import { PreConnectDialog } from "./PreConnectDialog";
@@ -51,7 +50,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       cameraDeviceId,
       micDeviceId,
       speakerDeviceId,
-    } = useDeviceSetup.getState();
+    } = useControls.getState();
     try {
       if (micEnabled) {
         await room.localParticipant.setMicrophoneEnabled(true, {

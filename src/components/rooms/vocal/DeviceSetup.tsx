@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "#/components/ui/select";
 import { cn } from "#/lib/utils";
-import { useDeviceSetup } from "./device-setup-state";
+import { useControls } from "./controls/controls-state";
 
 const DeviceSelector = ({
   kind,
@@ -118,16 +118,16 @@ const useAudioLevel = (track: LocalAudioTrack | undefined) => {
 };
 
 export const DeviceSetup = () => {
-  const cameraEnabled = useDeviceSetup((s) => s.cameraEnabled);
-  const micEnabled = useDeviceSetup((s) => s.micEnabled);
-  const cameraDeviceId = useDeviceSetup((s) => s.cameraDeviceId);
-  const micDeviceId = useDeviceSetup((s) => s.micDeviceId);
-  const speakerDeviceId = useDeviceSetup((s) => s.speakerDeviceId);
-  const setCameraEnabled = useDeviceSetup((s) => s.setCameraEnabled);
-  const setMicEnabled = useDeviceSetup((s) => s.setMicEnabled);
-  const setCameraDeviceId = useDeviceSetup((s) => s.setCameraDeviceId);
-  const setMicDeviceId = useDeviceSetup((s) => s.setMicDeviceId);
-  const setSpeakerDeviceId = useDeviceSetup((s) => s.setSpeakerDeviceId);
+  const cameraEnabled = useControls((s) => s.cameraEnabled);
+  const micEnabled = useControls((s) => s.micEnabled);
+  const cameraDeviceId = useControls((s) => s.cameraDeviceId);
+  const micDeviceId = useControls((s) => s.micDeviceId);
+  const speakerDeviceId = useControls((s) => s.speakerDeviceId);
+  const setCameraEnabled = useControls((s) => s.setCameraEnabled);
+  const setMicEnabled = useControls((s) => s.setMicEnabled);
+  const setCameraDeviceId = useControls((s) => s.setCameraDeviceId);
+  const setMicDeviceId = useControls((s) => s.setMicDeviceId);
+  const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
 
   const [permissionError, setPermissionError] = useState(false);
 
