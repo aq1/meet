@@ -11,6 +11,7 @@ import { Controls } from "./controls";
 import { useControls } from "./controls-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
+import { PreConnectDialog } from "./PreConnectDialog";
 
 const grantToken = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; roomId: string }) => data)
@@ -19,6 +20,8 @@ const grantToken = createServerFn({ method: "POST" })
   );
 
 export const VocalRoom = ({ roomId }: { roomId: string }) => {
+  const [isReady, setIsReady] = useState(false)
+
   const [room] = useState(
     () =>
       new Room({
@@ -28,34 +31,28 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   );
   const showKeyboard = useControls((state) => state.showKeyboard);
   const isMobile = useIsMobile();
-  const setShowChat = useControls((state) => state.set);
+  const setControls = useControls((state) => state.set);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
 
-  useEffect(() => {
-    const connect = async () => {
-      if (!room || !username) {
-        return;
-      }
-      const { wss, token } = await grant({
-        data: { username, roomId },
-      });
-      await room.connect(wss, token);
-      try {
-        await room.localParticipant.enableCameraAndMicrophone();
-      } catch {}
-    };
-
-    connect();
-
-    return () => {
-      room.disconnect();
-    };
-  }, [room, username, roomId, grant]);
+  const connect = async () => {
+    if (!room || !username) {
+      return;
+    }
+    setIsReady(true)
+    const { wss, token } = await grant({
+      data: { username, roomId },
+    });
+    await room.connect(wss, token);
+    try {
+      await room.localParticipant.enableCameraAndMicrophone();
+    } catch { }
+  };
 
   useEffect(() => {
-    setShowChat("showChat", !isMobile);
-  }, [isMobile, setShowChat]);
+    setControls("showChat", !isMobile);
+    setControls("showKeyboard", !isMobile);
+  }, [isMobile, setControls]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -65,12 +62,14 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
+      room.disconnect()
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  }, [room]);
 
   return (
     <RoomContext.Provider value={room}>
+      <PreConnectDialog open={!isReady} onSubmit={connect} />
       <div className="h-dvh w-dvw md:pt-4">
         <div className="flex size-full flex-col md:gap-2">
           <div className="order-last md:order-none">

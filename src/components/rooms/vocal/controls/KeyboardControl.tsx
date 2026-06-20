@@ -56,7 +56,7 @@ export const KeyboardControl = () => {
   const status = useMidiStore((s) => s.status);
 
   return (
-    <Group aria-label="Microphone controls">
+    <Group className="hidden md:flex" aria-label="Keyboard controls">
       <Button
         onClick={() => toggle("showKeyboard")}
         variant={variant}
