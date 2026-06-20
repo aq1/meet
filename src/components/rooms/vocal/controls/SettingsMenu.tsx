@@ -11,7 +11,7 @@ import {
 } from "#/components/ui/popover";
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
-import { useParticipantVolume } from "../controls-state";
+import { useControls } from "./controls-state";
 import { useSamplerStore } from "../piano/sampler";
 
 const PianoVolumeSlider = () => {
@@ -36,8 +36,8 @@ const PianoVolumeSlider = () => {
 };
 
 const ParticipantsVolumeSlider = () => {
-  const volume = useParticipantVolume((state) => state.volume);
-  const setVolume = useParticipantVolume((state) => state.setVolume);
+  const volume = useControls((state) => state.volume);
+  const setVolume = useControls((state) => state.setVolume);
 
   return (
     <Field>

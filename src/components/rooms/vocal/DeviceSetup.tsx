@@ -129,6 +129,8 @@ export const DeviceSetup = () => {
   const setMicDeviceId = useDeviceSetup((s) => s.setMicDeviceId);
   const setSpeakerDeviceId = useDeviceSetup((s) => s.setSpeakerDeviceId);
 
+  const [permissionError, setPermissionError] = useState(false);
+
   const previewOptions = useMemo(
     () => ({
       audio: micEnabled ? { deviceId: micDeviceId } : false,
@@ -137,7 +139,11 @@ export const DeviceSetup = () => {
     [micEnabled, cameraEnabled, micDeviceId, cameraDeviceId],
   );
 
-  const tracks = usePreviewTracks(previewOptions);
+  const tracks = usePreviewTracks(previewOptions, () => {
+    setPermissionError(true);
+    setCameraEnabled(false);
+    setMicEnabled(false);
+  });
 
   const videoTrack = tracks?.find(
     (t): t is LocalVideoTrack => t instanceof LocalVideoTrack,
@@ -179,7 +185,10 @@ export const DeviceSetup = () => {
           <Button
             variant={micEnabled ? "outline" : "destructive-outline"}
             size="icon-lg"
-            onClick={() => setMicEnabled(!micEnabled)}
+            onClick={() => {
+              setPermissionError(false);
+              setMicEnabled(!micEnabled);
+            }}
             title={micEnabled ? "Turn off microphone" : "Turn on microphone"}
             aria-label={
               micEnabled ? "Turn off microphone" : "Turn on microphone"
@@ -190,7 +199,10 @@ export const DeviceSetup = () => {
           <Button
             variant={cameraEnabled ? "outline" : "destructive-outline"}
             size="icon-lg"
-            onClick={() => setCameraEnabled(!cameraEnabled)}
+            onClick={() => {
+              setPermissionError(false);
+              setCameraEnabled(!cameraEnabled);
+            }}
             title={cameraEnabled ? "Turn off camera" : "Turn on camera"}
             aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
           >
@@ -209,6 +221,13 @@ export const DeviceSetup = () => {
           />
         </MeterTrack>
       </Meter>
+
+      {permissionError ? (
+        <p className="text-sm text-destructive">
+          Camera/mic access blocked — check your browser permissions, then turn
+          them back on.
+        </p>
+      ) : null}
 
       <div className="grid gap-2">
         <DeviceSelector

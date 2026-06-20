@@ -14,7 +14,7 @@ import { useIsMobile } from "#/hooks/use-media-query";
 import { cn } from "#/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useControls } from "../rooms/vocal/controls-state";
+import { useControls } from "../rooms/vocal/controls/controls-state";
 import { Button } from "../ui/button";
 
 type MessageT = {

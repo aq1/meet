@@ -8,7 +8,7 @@ import {
   MenuRadioItem,
   MenuTrigger,
 } from "#/components/ui/menu";
-import { useControls } from "../controls-state";
+import { useControls } from "./controls-state";
 import { useMidiStore } from "../piano/midi";
 
 const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {

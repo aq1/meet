@@ -1,13 +1,13 @@
 import { RoomAudioRenderer } from "@livekit/components-react";
 import { useIsMobile } from "#/hooks/use-media-query";
 import { ActiveSpeakerPanel } from "./ActiveSpeakerPanel";
-import { useParticipantVolume } from "./controls-state";
+import { useControls } from "./controls/controls-state";
 import { LocalParticipantTile } from "./LocalParticipantTile";
 import { ParticipantsGrid } from "./ParticipantsGrid";
 
 export const Participants = () => {
   const isMobile = useIsMobile();
-  const participantVolume = useParticipantVolume((state) => state.volume);
+  const participantVolume = useControls((state) => state.volume);
 
   return (
     <div className="relative flex-1">

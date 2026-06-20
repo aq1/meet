@@ -1,6 +1,6 @@
 import { MessageCircleIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
-import { useControls } from "../controls-state";
+import { useControls } from "./controls-state";
 
 export const ChatToggle = () => {
   const showChat = useControls((state) => state.showChat);

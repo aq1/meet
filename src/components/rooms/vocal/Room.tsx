@@ -8,7 +8,7 @@ import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
-import { useControls } from "./controls-state";
+import { useControls } from "./controls/controls-state";
 import { useDeviceSetup } from "./device-setup-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
