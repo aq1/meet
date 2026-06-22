@@ -79,7 +79,6 @@ const ParticipantTileContent = ({
   const hasVideo = !!trackRef.publication && !isCameraMuted;
   const isSpeaking = useIsSpeaking(trackRef.participant);
   const facingMode = useFacingMode(trackRef);
-  console.log(facingMode)
 
   const isMirrored =
     facingMode === "user" &&
