@@ -27,10 +27,11 @@ export const LeaveButton = () => {
             variant="destructive-outline"
             size={isTablet ? "icon-xl" : "xl"}
             title="Leave"
-          />
+          >
+            <PhoneOff />
+            <span className="hidden lg:inline">Leave</span>
+          </Button>
         }>
-        <PhoneOff />
-        {isTablet ? null : <span>Leave</span>}
       </AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>

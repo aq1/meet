@@ -115,23 +115,8 @@ export const Chat = () => {
   const showChat = useControls((state) => state.showChat);
   const toggle = useControls((state) => state.toggle);
 
-  if (!isTablet) {
-    return (
-      <div
-        className={cn(
-          "flex min-h-0 basis-1/4 justify-end gap-4",
-          !showChat && "hidden",
-        )}
-      >
-        <div className="flex size-full min-h-0 flex-col px-4">
-          <ChatContent />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
+  if (isTablet) {
+    return <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
       <DialogPortal keepMounted>
         <DialogBackdrop />
         <DialogPrimitive.Popup
@@ -153,5 +138,20 @@ export const Chat = () => {
         </DialogPrimitive.Popup>
       </DialogPortal>
     </Dialog>
+
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex min-h-0 basis-1/4 justify-end gap-4",
+        !showChat && "hidden",
+      )}
+    >
+      <div className="flex size-full min-h-0 flex-col px-4">
+        <ChatContent />
+      </div>
+    </div>
+
   );
 };
