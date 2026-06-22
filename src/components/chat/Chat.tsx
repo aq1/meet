@@ -10,7 +10,7 @@ import {
   DialogPrimitive,
   DialogTitle,
 } from "#/components/ui/dialog";
-import { useIsMobile } from "#/hooks/use-media-query";
+import { useIsTablet } from "#/hooks/use-media-query";
 import { cn } from "#/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -111,11 +111,11 @@ const ChatContent = () => {
 };
 
 export const Chat = () => {
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const showChat = useControls((state) => state.showChat);
   const toggle = useControls((state) => state.toggle);
 
-  if (!isMobile) {
+  if (!isTablet) {
     return (
       <div
         className={cn(

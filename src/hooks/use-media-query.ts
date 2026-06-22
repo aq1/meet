@@ -94,3 +94,7 @@ export function useMediaQuery(
 export function useIsMobile(): boolean {
   return useMediaQuery("max-sm");
 }
+
+export function useIsTablet() {
+  return useMediaQuery("max-lg");
+}

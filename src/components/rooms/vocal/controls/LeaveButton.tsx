@@ -12,10 +12,10 @@ import {
   AlertDialogTrigger,
 } from "#/components/ui/alert-dialog";
 import { Button } from "#/components/ui/button";
-import { useIsMobile } from "#/hooks/use-media-query";
+import { useIsTablet } from "#/hooks/use-media-query";
 
 export const LeaveButton = () => {
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const room = useRoomContext();
   const navigate = useNavigate();
 
@@ -25,13 +25,12 @@ export const LeaveButton = () => {
         render={
           <Button
             variant="destructive-outline"
-            size={isMobile ? "icon-xl" : "xl"}
+            size={isTablet ? "icon-xl" : "xl"}
             title="Leave"
           />
-        }
-      >
+        }>
         <PhoneOff />
-        {isMobile ? null : <span>Leave</span>}
+        {isTablet ? null : <span>Leave</span>}
       </AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>
@@ -55,6 +54,6 @@ export const LeaveButton = () => {
           </AlertDialogClose>
         </AlertDialogFooter>
       </AlertDialogPopup>
-    </AlertDialog>
+    </AlertDialog >
   );
 };

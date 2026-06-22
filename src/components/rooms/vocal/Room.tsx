@@ -3,7 +3,7 @@ import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
-import { useIsMobile } from "#/hooks/use-media-query";
+import { useIsTablet } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
 import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
@@ -30,7 +30,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       }),
   );
   const showKeyboard = useControls((state) => state.showKeyboard);
-  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const setControls = useControls((state) => state.set);
   const grant = useServerFn(grantToken);
   const username = useUser((state) => state.username);
@@ -69,9 +69,9 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   };
 
   useEffect(() => {
-    setControls("showChat", !isMobile);
-    setControls("showKeyboard", !isMobile);
-  }, [isMobile, setControls]);
+    setControls("showChat", !isTablet);
+    setControls("showKeyboard", !isTablet);
+  }, [isTablet, setControls]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
