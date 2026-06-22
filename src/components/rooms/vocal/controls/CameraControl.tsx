@@ -23,14 +23,13 @@ const VideoMenu = ({
           <Button
             variant={variant}
             size="icon-xl"
-            className="w-7 md:w-6"
             aria-label="Select camera"
             title="Select camera"
           />
         }
       >
-        <ChevronUpIcon className="inline md:hidden" aria-hidden="true" />
-        <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
+        <ChevronUpIcon className="inline lg:hidden" aria-hidden="true" />
+        <ChevronDownIcon className="hidden lg:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
         <MediaDeviceSelect

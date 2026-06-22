@@ -65,7 +65,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       if (speakerDeviceId) {
         await room.switchActiveDevice("audiooutput", speakerDeviceId);
       }
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -89,12 +89,12 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
   return (
     <RoomContext.Provider value={room}>
       <PreConnectDialog open={!isReady} onSubmit={connect} />
-      <div className="h-dvh w-dvw md:pt-4">
-        <div className="flex size-full flex-col md:gap-2">
-          <div className="order-last md:order-none">
+      <div className="h-dvh w-dvw lg:pt-4">
+        <div className="flex size-full flex-col lg:gap-2">
+          <div className="order-last lg:order-none">
             <Controls />
           </div>
-          <div className="order-first flex size-full min-h-0 basis-full md:order-none">
+          <div className="order-first flex size-full min-h-0 basis-full lg:order-none">
             <Participants />
             <Chat />
           </div>

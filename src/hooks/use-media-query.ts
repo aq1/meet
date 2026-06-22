@@ -75,7 +75,7 @@ export function useMediaQuery(
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      if (typeof window === "undefined") return () => {};
+      if (typeof window === "undefined") return () => { };
       const mql = window.matchMedia(mediaQuery);
       mql.addEventListener("change", callback);
       return () => mql.removeEventListener("change", callback);
@@ -92,5 +92,5 @@ export function useMediaQuery(
 }
 
 export function useIsMobile(): boolean {
-  return useMediaQuery("max-md");
+  return useMediaQuery("max-sm");
 }

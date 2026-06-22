@@ -23,14 +23,14 @@ const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
           <Button
             variant={variant}
             size="icon-xl"
-            className="w-7 md:w-6"
+            className="w-7 lg:w-6"
             aria-label="Select microphone"
             title="Select microphone"
           />
         }
       >
-        <ChevronUpIcon className="inline md:hidden" aria-hidden="true" />
-        <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
+        <ChevronUpIcon className="inline lg:hidden" aria-hidden="true" />
+        <ChevronDownIcon className="hidden lg:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
         <MenuRadioGroup
@@ -56,7 +56,7 @@ export const KeyboardControl = () => {
   const status = useMidiStore((s) => s.status);
 
   return (
-    <Group className="hidden md:flex" aria-label="Keyboard controls">
+    <Group className="hidden lg:flex" aria-label="Keyboard controls">
       <Button
         onClick={() => toggle("showKeyboard")}
         variant={variant}

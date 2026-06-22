@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "#/components/ui/button";
-import { Meter, MeterIndicator, MeterTrack } from "#/components/ui/meter";
 import {
   Select,
   SelectItem,
@@ -148,12 +147,8 @@ export const DeviceSetup = () => {
   const videoTrack = tracks?.find(
     (t): t is LocalVideoTrack => t instanceof LocalVideoTrack,
   );
-  const audioTrack = tracks?.find(
-    (t): t is LocalAudioTrack => t instanceof LocalAudioTrack,
-  );
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const level = useAudioLevel(audioTrack);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -210,17 +205,6 @@ export const DeviceSetup = () => {
           </Button>
         </div>
       </div>
-
-      <Meter value={micEnabled ? Math.min(100, level * 100) : 0}>
-        <MeterTrack className="h-1.5 rounded-full">
-          <MeterIndicator
-            className={cn(
-              "rounded-full duration-100",
-              !micEnabled && "opacity-0",
-            )}
-          />
-        </MeterTrack>
-      </Meter>
 
       {permissionError ? (
         <p className="text-sm text-destructive">

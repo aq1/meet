@@ -33,7 +33,7 @@ export const PreConnectDialog = ({ open, onSubmit }: PreConnectDialogProps) => {
 
   return (
     <Dialog open={open}>
-      <DialogPopup className="md:max-w-md" showCloseButton={false}>
+      <DialogPopup className="lg:max-w-md" showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Join room</DialogTitle>
           <DialogDescription>
