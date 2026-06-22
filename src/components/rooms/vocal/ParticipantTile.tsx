@@ -68,6 +68,8 @@ const ConnectionQualityIndicator = ({
   }
 };
 
+import { useFacingMode } from "@livekit/components-react";
+
 const ParticipantTileContent = ({
   trackRef,
 }: {
@@ -76,10 +78,13 @@ const ParticipantTileContent = ({
   const isCameraMuted = useIsMuted(trackRef);
   const hasVideo = !!trackRef.publication && !isCameraMuted;
   const isSpeaking = useIsSpeaking(trackRef.participant);
-  // Mirror only the local camera self-view (display-only, like a mirror).
-  // Remote video and screen share must never be flipped.
+  const facingMode = useFacingMode(trackRef);
+  console.log(facingMode)
+
   const isMirrored =
-    trackRef.participant?.isLocal && trackRef.source === Track.Source.Camera;
+    facingMode === "user" &&
+    trackRef.participant?.isLocal &&
+    trackRef.source === Track.Source.Camera;
 
   return (
     <Card
