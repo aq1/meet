@@ -27,6 +27,11 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       new Room({
         adaptiveStream: true,
         dynacast: true,
+        webAudioMix: true,
+        publishDefaults: {
+          red: false,
+          videoCodec: "vp8",
+        },
       }),
   );
   const showKeyboard = useControls((state) => state.showKeyboard);
@@ -39,6 +44,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     if (!room || !username) {
       return;
     }
+    room.startAudio();
     setIsReady(true);
     const { wss, token } = await grant({
       data: { username, roomId },
