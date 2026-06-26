@@ -1,0 +1,19 @@
+services:
+  meet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meet
+    container_name: meet
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - bond
+
+networks:
+  bond:
+    external: true

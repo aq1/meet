@@ -3,9 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-IMAGE="meet"
 CONTAINER="meet"
-NETWORK="bond"
 BRANCH="${BRANCH:-main}"
 STATE_FILE=".last-deployed-commit"
 
@@ -40,19 +38,8 @@ if [ "$AFTER" = "$DEPLOYED" ]; then
   exit 0
 fi
 
-echo "==> Building Docker image ($IMAGE)..."
-docker build -t "$IMAGE" .
-
-echo "==> Stopping and removing existing container ($CONTAINER)..."
-docker rm -f "$CONTAINER" 2>/dev/null || true
-
-echo "==> Starting container ($CONTAINER) on network $NETWORK..."
-docker run -d \
-  --name "$CONTAINER" \
-  --restart unless-stopped \
-  --network "$NETWORK" \
-  --env-file .env \
-  "$IMAGE"
+echo "==> Building and starting container ($CONTAINER)..."
+docker compose up -d --build
 
 echo "==> Cleaning up dangling images..."
 docker image prune -f
@@ -61,5 +48,5 @@ echo "$AFTER" > "$STATE_FILE"
 
 COMMIT="$(git rev-parse --short HEAD)"
 SUBJECT="$(git log -1 --pretty=%s)"
-echo "==> Done. $CONTAINER is running on network $NETWORK."
+echo "==> Done. $CONTAINER is running."
 notify "✅ meet updated and restarted on $BRANCH @ ${COMMIT}: ${SUBJECT}"
