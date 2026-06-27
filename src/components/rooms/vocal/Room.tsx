@@ -30,7 +30,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
         webAudioMix: true,
         publishDefaults: {
           red: false,
-          videoCodec: "h264",
+          videoCodec: "vp8",
         },
       }),
   );
