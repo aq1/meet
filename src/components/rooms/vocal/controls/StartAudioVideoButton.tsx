@@ -16,7 +16,7 @@ export const StartVideoButton = () => {
     size="icon-xl"
     title="Start audio"
   >
-    Start Video
+    Allow incoming video
   </Button>
 }
 
@@ -36,7 +36,7 @@ export const StartAudioButton = () => {
         size="icon-xl"
         title="Start audio"
       >
-        Start Audio
+        Allow incoming audio
       </Button>
     </>
   );
