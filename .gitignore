@@ -14,3 +14,5 @@ todos.json
 
 # update.sh deploy state
 .last-deployed-commit
+.update.lock
+.update.lock.d

@@ -3,6 +3,21 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+if command -v flock >/dev/null 2>&1; then
+  exec 9>".update.lock"
+  if ! flock -n 9; then
+    echo "==> Another update is already running. Exiting."
+    exit 0
+  fi
+else
+  LOCK_DIR=".update.lock.d"
+  if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+    echo "==> Another update is already running. Exiting."
+    exit 0
+  fi
+  trap 'rmdir "$LOCK_DIR" 2>/dev/null || true' EXIT
+fi
+
 CONTAINER="meet"
 BRANCH="${BRANCH:-main}"
 STATE_FILE=".last-deployed-commit"
