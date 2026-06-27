@@ -6,11 +6,12 @@ import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
 import { ScreenShareToggle } from "./ScreenShareToggle";
 import { SettingsMenu } from "./SettingsMenu";
-import { StartAudioButton } from "./StartAudioButton";
+import { StartAudioButton, StartVideoButton } from "./StartAudioVideoButton";
 
 export const Controls = () => {
   return (
     <div className="flex size-full justify-center gap-4 px-4 py-2 lg:justify-end lg:py-0">
+      <StartVideoButton />
       <StartAudioButton />
       <MicControl />
       <CameraControl />
