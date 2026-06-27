@@ -4,11 +4,7 @@ import { Button } from "#/components/ui/button";
 
 export const StartAudioButton = () => {
   const room = useRoomContext();
-  const { mergedProps, canPlayAudio } = useStartAudio({ room, props: {} });
-
-  if (canPlayAudio) {
-    return null;
-  }
+  const { mergedProps } = useStartAudio({ room, props: {} });
 
   return (
     <Button
