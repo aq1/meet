@@ -28,6 +28,9 @@ export const useControls = create<ControlsState>()(
       volume: 100,
       cameraEnabled: true,
       micEnabled: true,
+      cameraDeviceId: "",
+      micDeviceId: "",
+      speakerDeviceId: "",
       toggle: (name) => set((state) => ({ ...state, [name]: !state[name] })),
       set: (name, value) => set((state) => ({ ...state, [name]: value })),
       setVolume: (volume) => set({ volume }),
@@ -37,6 +40,16 @@ export const useControls = create<ControlsState>()(
       setMicDeviceId: (micDeviceId) => set({ micDeviceId }),
       setSpeakerDeviceId: (speakerDeviceId) => set({ speakerDeviceId }),
     }),
-    { name: "controls", storage: createJSONStorage(() => localStorage) },
+    {
+      name: "controls",
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      partialize: ({
+        cameraDeviceId,
+        micDeviceId,
+        speakerDeviceId,
+        ...rest
+      }) => rest,
+    },
   ),
 );

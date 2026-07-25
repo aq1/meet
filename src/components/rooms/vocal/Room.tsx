@@ -27,9 +27,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       new Room({
         adaptiveStream: true,
         dynacast: true,
-        webAudioMix: true,
         publishDefaults: {
-          red: false,
           videoCodec: "vp8",
         },
       }),
@@ -60,12 +58,12 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
     try {
       if (micEnabled) {
         await room.localParticipant.setMicrophoneEnabled(true, {
-          deviceId: micDeviceId,
+          deviceId: micDeviceId || undefined,
         });
       }
       if (cameraEnabled) {
         await room.localParticipant.setCameraEnabled(true, {
-          deviceId: cameraDeviceId,
+          deviceId: cameraDeviceId || undefined,
         });
       }
       if (speakerDeviceId) {

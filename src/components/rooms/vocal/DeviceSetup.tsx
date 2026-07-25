@@ -34,8 +34,9 @@ const DeviceSelector = ({
   const devices = useMediaDevices({ kind });
 
   const items = useMemo(
-    () =>
-      devices
+    () => [
+      { label: "System default", value: "" },
+      ...devices
         .filter(
           (d) =>
             d.deviceId &&
@@ -46,23 +47,17 @@ const DeviceSelector = ({
           label: d.label || `${label} ${index + 1}`,
           value: d.deviceId,
         })),
+    ],
     [devices, label],
   );
-
-  useEffect(() => {
-    if (!value && items.length) {
-      onChange(items[0].value);
-    }
-  }, [value, items, onChange]);
 
   return (
     <Select
       items={items}
       value={value ?? ""}
       onValueChange={(next) => {
-        if (next) onChange(next);
+        onChange(next ?? "");
       }}
-      disabled={!items.length}
     >
       <SelectTrigger size="sm" aria-label={label}>
         <span className="flex min-w-0 items-center gap-2 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:opacity-80">
@@ -97,8 +92,8 @@ export const DeviceSetup = () => {
 
   const previewOptions = useMemo(
     () => ({
-      audio: micEnabled ? { deviceId: micDeviceId } : false,
-      video: cameraEnabled ? { deviceId: cameraDeviceId } : false,
+      audio: micEnabled ? { deviceId: micDeviceId || undefined } : false,
+      video: cameraEnabled ? { deviceId: cameraDeviceId || undefined } : false,
     }),
     [micEnabled, cameraEnabled, micDeviceId, cameraDeviceId],
   );

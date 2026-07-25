@@ -21,12 +21,7 @@ export const MediaDeviceSelect = ({
     useMediaDeviceSelect({ kind, requestPermissions: true });
 
   const items = devices
-    .filter(
-      (d) =>
-        d.deviceId &&
-        d.deviceId !== "default" &&
-        d.deviceId !== "communications",
-    )
+    .filter((d) => d.deviceId && d.deviceId !== "communications")
     .map((d, index) => ({
       label: d.label || `${label} ${index + 1}`,
       value: d.deviceId,
