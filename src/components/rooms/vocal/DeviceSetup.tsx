@@ -1,9 +1,5 @@
 import { useMediaDevices, usePreviewTracks } from "@livekit/components-react";
-import {
-  createAudioAnalyser,
-  LocalAudioTrack,
-  LocalVideoTrack,
-} from "livekit-client";
+import { LocalVideoTrack } from "livekit-client";
 import {
   MicIcon,
   MicOffIcon,
@@ -20,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
-import { cn } from "#/lib/utils";
 import { useControls } from "./controls/controls-state";
 
 const DeviceSelector = ({
@@ -84,36 +79,6 @@ const DeviceSelector = ({
       </SelectPopup>
     </Select>
   );
-};
-
-const useAudioLevel = (track: LocalAudioTrack | undefined) => {
-  const [level, setLevel] = useState(0);
-
-  useEffect(() => {
-    if (!track) {
-      setLevel(0);
-      return;
-    }
-
-    const { calculateVolume, cleanup } = createAudioAnalyser(track, {
-      fftSize: 32,
-      smoothingTimeConstant: 0.8,
-    });
-
-    let frame = 0;
-    const update = () => {
-      setLevel(calculateVolume());
-      frame = requestAnimationFrame(update);
-    };
-    frame = requestAnimationFrame(update);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      cleanup();
-    };
-  }, [track]);
-
-  return level;
 };
 
 export const DeviceSetup = () => {
