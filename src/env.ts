@@ -6,6 +6,8 @@ export const env = createEnv({
     LIVEKIT_URL: z.string(),
     LIVEKIT_API_KEY: z.string(),
     LIVEKIT_API_SECRET: z.string(),
+    LIVEKIT_WEBHOOK_API_KEY: z.string(),
+    LIVEKIT_WEBHOOK_API_SECRET: z.string(),
   },
 
   /**

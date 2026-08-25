@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoomRoomIdRouteImport } from './routes/room/$roomId'
+import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
   path: '/room/$roomId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
+  id: '/api/webhooks/livekit',
+  path: '/api/webhooks/livekit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/room/$roomId'
+  fullPaths: '/' | '/room/$roomId' | '/api/webhooks/livekit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/room/$roomId'
-  id: '__root__' | '/' | '/room/$roomId'
+  to: '/' | '/room/$roomId' | '/api/webhooks/livekit'
+  id: '__root__' | '/' | '/room/$roomId' | '/api/webhooks/livekit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RoomRoomIdRoute: typeof RoomRoomIdRoute
+  ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoomRoomIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/livekit': {
+      id: '/api/webhooks/livekit'
+      path: '/api/webhooks/livekit'
+      fullPath: '/api/webhooks/livekit'
+      preLoaderRoute: typeof ApiWebhooksLivekitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RoomRoomIdRoute: RoomRoomIdRoute,
+  ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
