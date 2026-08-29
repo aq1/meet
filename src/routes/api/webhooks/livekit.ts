@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
         }
 
         if (!WATCHED_EVENTS.includes(event.event)) {
-          return;
+          return new Response(JSON.stringify({ ok: true }));
         }
 
         const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
