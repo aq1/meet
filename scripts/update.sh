@@ -63,7 +63,7 @@ fi
 COMMIT="$(git rev-parse --short HEAD)"
 
 echo "==> Building and starting container ($CONTAINER) with VERSION=$COMMIT..."
-VITE_VERSION="$COMMIT" docker compose up -d --build
+VERSION="$COMMIT" docker compose up -d --build
 
 echo "==> Cleaning up dangling images..."
 docker image prune -f
