@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_VERSION: ${VERSION:-dev}
     image: meet
     container_name: meet
     environment:

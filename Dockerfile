@@ -8,6 +8,8 @@ RUN bun install --frozen-lockfile
 
 # Build
 FROM base AS build
+ARG VITE_VERSION=dev
+ENV VITE_VERSION=$VITE_VERSION
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
