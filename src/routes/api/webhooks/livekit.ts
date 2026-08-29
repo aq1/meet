@@ -7,6 +7,11 @@ const WATCHED_EVENTS = [
   "participant_left",
   "room_started",
   "room_finished",
+  "participant_connection_aborted",
+  "egress_started",
+  "egress_ended",
+  "ingress_started",
+  "ingress_ended",
 ];
 
 export const Route = createFileRoute("/api/webhooks/livekit")({
