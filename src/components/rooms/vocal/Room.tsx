@@ -10,8 +10,8 @@ import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
-import { Piano } from "./piano/Piano";
 import { PreConnectDialog } from "./PreConnectDialog";
+import { Piano } from "./piano/Piano";
 
 const grantToken = createServerFn({ method: "POST" })
   .inputValidator((data: { username: string; roomId: string }) => data)
@@ -69,7 +69,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       if (speakerDeviceId) {
         await room.switchActiveDevice("audiooutput", speakerDeviceId);
       }
-    } catch { }
+    } catch {}
   };
 
   useEffect(() => {

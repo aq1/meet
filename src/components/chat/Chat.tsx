@@ -116,29 +116,30 @@ export const Chat = () => {
   const toggle = useControls((state) => state.toggle);
 
   if (isTablet) {
-    return <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
-      <DialogPortal keepMounted>
-        <DialogBackdrop />
-        <DialogPrimitive.Popup
-          className="fixed inset-0 z-50 flex flex-col gap-2 bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] outline-none transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0"
-          data-slot="dialog-popup"
-        >
-          <div className="flex items-center justify-between">
-            <DialogTitle>Chat</DialogTitle>
-            <DialogClose
-              aria-label="Close"
-              render={<Button size="icon" variant="ghost" title="Close" />}
-            >
-              <XIcon />
-            </DialogClose>
-          </div>
-          <div className="min-h-0 flex-1">
-            <ChatContent />
-          </div>
-        </DialogPrimitive.Popup>
-      </DialogPortal>
-    </Dialog>
-
+    return (
+      <Dialog open={showChat} onOpenChange={() => toggle("showChat")}>
+        <DialogPortal keepMounted>
+          <DialogBackdrop />
+          <DialogPrimitive.Popup
+            className="fixed inset-0 z-50 flex flex-col gap-2 bg-background p-4 pt-[max(1rem,env(safe-area-inset-top))] outline-none transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0"
+            data-slot="dialog-popup"
+          >
+            <div className="flex items-center justify-between">
+              <DialogTitle>Chat</DialogTitle>
+              <DialogClose
+                aria-label="Close"
+                render={<Button size="icon" variant="ghost" title="Close" />}
+              >
+                <XIcon />
+              </DialogClose>
+            </div>
+            <div className="min-h-0 flex-1">
+              <ChatContent />
+            </div>
+          </DialogPrimitive.Popup>
+        </DialogPortal>
+      </Dialog>
+    );
   }
 
   return (
@@ -152,6 +153,5 @@ export const Chat = () => {
         <ChatContent />
       </div>
     </div>
-
   );
 };

@@ -31,8 +31,8 @@ export const LeaveButton = () => {
             <PhoneOff />
             <span className="hidden lg:inline">Leave</span>
           </Button>
-        }>
-      </AlertDialogTrigger>
+        }
+      ></AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>
           <AlertDialogTitle>Leave the room?</AlertDialogTitle>
@@ -55,6 +55,6 @@ export const LeaveButton = () => {
           </AlertDialogClose>
         </AlertDialogFooter>
       </AlertDialogPopup>
-    </AlertDialog >
+    </AlertDialog>
   );
 };

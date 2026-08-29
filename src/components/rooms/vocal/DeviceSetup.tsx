@@ -167,7 +167,7 @@ export const DeviceSetup = () => {
       </div>
 
       {permissionError ? (
-        <p className="text-sm text-destructive">
+        <p className="text-destructive text-sm">
           Camera/mic access blocked — check your browser permissions, then turn
           them back on.
         </p>

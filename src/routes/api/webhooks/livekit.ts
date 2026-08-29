@@ -9,12 +9,14 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
         const { event, error } = await receiveLivekitWebhook(request);
         if (error) {
           console.warn("livekit webhook rejected", error.message);
-          return new Response(JSON.stringify({ error: "invalid webhook" },), { status: 401 });
+          return new Response(JSON.stringify({ error: "invalid webhook" }), {
+            status: 401,
+          });
         }
 
-        const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`
+        const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
 
-        await notifyAdmins({ text })
+        await notifyAdmins({ text });
 
         return new Response(JSON.stringify({ ok: true }));
       },

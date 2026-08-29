@@ -20,9 +20,9 @@ import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { Switch } from "#/components/ui/switch";
 import { useIsTablet } from "#/hooks/use-media-query";
-import { useControls } from "./controls-state";
 import { useMidiStore } from "../piano/midi";
 import { useSamplerStore } from "../piano/sampler";
+import { useControls } from "./controls-state";
 
 const PianoVolumeSlider = () => {
   const volume = useSamplerStore((s) => s.volume);

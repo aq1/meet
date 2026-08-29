@@ -60,15 +60,16 @@ if [ "$AFTER" = "$DEPLOYED" ]; then
   exit 0
 fi
 
-echo "==> Building and starting container ($CONTAINER)..."
-docker compose up -d --build
+COMMIT="$(git rev-parse --short HEAD)"
+
+echo "==> Building and starting container ($CONTAINER) with VERSION=$COMMIT..."
+VERSION="$COMMIT" docker compose up -d --build
 
 echo "==> Cleaning up dangling images..."
 docker image prune -f
 
 echo "$AFTER" > "$STATE_FILE"
 
-COMMIT="$(git rev-parse --short HEAD)"
 SUBJECT="$(git log -1 --pretty=%s)"
 echo "==> Done. $CONTAINER is running."
 notify "✅ meet updated and restarted on $BRANCH @ ${COMMIT}: ${SUBJECT}"

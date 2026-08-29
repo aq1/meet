@@ -1,3 +1,4 @@
+import { useUser } from "#/lib/user-store";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,7 +12,6 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useUser } from "#/lib/user-store";
 import { DeviceSetup } from "./DeviceSetup";
 
 type PreConnectDialogProps = {
