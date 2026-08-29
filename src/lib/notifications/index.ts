@@ -21,8 +21,6 @@ export const notifyAdmins = async ({ text }: NotifyAdminsT) => {
       },
     );
 
-    if (!res.ok) {
-      throw new Error(`${res.status} ${await res.text()}`);
-    }
+    console.log(`${res.status} ${await res.text()}`);
   });
 };
