@@ -31,13 +31,20 @@ fi
 
 notify() {
   local message="$1"
-  if [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ]; then
+  if [ -z "${TELEGRAM_TOKEN:-}" ] || [ -z "${TELEGRAM_ADMINS:-}" ]; then
+    return 0
+  fi
+  local chat_id
+  IFS=',' read -ra chat_ids <<< "$TELEGRAM_ADMINS"
+  for chat_id in "${chat_ids[@]}"; do
+    chat_id="${chat_id//[[:space:]]/}"
+    [ -n "$chat_id" ] || continue
     curl -sf -m 10 \
-      "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-      -d "chat_id=${TELEGRAM_CHAT_ID}" \
+      "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+      -d "chat_id=${chat_id}" \
       -d "text=${message}" \
       -d "disable_web_page_preview=true" >/dev/null || true
-  fi
+  done
 }
 
 trap 'notify "❌ meet update failed (line $LINENO). See server logs."' ERR

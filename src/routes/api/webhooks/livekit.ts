@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { receiveLivekitWebhook } from "#/lib/livekit";
+import { notifyAdmins } from "#/lib/notifications";
 
 export const Route = createFileRoute("/api/webhooks/livekit")({
   server: {
@@ -11,22 +12,9 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
           return new Response(JSON.stringify({ error: "invalid webhook" },), { status: 401 });
         }
 
-        switch (event.event) {
-          case "room_started":
-          case "room_finished":
-            console.log(event.event, event.room?.name);
-            break;
-          case "participant_joined":
-          case "participant_left":
-            console.log(
-              event.event,
-              event.room?.name,
-              event.participant?.identity,
-            );
-            break;
-          default:
-            console.log(event.event);
-        }
+        const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`
+
+        await notifyAdmins({ text })
 
         return new Response(JSON.stringify({ ok: true }));
       },
