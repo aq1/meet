@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EgressIndexRouteImport } from './routes/egress/index'
 import { Route as RoomRoomIdRouteImport } from './routes/room/$roomId'
 import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EgressIndexRoute = EgressIndexRouteImport.update({
+  id: '/egress/',
+  path: '/egress/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
@@ -32,30 +38,34 @@ const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/egress/': typeof EgressIndexRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/egress': typeof EgressIndexRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/room/$roomId': typeof RoomRoomIdRoute
+  '/egress/': typeof EgressIndexRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/room/$roomId' | '/api/webhooks/livekit'
+  fullPaths: '/' | '/room/$roomId' | '/egress/' | '/api/webhooks/livekit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/room/$roomId' | '/api/webhooks/livekit'
-  id: '__root__' | '/' | '/room/$roomId' | '/api/webhooks/livekit'
+  to: '/' | '/room/$roomId' | '/egress' | '/api/webhooks/livekit'
+  id: '__root__' | '/' | '/room/$roomId' | '/egress/' | '/api/webhooks/livekit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RoomRoomIdRoute: typeof RoomRoomIdRoute
+  EgressIndexRoute: typeof EgressIndexRoute
   ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/egress/': {
+      id: '/egress/'
+      path: '/egress'
+      fullPath: '/egress/'
+      preLoaderRoute: typeof EgressIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/room/$roomId': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RoomRoomIdRoute: RoomRoomIdRoute,
+  EgressIndexRoute: EgressIndexRoute,
   ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
 }
 export const routeTree = rootRouteImport

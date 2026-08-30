@@ -8,6 +8,7 @@ export const env = createEnv({
     LIVEKIT_API_SECRET: z.string(),
     LIVEKIT_WEBHOOK_API_KEY: z.string(),
     LIVEKIT_WEBHOOK_API_SECRET: z.string(),
+    EGRESS_TEMPLATE_URL: z.string().url().optional(),
     TELEGRAM_TOKEN: z.string(),
     TELEGRAM_ADMINS: z.string().transform((v) =>
       v

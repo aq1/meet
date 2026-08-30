@@ -14,7 +14,7 @@ import { PreConnectDialog } from "./PreConnectDialog";
 import { Piano } from "./piano/Piano";
 
 const grantToken = createServerFn({ method: "POST" })
-  .inputValidator((data: { username: string; roomId: string }) => data)
+  .validator((data: { username: string; roomId: string }) => data)
   .handler(
     async ({ data }) => await grantLivekitToken(data.username, data.roomId),
   );
@@ -69,7 +69,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       if (speakerDeviceId) {
         await room.switchActiveDevice("audiooutput", speakerDeviceId);
       }
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {

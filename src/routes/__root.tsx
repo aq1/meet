@@ -1,6 +1,11 @@
+import { setLogLevel as setComponentsLogLevel } from "@livekit/components-react";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { LogLevel, setLogLevel } from "livekit-client";
 
 import appCss from "../styles.css?url";
+
+setLogLevel(LogLevel.warn);
+setComponentsLogLevel("warn");
 
 export const Route = createRootRoute({
   head: () => ({
