@@ -9,7 +9,7 @@ import { useSamplerStore } from "./sampler";
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-export const usePiano = () => {
+export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
   const { localParticipant } = useLocalParticipant();
   const enableMidi = useMidiStore((s) => s.enable);
   const disableMidi = useMidiStore((s) => s.disable);
@@ -93,13 +93,13 @@ export const usePiano = () => {
   );
 
   useEffect(() => {
-    enableMidi(onNote);
+    if (midi) enableMidi(onNote);
     enableSampler();
     return () => {
-      disableMidi();
+      if (midi) disableMidi();
       disableSampler();
     };
-  }, [enableMidi, enableSampler, disableMidi, disableSampler, onNote]);
+  }, [midi, enableMidi, enableSampler, disableMidi, disableSampler, onNote]);
 
   return onNote;
 };

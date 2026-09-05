@@ -1,5 +1,5 @@
 import { GridLayout, useTracks } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { ParticipantKind, Track } from "livekit-client";
 import { ParticipantTile } from "./ParticipantTile";
 
 export const ParticipantsGrid = () => {
@@ -9,7 +9,10 @@ export const ParticipantsGrid = () => {
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
     { onlySubscribed: false },
-  ).filter((t) => !t.participant.isLocal);
+  ).filter(
+    (t) =>
+      !t.participant.isLocal && t.participant.kind !== ParticipantKind.EGRESS,
+  );
 
   return (
     <GridLayout

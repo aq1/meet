@@ -92,7 +92,7 @@ function EgressPage() {
           <Chat />
         </div>
         <div className="basis-1/3">
-          <Piano />
+          <Piano midi={false} />
         </div>
       </div>
     </RoomContext.Provider>
