@@ -4,6 +4,7 @@ import {
   EgressClient,
   EncodedFileOutput,
   EncodedFileType,
+  EncodingOptionsPreset,
   WebhookReceiver,
 } from "livekit-server-sdk";
 import { env } from "#/env";
@@ -65,7 +66,10 @@ export const startRoomRecording = async (roomName: string) => {
       fileType: EncodedFileType.MP4,
       filepath: "{room_name}-{time}.mp4",
     }),
-    { customBaseUrl: env.EGRESS_TEMPLATE_URL },
+    {
+      customBaseUrl: env.EGRESS_TEMPLATE_URL,
+      encodingOptions: EncodingOptionsPreset.H264_1080P_30,
+    },
   );
 };
 
