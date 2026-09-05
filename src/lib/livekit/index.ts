@@ -56,7 +56,7 @@ const egressClient = new EgressClient(
 
 export const startRoomRecording = async (roomName: string) => {
   if (!env.EGRESS_TEMPLATE_URL) {
-    return null;
+    throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }
   return await egressClient.startRoomCompositeEgress(
     roomName,

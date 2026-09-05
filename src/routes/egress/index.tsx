@@ -5,7 +5,7 @@ import {
   useTracks,
 } from "@livekit/components-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Room, RoomEvent, Track } from "livekit-client";
+import { type DisconnectReason, Room, RoomEvent, Track } from "livekit-client";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Chat } from "#/components/chat/Chat";
@@ -54,9 +54,16 @@ function EgressPage() {
   }, [setControls]);
 
   useEffect(() => {
-    const onDisconnected = () => console.log("END_RECORDING");
-    room.on(RoomEvent.Disconnected, onDisconnected);
-    room.connect(url, token).then(() => console.log("START_RECORDING"));
+    const onDisconnected = (reason?: DisconnectReason) => {
+      console.log("END_RECORDING", reason);
+    };
+    room
+      .connect(url, token)
+      .then(() => {
+        room.once(RoomEvent.Disconnected, onDisconnected);
+        console.log("START_RECORDING");
+      })
+      .catch((e) => console.error("egress: room.connect failed", url, e));
     return () => {
       room.off(RoomEvent.Disconnected, onDisconnected);
       room.disconnect();

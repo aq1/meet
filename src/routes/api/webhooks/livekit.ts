@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { receiveLivekitWebhook, startRoomRecording } from "#/lib/livekit";
+import { receiveLivekitWebhook } from "#/lib/livekit";
 import { notifyAdmins } from "#/lib/notifications";
 
 const WATCHED_EVENTS = [
@@ -28,15 +28,6 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
 
         if (!WATCHED_EVENTS.includes(event.event)) {
           return new Response(JSON.stringify({ ok: true }));
-        }
-
-        if (event.event === "room_started" && event.room?.name) {
-          console.log("helllooo")
-          try {
-            await startRoomRecording(event.room.name);
-          } catch (e) {
-            console.warn("egress start failed", e);
-          }
         }
 
         const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
