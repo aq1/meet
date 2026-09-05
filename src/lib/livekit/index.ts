@@ -50,8 +50,8 @@ export const receiveLivekitWebhook = async (
 
 const egressClient = new EgressClient(
   env.LIVEKIT_URL,
-  env.LIVEKIT_API_KEY,
-  env.LIVEKIT_API_SECRET,
+  env.LIVEKIT_WEBHOOK_API_KEY,
+  env.LIVEKIT_WEBHOOK_API_SECRET,
 );
 
 export const startRoomRecording = async (roomName: string) => {
