@@ -4,7 +4,6 @@ import { ChatToggle } from "./ChatToggle";
 import { KeyboardControl } from "./KeyboardControl";
 import { LeaveButton } from "./LeaveButton";
 import { MicControl } from "./MicControl";
-import { RecordButton } from "./RecordButton";
 import { ScreenShareToggle } from "./ScreenShareToggle";
 import { SettingsMenu } from "./SettingsMenu";
 import { StartAudioButton, StartVideoButton } from "./StartAudioVideoButton";
@@ -21,7 +20,6 @@ export const Controls = () => {
       <ScreenShareToggle />
       <KeyboardControl />
       <ChatToggle />
-      <RecordButton />
       <SettingsMenu />
       <Separator orientation="vertical" />
       <LeaveButton />
