@@ -5,6 +5,7 @@ import {
   useTracks,
 } from "@livekit/components-react";
 import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { type DisconnectReason, Room, RoomEvent, Track } from "livekit-client";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -21,6 +22,12 @@ export const Route = createFileRoute("/egress/")({
   }),
   component: EgressPage,
 });
+
+const onEgressPageLoad = createServerFn({ method: "POST" })
+  .validator((data: { url: string }) => data)
+  .handler(async ({ data }) => {
+    console.log("egress: page loaded", data.url);
+  });
 
 const Grid = () => {
   const tracks = useTracks(
@@ -47,6 +54,12 @@ function EgressPage() {
   const [room] = useState(
     () => new Room({ adaptiveStream: false, dynacast: false }),
   );
+
+  useEffect(() => {
+    onEgressPageLoad({ data: { url: window.location.href } }).catch((e) =>
+      console.error("egress: onEgressPageLoad failed", e),
+    );
+  }, []);
 
   useEffect(() => {
     setControls("showChat", true);
