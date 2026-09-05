@@ -62,8 +62,8 @@ fi
 
 COMMIT="$(git rev-parse --short HEAD)"
 
-echo "==> Building and starting container ($CONTAINER) with VERSION=$COMMIT..."
-VERSION="$COMMIT" docker compose up -d --build
+echo "==> Building and starting container ($CONTAINER) @ $COMMIT..."
+docker compose up -d --build
 
 echo "==> Cleaning up dangling images..."
 docker image prune -f

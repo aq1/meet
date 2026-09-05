@@ -3,14 +3,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        VITE_VERSION: ${VERSION:-dev}
     image: meet
     container_name: meet
     environment:
       NODE_ENV: production
       PORT: "3000"
-      VITE_VERSION: ${VERSION:-dev}
     env_file:
       - .env
     restart: unless-stopped

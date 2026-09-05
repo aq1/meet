@@ -24,9 +24,7 @@ export const env = createEnv({
    */
   clientPrefix: "VITE_",
 
-  client: {
-    VITE_VERSION: z.string(),
-  },
+  client: {},
 
   /**
    * What object holds the environment variables at runtime. This is usually
