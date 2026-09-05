@@ -68,7 +68,6 @@ export const startRoomRecording = async (roomName: string) => {
     }),
     {
       customBaseUrl: env.EGRESS_TEMPLATE_URL,
-      encodingOptions: EncodingOptionsPreset.H264_1080P_30,
     },
   );
 };
