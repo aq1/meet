@@ -16,3 +16,6 @@ todos.json
 .last-deployed-commit
 .update.lock
 .update.lock.d
+
+# Sentry Config File
+.env.sentry-build-plugin
