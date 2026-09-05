@@ -36,7 +36,7 @@ const Grid = () => {
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
     { onlySubscribed: false },
-  );
+  ).filter((t) => !t.participant.isLocal);
 
   return (
     <GridLayout
