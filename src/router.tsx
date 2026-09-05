@@ -2,7 +2,16 @@ import {
   createRouter as createTanStackRouter,
   ErrorComponent,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { captureException, instrumentRouter } from "#/lib/sentry";
 import { routeTree } from "./routeTree.gen";
+
+function DefaultErrorComponent({ error }: { error: Error }) {
+  useEffect(() => {
+    captureException(error);
+  }, [error]);
+  return <ErrorComponent error={error} />;
+}
 
 export function getRouter() {
   const router = createTanStackRouter({
@@ -10,8 +19,10 @@ export function getRouter() {
     scrollRestoration: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
-    defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+    defaultErrorComponent: DefaultErrorComponent,
   });
+
+  instrumentRouter(router);
 
   return router;
 }
