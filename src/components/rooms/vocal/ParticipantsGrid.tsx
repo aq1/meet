@@ -11,7 +11,8 @@ export const ParticipantsGrid = () => {
     { onlySubscribed: false },
   ).filter(
     (t) =>
-      !t.participant.isLocal && t.participant.kind !== ParticipantKind.EGRESS,
+      (!t.participant.isLocal || t.source === Track.Source.ScreenShare) &&
+      t.participant.kind !== ParticipantKind.EGRESS,
   );
 
   return (
