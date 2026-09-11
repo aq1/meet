@@ -72,8 +72,8 @@ export const startRoomRecording = async (roomName: string) => {
       }),
       segments: new SegmentedFileOutput({
         filenamePrefix: `${prefix}/segments/{time}`,
-        playlistName: `${prefix}/segments/{time}.m3u8`,
-        livePlaylistName: `${prefix}/segments/{time}-live.m3u8`,
+        playlistName: `${prefix}/{time}.m3u8`,
+        livePlaylistName: `${prefix}/{time}-live.m3u8`,
         segmentDuration: 6,
       }),
     },
