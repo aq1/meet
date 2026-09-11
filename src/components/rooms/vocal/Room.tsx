@@ -69,7 +69,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       if (speakerDeviceId) {
         await room.switchActiveDevice("audiooutput", speakerDeviceId);
       }
-    } catch { }
+    } catch {}
   };
 
   useEffect(() => {

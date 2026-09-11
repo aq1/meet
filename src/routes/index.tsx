@@ -25,7 +25,8 @@ function Welcome() {
   const username = useUser((state) => state.username);
 
   const createRoom = () => {
-    const roomId = Math.random().toString(36).slice(2, 10);
+    const id = Math.random().toString(36).slice(2, 10);
+    const roomId = import.meta.env.PROD ? id : `test-${id}`;
     navigate({ to: "/room/$roomId", params: { roomId } });
   };
 

@@ -1,7 +1,7 @@
 import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
 import { Send, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { memo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -64,6 +64,13 @@ const ChatContent = ({ readonly = false }: ChatT) => {
   const { chatMessages, send, isSending } = useChat();
 
   const [draft, setDraft] = useState("");
+
+  const messageCount = chatMessages.length;
+  useEffect(() => {
+    if (messageCount) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messageCount]);
 
   const sendDraft = () => {
     if (!draft.length) {

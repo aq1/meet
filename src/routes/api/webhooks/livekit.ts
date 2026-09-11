@@ -30,6 +30,10 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
           });
         }
 
+        if (event.room?.name.startsWith("test-")) {
+          return new Response(JSON.stringify({ ok: true }));
+        }
+
         if (!WATCHED_EVENTS.includes(event.event)) {
           return new Response(JSON.stringify({ ok: true }));
         }
