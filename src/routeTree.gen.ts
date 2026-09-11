@@ -9,9 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as PrivateRouteImport } from './routes/_private'
 import { Route as PublicRouteImport } from './routes/_public'
-import { Route as PrivateIndexRouteImport } from './routes/_private/index'
+import { Route as PublicHomeRouteImport } from './routes/_public/home'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
 import { Route as PrivateRoomRoomIdRouteImport } from './routes/_private/room/$roomId'
@@ -20,6 +21,11 @@ import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/i
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
@@ -28,10 +34,10 @@ const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivateIndexRoute = PrivateIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PrivateRoute,
+const PublicHomeRoute = PublicHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/login',
@@ -70,7 +76,8 @@ const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PrivateIndexRoute
+  '/': typeof IndexRoute
+  '/home': typeof PublicHomeRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
   '/room/$roomId': typeof PrivateRoomRoomIdRoute
@@ -80,7 +87,8 @@ export interface FileRoutesByFullPath {
   '/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PrivateIndexRoute
+  '/': typeof IndexRoute
+  '/home': typeof PublicHomeRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
   '/room/$roomId': typeof PrivateRoomRoomIdRoute
@@ -91,11 +99,12 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_private': typeof PrivateRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
+  '/_public/home': typeof PublicHomeRoute
   '/_public/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
-  '/_private/': typeof PrivateIndexRoute
   '/_private/room/$roomId': typeof PrivateRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/home'
     | '/login'
     | '/api/sentry'
     | '/room/$roomId'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/home'
     | '/login'
     | '/api/sentry'
     | '/room/$roomId'
@@ -125,11 +136,12 @@ export interface FileRouteTypes {
     | '/egress'
   id:
     | '__root__'
+    | '/'
     | '/_private'
     | '/_public'
+    | '/_public/home'
     | '/_public/login'
     | '/api/sentry'
-    | '/_private/'
     | '/_private/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   PrivateRoute: typeof PrivateRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   ApiSentryRoute: typeof ApiSentryRoute
@@ -147,6 +160,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_private': {
       id: '/_private'
       path: ''
@@ -161,12 +181,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_private/': {
-      id: '/_private/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PrivateIndexRouteImport
-      parentRoute: typeof PrivateRoute
+    '/_public/home': {
+      id: '/_public/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof PublicHomeRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_public/login': {
       id: '/_public/login'
@@ -221,13 +241,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface PrivateRouteChildren {
-  PrivateIndexRoute: typeof PrivateIndexRoute
   PrivateRoomRoomIdRoute: typeof PrivateRoomRoomIdRoute
   PrivateTestIndexRoute: typeof PrivateTestIndexRoute
 }
 
 const PrivateRouteChildren: PrivateRouteChildren = {
-  PrivateIndexRoute: PrivateIndexRoute,
   PrivateRoomRoomIdRoute: PrivateRoomRoomIdRoute,
   PrivateTestIndexRoute: PrivateTestIndexRoute,
 }
@@ -236,11 +254,13 @@ const PrivateRouteWithChildren =
   PrivateRoute._addFileChildren(PrivateRouteChildren)
 
 interface PublicRouteChildren {
+  PublicHomeRoute: typeof PublicHomeRoute
   PublicLoginRoute: typeof PublicLoginRoute
   PublicEgressIndexRoute: typeof PublicEgressIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
+  PublicHomeRoute: PublicHomeRoute,
   PublicLoginRoute: PublicLoginRoute,
   PublicEgressIndexRoute: PublicEgressIndexRoute,
 }
@@ -249,6 +269,7 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   PrivateRoute: PrivateRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   ApiSentryRoute: ApiSentryRoute,

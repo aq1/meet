@@ -1,5 +1,6 @@
 import {
   createFileRoute,
+  redirect,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
@@ -16,9 +17,17 @@ import { Field } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { authClient } from "#/lib/auth/client";
+import { getSession } from "#/lib/auth/session";
 import { useUser } from "#/lib/user-store";
 
-export const Route = createFileRoute("/_private/")({
+export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    const session = await getSession();
+    if (!session) {
+      throw redirect({ to: "/home" });
+    }
+    return { user: session.user };
+  },
   component: Home,
 });
 
