@@ -1,0 +1,27 @@
+ws_url: wss://lk.snek.sh
+template_port: 7980
+health_port: 8080
+
+redis:
+    address: 127.0.0.1:6380
+    username: "atlantic"
+    password: "Oj3ybV2kZ2o5nO"
+    db: 0
+    use_tls: false
+    sentinel_master_name: ""
+    sentinel_username: ""
+    sentinel_password: ""
+    sentinel_addresses: []
+    cluster_addresses: []
+    max_redirects: null
+
+storage:
+  s3:
+    endpoint: https://s3.snek.sh
+    bucket: meet
+    force_path_style: true
+    max_retries: 3
+
+logging:
+  level: info
+  pion_level: error

@@ -1,4 +1,53 @@
+# This docker-compose requires host networking, which is only available on Linux
+# This compose will not function correctly on Mac or Windows
+
+volumes:
+  lk-caddy-data:
+    external: true
+
 services:
+  caddy:
+    image: livekit/caddyl4
+    command: run --config /etc/caddy.yaml --adapter yaml
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - ./configs/caddy.yaml:/etc/caddy.yaml
+      - lk-caddy-data:/data
+
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    restart: unless-stopped
+    network_mode: "host"
+    env_file:
+      - /srv/envs/livekit
+    volumes:
+      - ./configs/livekit.yaml:/etc/livekit.yaml
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server /etc/redis.conf
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - ./configs/redis.conf:/etc/redis.conf
+
+  egress:
+    image: livekit/egress:latest
+    restart: unless-stopped
+    env_file:
+      - /srv/envs/livekit
+      - /srv/envs/egress-livekit
+    environment:
+      - EGRESS_CONFIG_FILE=/etc/egress.yaml
+    network_mode: "host"
+    shm_size: 2gb
+    volumes:
+      - ./configs/egress.yaml:/etc/egress.yaml
+    cap_add:
+      - CAP_SYS_ADMIN
+
   meet:
     build:
       context: .
