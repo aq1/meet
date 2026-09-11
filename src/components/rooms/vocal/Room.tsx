@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
 import { useIsTablet } from "#/hooks/use-media-query";
 import { grantLivekitToken } from "#/lib/livekit";
+import { roomExists } from "#/lib/rooms";
 import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
@@ -15,9 +16,12 @@ import { Piano } from "./piano/Piano";
 
 const grantToken = createServerFn({ method: "POST" })
   .validator((data: { username: string; roomId: string }) => data)
-  .handler(
-    async ({ data }) => await grantLivekitToken(data.username, data.roomId),
-  );
+  .handler(async ({ data }) => {
+    if (!(await roomExists(data.roomId))) {
+      throw new Response("Room not found", { status: 404 });
+    }
+    return await grantLivekitToken(data.username, data.roomId);
+  });
 
 export const VocalRoom = ({ roomId }: { roomId: string }) => {
   const [isReady, setIsReady] = useState(false);

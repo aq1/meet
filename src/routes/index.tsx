@@ -4,6 +4,7 @@ import {
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "#/components/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { authClient } from "#/lib/auth/client";
 import { getSession } from "#/lib/auth/session";
+import { createRoom as createRoomServerFn } from "#/lib/rooms";
 import { useUser } from "#/lib/user-store";
 
 export const Route = createFileRoute("/")({
@@ -40,6 +42,7 @@ function Welcome() {
   const router = useRouter();
   const { user } = Route.useRouteContext();
   const username = useUser((state) => state.username);
+  const createRoomFn = useServerFn(createRoomServerFn);
 
   const signOut = async () => {
     await authClient.signOut();
@@ -47,9 +50,8 @@ function Welcome() {
     navigate({ to: "/login" });
   };
 
-  const createRoom = () => {
-    const id = Math.random().toString(36).slice(2, 10);
-    const roomId = import.meta.env.PROD ? id : `test-${id}`;
+  const createRoom = async () => {
+    const { roomId } = await createRoomFn();
     navigate({ to: "/room/$roomId", params: { roomId } });
   };
 
