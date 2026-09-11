@@ -9,37 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as PrivateRouteImport } from './routes/_private'
+import { Route as PublicRouteImport } from './routes/_public'
+import { Route as PrivateIndexRouteImport } from './routes/_private/index'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
-import { Route as EgressIndexRouteImport } from './routes/egress/index'
-import { Route as RoomRoomIdRouteImport } from './routes/room/$roomId'
-import { Route as TestIndexRouteImport } from './routes/test/index'
+import { Route as PrivateRoomRoomIdRouteImport } from './routes/_private/room/$roomId'
+import { Route as PrivateTestIndexRouteImport } from './routes/_private/test/index'
+import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
-const IndexRoute = IndexRouteImport.update({
+const PrivateRoute = PrivateRouteImport.update({
+  id: '/_private',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicRoute = PublicRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivateIndexRoute = PrivateIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PrivateRoute,
 } as any)
 const ApiSentryRoute = ApiSentryRouteImport.update({
   id: '/api/sentry',
   path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EgressIndexRoute = EgressIndexRouteImport.update({
-  id: '/egress/',
-  path: '/egress/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
+const PrivateRoomRoomIdRoute = PrivateRoomRoomIdRouteImport.update({
   id: '/room/$roomId',
   path: '/room/$roomId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PrivateRoute,
 } as any)
-const TestIndexRoute = TestIndexRouteImport.update({
+const PrivateTestIndexRoute = PrivateTestIndexRouteImport.update({
   id: '/test/',
   path: '/test/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PrivateRoute,
+} as any)
+const PublicEgressIndexRoute = PublicEgressIndexRouteImport.update({
+  id: '/egress/',
+  path: '/egress/',
+  getParentRoute: () => PublicRoute,
 } as any)
 const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
   id: '/api/webhooks/livekit',
@@ -48,29 +58,31 @@ const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof PrivateIndexRoute
   '/api/sentry': typeof ApiSentryRoute
-  '/room/$roomId': typeof RoomRoomIdRoute
-  '/egress/': typeof EgressIndexRoute
-  '/test/': typeof TestIndexRoute
+  '/room/$roomId': typeof PrivateRoomRoomIdRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/test/': typeof PrivateTestIndexRoute
+  '/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof PrivateIndexRoute
   '/api/sentry': typeof ApiSentryRoute
-  '/room/$roomId': typeof RoomRoomIdRoute
-  '/egress': typeof EgressIndexRoute
-  '/test': typeof TestIndexRoute
+  '/room/$roomId': typeof PrivateRoomRoomIdRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/test': typeof PrivateTestIndexRoute
+  '/egress': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_private': typeof PrivateRouteWithChildren
+  '/_public': typeof PublicRouteWithChildren
   '/api/sentry': typeof ApiSentryRoute
-  '/room/$roomId': typeof RoomRoomIdRoute
-  '/egress/': typeof EgressIndexRoute
-  '/test/': typeof TestIndexRoute
+  '/_private/': typeof PrivateIndexRoute
+  '/_private/room/$roomId': typeof PrivateRoomRoomIdRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/_private/test/': typeof PrivateTestIndexRoute
+  '/_public/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -78,44 +90,58 @@ export interface FileRouteTypes {
     | '/'
     | '/api/sentry'
     | '/room/$roomId'
-    | '/egress/'
-    | '/test/'
     | '/api/webhooks/livekit'
+    | '/test/'
+    | '/egress/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/api/sentry'
     | '/room/$roomId'
-    | '/egress'
-    | '/test'
     | '/api/webhooks/livekit'
+    | '/test'
+    | '/egress'
   id:
     | '__root__'
-    | '/'
+    | '/_private'
+    | '/_public'
     | '/api/sentry'
-    | '/room/$roomId'
-    | '/egress/'
-    | '/test/'
+    | '/_private/'
+    | '/_private/room/$roomId'
     | '/api/webhooks/livekit'
+    | '/_private/test/'
+    | '/_public/egress/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  PrivateRoute: typeof PrivateRouteWithChildren
+  PublicRoute: typeof PublicRouteWithChildren
   ApiSentryRoute: typeof ApiSentryRoute
-  RoomRoomIdRoute: typeof RoomRoomIdRoute
-  EgressIndexRoute: typeof EgressIndexRoute
-  TestIndexRoute: typeof TestIndexRoute
   ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_private': {
+      id: '/_private'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PrivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_private/': {
+      id: '/_private/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PrivateIndexRouteImport
+      parentRoute: typeof PrivateRoute
     }
     '/api/sentry': {
       id: '/api/sentry'
@@ -124,26 +150,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSentryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/egress/': {
-      id: '/egress/'
-      path: '/egress'
-      fullPath: '/egress/'
-      preLoaderRoute: typeof EgressIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/room/$roomId': {
-      id: '/room/$roomId'
+    '/_private/room/$roomId': {
+      id: '/_private/room/$roomId'
       path: '/room/$roomId'
       fullPath: '/room/$roomId'
-      preLoaderRoute: typeof RoomRoomIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PrivateRoomRoomIdRouteImport
+      parentRoute: typeof PrivateRoute
     }
-    '/test/': {
-      id: '/test/'
+    '/_private/test/': {
+      id: '/_private/test/'
       path: '/test'
       fullPath: '/test/'
-      preLoaderRoute: typeof TestIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PrivateTestIndexRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_public/egress/': {
+      id: '/_public/egress/'
+      path: '/egress'
+      fullPath: '/egress/'
+      preLoaderRoute: typeof PublicEgressIndexRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/api/webhooks/livekit': {
       id: '/api/webhooks/livekit'
@@ -155,12 +181,36 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PrivateRouteChildren {
+  PrivateIndexRoute: typeof PrivateIndexRoute
+  PrivateRoomRoomIdRoute: typeof PrivateRoomRoomIdRoute
+  PrivateTestIndexRoute: typeof PrivateTestIndexRoute
+}
+
+const PrivateRouteChildren: PrivateRouteChildren = {
+  PrivateIndexRoute: PrivateIndexRoute,
+  PrivateRoomRoomIdRoute: PrivateRoomRoomIdRoute,
+  PrivateTestIndexRoute: PrivateTestIndexRoute,
+}
+
+const PrivateRouteWithChildren =
+  PrivateRoute._addFileChildren(PrivateRouteChildren)
+
+interface PublicRouteChildren {
+  PublicEgressIndexRoute: typeof PublicEgressIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicEgressIndexRoute: PublicEgressIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  PrivateRoute: PrivateRouteWithChildren,
+  PublicRoute: PublicRouteWithChildren,
   ApiSentryRoute: ApiSentryRoute,
-  RoomRoomIdRoute: RoomRoomIdRoute,
-  EgressIndexRoute: EgressIndexRoute,
-  TestIndexRoute: TestIndexRoute,
   ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
 }
 export const routeTree = rootRouteImport

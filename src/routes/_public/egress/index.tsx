@@ -13,7 +13,7 @@ import { useControls } from "#/components/rooms/vocal/controls/controls-state";
 import { ParticipantTile } from "#/components/rooms/vocal/ParticipantTile";
 import { usePiano } from "#/components/rooms/vocal/piano/usePiano";
 
-export const Route = createFileRoute("/egress/")({
+export const Route = createFileRoute("/_public/egress/")({
   validateSearch: z.object({
     url: z.string(),
     token: z.string(),

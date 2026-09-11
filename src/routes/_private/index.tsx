@@ -12,7 +12,7 @@ import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { useUser } from "#/lib/user-store";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_private/")({
   component: Home,
 });
 
