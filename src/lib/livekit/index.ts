@@ -61,14 +61,14 @@ export const startRoomRecording = async (roomName: string) => {
     throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }
 
-  const prefix = `${new Date().toISOString().slice(0, 10)}/{room_name}/{time}`;
+  const prefix = `${new Date().toISOString().slice(0, 10)}/{room_name}`;
 
   return await egressClient.startRoomCompositeEgress(
     roomName,
     {
       file: new EncodedFileOutput({
         fileType: EncodedFileType.MP4,
-        filepath: `${prefix}.mp4`,
+        filepath: `${prefix}/{time}.mp4`,
       }),
       segments: new SegmentedFileOutput({
         filenamePrefix: `${prefix}/segments/{time}`,

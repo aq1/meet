@@ -55,7 +55,11 @@ const Message = memo(({ message, previousMessage }: MessageT) => {
 });
 Message.displayName = "Message";
 
-const ChatContent = () => {
+type ChatT = {
+  readonly?: boolean;
+};
+
+const ChatContent = ({ readonly = false }: ChatT) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const { chatMessages, send, isSending } = useChat();
 
@@ -87,30 +91,36 @@ const ChatContent = () => {
             <div ref={bottomRef} />
           </div>
         </ScrollArea>
-        <div className="flex gap-4">
-          <Input
-            aria-label="Chat"
-            placeholder="Write a message..."
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                sendDraft();
-              }
-            }}
-          />
-          <Button disabled={isSending} onClick={sendDraft} title="Send message">
-            <Send />
-          </Button>
-        </div>
+        {readonly ? null : (
+          <div className="flex gap-4">
+            <Input
+              aria-label="Chat"
+              placeholder="Write a message..."
+              type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  sendDraft();
+                }
+              }}
+            />
+            <Button
+              disabled={isSending}
+              onClick={sendDraft}
+              title="Send message"
+            >
+              <Send />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export const Chat = () => {
+export const Chat = ({ readonly = false }: ChatT) => {
   const isTablet = useIsTablet();
   const showChat = useControls((state) => state.showChat);
   const toggle = useControls((state) => state.toggle);
@@ -134,7 +144,7 @@ export const Chat = () => {
               </DialogClose>
             </div>
             <div className="min-h-0 flex-1">
-              <ChatContent />
+              <ChatContent readonly={readonly} />
             </div>
           </DialogPrimitive.Popup>
         </DialogPortal>
@@ -150,7 +160,7 @@ export const Chat = () => {
       )}
     >
       <div className="flex size-full min-h-0 flex-col px-4">
-        <ChatContent />
+        <ChatContent readonly={readonly} />
       </div>
     </div>
   );
