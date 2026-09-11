@@ -10,6 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "db:migrate": "bun run scripts/migrate.ts",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check"
@@ -39,6 +40,7 @@
     "lucide-react": "^1.26.0",
     "motion": "^12.42.2",
     "nitro": "npm:nitro-nightly@latest",
+    "postgres": "^3.4.9",
     "react": "^19.2.8",
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.8",

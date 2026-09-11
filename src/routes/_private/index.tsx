@@ -1,8 +1,13 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import {
   Card,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardPanel,
   CardTitle,
@@ -10,6 +15,7 @@ import {
 import { Field } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
+import { authClient } from "#/lib/auth/client";
 import { useUser } from "#/lib/user-store";
 
 export const Route = createFileRoute("/_private/")({
@@ -22,7 +28,15 @@ function Home() {
 
 function Welcome() {
   const navigate = useNavigate();
+  const router = useRouter();
+  const { user } = Route.useRouteContext();
   const username = useUser((state) => state.username);
+
+  const signOut = async () => {
+    await authClient.signOut();
+    await router.invalidate();
+    navigate({ to: "/login" });
+  };
 
   const createRoom = () => {
     const id = Math.random().toString(36).slice(2, 10);
@@ -45,7 +59,8 @@ function Welcome() {
         <CardHeader>
           <CardTitle>Welcome{username ? `, ${username}` : ""}</CardTitle>
           <CardDescription>
-            Create a new room or join an existing one.
+            Signed in as {user.email}. Create a new room or join an existing
+            one.
           </CardDescription>
         </CardHeader>
         <CardPanel className="grid gap-6">
@@ -59,6 +74,11 @@ function Welcome() {
             </Button>
           </Form>
         </CardPanel>
+        <CardFooter>
+          <Button variant="ghost" className="w-full" onClick={signOut}>
+            Sign out
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   );
