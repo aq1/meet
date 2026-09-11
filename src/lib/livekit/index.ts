@@ -4,7 +4,7 @@ import {
   EgressClient,
   EncodedFileOutput,
   EncodedFileType,
-  EncodingOptionsPreset,
+  SegmentedFileOutput,
   WebhookReceiver,
 } from "livekit-server-sdk";
 import { env } from "#/env";
@@ -60,12 +60,23 @@ export const startRoomRecording = async (roomName: string) => {
   if (!env.EGRESS_TEMPLATE_URL) {
     throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }
+
+  const prefix = `${new Date().toISOString().slice(0, 10)}/{room_name}/{time}`;
+
   return await egressClient.startRoomCompositeEgress(
     roomName,
-    new EncodedFileOutput({
-      fileType: EncodedFileType.MP4,
-      filepath: "{room_name}-{time}.mp4",
-    }),
+    {
+      file: new EncodedFileOutput({
+        fileType: EncodedFileType.MP4,
+        filepath: `${prefix}.mp4`,
+      }),
+      segments: new SegmentedFileOutput({
+        filenamePrefix: prefix,
+        playlistName: `${prefix}.m3u8`,
+        livePlaylistName: `${prefix}-live.m3u8`,
+        segmentDuration: 6,
+      }),
+    },
     {
       customBaseUrl: env.EGRESS_TEMPLATE_URL,
     },

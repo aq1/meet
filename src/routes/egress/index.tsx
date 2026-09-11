@@ -50,7 +50,7 @@ function EgressPage() {
 
   useEffect(() => {
     setControls("showChat", true);
-    setControls("showKeyboard", true);
+    setControls("showKeyboard", false);
   }, [setControls]);
 
   useEffect(() => {
