@@ -11,7 +11,7 @@ import { z } from "zod";
 import { Chat } from "#/components/chat/Chat";
 import { useControls } from "#/components/rooms/vocal/controls/controls-state";
 import { ParticipantTile } from "#/components/rooms/vocal/ParticipantTile";
-import { Piano } from "#/components/rooms/vocal/piano/Piano";
+import { usePiano } from "#/components/rooms/vocal/piano/usePiano";
 
 export const Route = createFileRoute("/egress/")({
   validateSearch: z.object({
@@ -41,6 +41,11 @@ const Grid = () => {
   );
 };
 
+const PianoSound = () => {
+  usePiano({ midi: false });
+  return null;
+};
+
 function EgressPage() {
   const { url, token } = Route.useSearch();
   const setControls = useControls((state) => state.set);
@@ -50,7 +55,6 @@ function EgressPage() {
 
   useEffect(() => {
     setControls("showChat", true);
-    setControls("showKeyboard", false);
   }, [setControls]);
 
   useEffect(() => {
@@ -73,14 +77,10 @@ function EgressPage() {
   return (
     <RoomContext.Provider value={room}>
       <RoomAudioRenderer />
-      <div className="flex h-dvh w-dvw flex-col gap-2 p-4">
-        <div className="flex min-h-0 flex-1">
-          <Grid />
-          <Chat />
-        </div>
-        <div className="basis-1/3">
-          <Piano midi={false} />
-        </div>
+      <PianoSound />
+      <div className="flex h-dvh w-dvw gap-2 p-4">
+        <Grid />
+        <Chat />
       </div>
     </RoomContext.Provider>
   );
