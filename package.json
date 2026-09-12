@@ -10,7 +10,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "db:migrate": "bun run scripts/migrate.ts",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check"

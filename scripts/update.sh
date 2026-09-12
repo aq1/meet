@@ -65,9 +65,6 @@ COMMIT="$(git rev-parse --short HEAD)"
 echo "==> Building image ($CONTAINER) @ $COMMIT..."
 docker compose build "$CONTAINER"
 
-echo "==> Running database migrations..."
-docker compose run --rm --no-deps "$CONTAINER" bun run db:migrate
-
 echo "==> Starting container ($CONTAINER)..."
 docker compose up -d
 

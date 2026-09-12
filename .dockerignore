@@ -1,5 +1,11 @@
 node_modules
 .output
+.tanstack
 .git
+.vscode
 .env
-dist
+.env.*
+compose.yml
+configs
+README.md
+CLAUDE.md
