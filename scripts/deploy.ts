@@ -9,6 +9,9 @@ $.cwd(root);
 const CONTAINER = "meet";
 const STATE_FILE = ".last-deployed-commit";
 const LOCK_DIR = ".update.lock.d";
+const LOG_FILE = process.env.UPDATE_LOG ?? "/srv/logs/update.log";
+const LOG_TAIL_LINES = 20;
+const LOG_TAIL_MAX_CHARS = 3000;
 
 let currentStep = "starting";
 
@@ -57,9 +60,17 @@ const notify = async (text: string) => {
           }),
           signal: AbortSignal.timeout(10_000),
         });
-      } catch { }
+      } catch {}
     }),
   );
+};
+
+const tailLog = async () => {
+  if (!(await Bun.file(LOG_FILE).exists())) {
+    return "";
+  }
+  const text = await $`tail -n ${LOG_TAIL_LINES} ${LOG_FILE}`.nothrow().text();
+  return text.trim().slice(-LOG_TAIL_MAX_CHARS);
 };
 
 const acquireLock = () => {
@@ -128,8 +139,12 @@ try {
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(error);
+  const tail = await tailLog();
+  const details = tail
+    ? `\n\nLast lines of ${LOG_FILE}:\n${tail}`
+    : " See server logs.";
   await notify(
-    `❌ meet update failed at "${currentStep}": ${message}. See server logs.`,
+    `❌ meet update failed at "${currentStep}": ${message}.${details}`,
   );
   process.exit(1);
 }
