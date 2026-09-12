@@ -50,6 +50,26 @@ bun --bun run check
 ```
 
 
+## Database migrations
+
+Migrations are plain SQL files in `migrations/`, run with [goose](https://pressly.github.io/goose/). Install it locally with `brew install goose`; `scripts/update.sh` installs it on the server automatically.
+
+The `db:*` scripts read goose settings from `.env`:
+
+```bash
+GOOSE_DRIVER=postgres
+GOOSE_DBSTRING=$DATABASE_URL
+GOOSE_MIGRATION_DIR=migrations
+```
+
+Columns are `snake_case` in SQL and exposed as `camelCase` through Kysely's `CamelCasePlugin`; run `bun run db:generate` after migrating to refresh `src/lib/db/schema.d.ts`.
+
+```bash
+bun run db:new add_something sql   # create migrations/<timestamp>_add_something.sql
+bun run db:migrate                 # apply pending migrations to $DATABASE_URL
+bun run db:status                  # show applied / pending migrations
+```
+
 ## Deploy
 
 `bun run build` produces a self-contained `.output` directory:

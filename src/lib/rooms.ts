@@ -18,7 +18,7 @@ export const createRoom = createServerFn({ method: "POST" }).handler(
     const roomId = import.meta.env.PROD ? id : `test-${id}`;
     await db
       .insertInto("room")
-      .values({ id: roomId, createdBy: session.user.id })
+      .values({ publicId: roomId, createdBy: Number(session.user.id) })
       .execute();
     return { roomId };
   },

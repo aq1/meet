@@ -1,21 +1,12 @@
-import { CamelCasePlugin, type Generated, Kysely } from "kysely";
-import { PostgresJSDialect } from "kysely-postgres-js";
-import postgres from "postgres";
-import { env } from "#/env";
+import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
+import { Pool } from "pg";
+import type { DB } from "./schema";
 
-export type RoomTable = {
-  id: string;
-  createdBy: string | null;
-  createdAt: Generated<Date>;
-};
-
-export type Database = {
-  room: RoomTable;
-};
-
-export const sql = postgres(env.DATABASE_URL);
-
-export const db = new Kysely<Database>({
-  dialect: new PostgresJSDialect({ postgres: sql }),
+export const db = new Kysely<DB>({
+  dialect: new PostgresDialect({
+    pool: new Pool({
+      connectionString: process.env.DATABASE_URL,
+    }),
+  }),
   plugins: [new CamelCasePlugin()],
 });
