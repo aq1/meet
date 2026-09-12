@@ -57,7 +57,7 @@ bun --bun run check
 - `.output/server/index.mjs` — the Nitro server (Bun preset)
 - `.output/public` — static assets
 
-The production image contains only `.output` on top of `oven/bun:1-slim`; no `node_modules`, sources or dev tooling.
+The production image contains only `.output` on top of `oven/bun:1-alpine`; no `node_modules`, sources or dev tooling.
 
 ```bash
 docker compose up --build -d meet
