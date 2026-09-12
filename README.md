@@ -52,7 +52,7 @@ bun --bun run check
 
 ## Database migrations
 
-Migrations are plain SQL files in `migrations/`, run with [goose](https://pressly.github.io/goose/). Install it locally with `brew install goose`; `scripts/update.sh` installs it on the server automatically.
+Migrations are plain SQL files in `migrations/`, run with [goose](https://pressly.github.io/goose/). Install it locally with `brew install goose`; `scripts/deploy.ts` runs `goose up` on the server during each deploy.
 
 The `db:*` scripts read goose settings from `.env`:
 

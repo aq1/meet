@@ -12,9 +12,8 @@ dist-ssr
 __unconfig*
 todos.json
 
-# update.sh deploy state
+# deploy.ts state
 .last-deployed-commit
-.update.lock
 .update.lock.d
 
 # Sentry Config File
