@@ -18,6 +18,10 @@ export const auth = betterAuth({
         if (type !== "sign-in") {
           return;
         }
+        if (!import.meta.env.PROD) {
+          console.log(`[auth] OTP for ${email}: ${otp}`);
+          return;
+        }
         void sendEmail({
           to: email,
           subject: `${otp} is your Meet sign-in code`,

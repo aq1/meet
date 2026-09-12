@@ -2,15 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth";
 import { db } from "#/lib/db";
-
-export const roomExists = async (roomId: string) => {
-  const row = await db
-    .selectFrom("room")
-    .select("id")
-    .where("id", "=", roomId)
-    .executeTakeFirst();
-  return Boolean(row);
-};
+import { roomExists } from "#/lib/db/rooms";
 
 export const getRoom = createServerFn({ method: "GET" })
   .validator((roomId: string) => roomId)
