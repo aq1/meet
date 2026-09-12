@@ -49,24 +49,6 @@ notify() {
 
 trap 'notify "❌ meet update failed (line $LINENO). See server logs."' ERR
 
-ensure_goose() {
-  if command -v goose >/dev/null 2>&1; then
-    return 0
-  fi
-  echo "==> goose not found. Installing..."
-  local install_dir="${GOOSE_INSTALL:-/usr/local}"
-  local -a runner=(env "GOOSE_INSTALL=$install_dir" sh)
-  if [ ! -w "${install_dir}/bin" ] && [ ! -w "$install_dir" ]; then
-    runner=(sudo "${runner[@]}")
-  fi
-  curl -fsSL https://raw.githubusercontent.com/pressly/goose/master/install.sh | "${runner[@]}"
-  export PATH="${install_dir}/bin:$PATH"
-  command -v goose >/dev/null 2>&1 || { echo "==> goose installation failed." >&2; return 1; }
-  echo "==> goose installed: $(goose --version)"
-}
-
-ensure_goose
-
 echo "==> Fetching latest from git ($BRANCH)..."
 git fetch origin "$BRANCH"
 git reset --hard "origin/$BRANCH"
@@ -84,7 +66,7 @@ echo "==> Building image ($CONTAINER) @ $COMMIT..."
 docker compose build "$CONTAINER"
 
 echo "==> Running database migrations..."
-GOOSE_DRIVER=postgres GOOSE_DBSTRING="$DATABASE_URL" GOOSE_MIGRATION_DIR=migrations goose up
+goose up
 
 echo "==> Starting container ($CONTAINER)..."
 docker compose up -d
