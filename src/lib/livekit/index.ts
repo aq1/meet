@@ -71,7 +71,7 @@ export const startRoomRecording = async (roomName: string) => {
         filepath: `${prefix}/{time}.mp4`,
       }),
       segments: new SegmentedFileOutput({
-        filenamePrefix: `${prefix}/segments/{time}`,
+        filenamePrefix: `segments/{time}`,
         playlistName: `${prefix}/{time}.m3u8`,
         livePlaylistName: `${prefix}/{time}-live.m3u8`,
         segmentDuration: 6,
