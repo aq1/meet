@@ -1,22 +1,61 @@
+import { EgressStatus, type WebhookEvent } from "@livekit/protocol";
 import { createFileRoute } from "@tanstack/react-router";
+import type { WebhookEventNames } from "livekit-server-sdk";
 import {
   receiveLivekitWebhook,
   startRoomRecording,
   stopRoomRecording,
 } from "#/lib/livekit";
 import { notifyAdmins } from "#/lib/notifications";
+import { updateRoom } from "#/lib/db/rooms";
 
-const WATCHED_EVENTS = [
-  "participant_joined",
-  "participant_left",
-  "room_started",
-  "room_finished",
-  "participant_connection_aborted",
-  "egress_started",
-  "egress_ended",
-  "ingress_started",
-  "ingress_ended",
-];
+const ignore = async (_: WebhookEvent) => { };
+
+const notifyOnEvent = async (event: WebhookEvent) => {
+  const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
+  await notifyAdmins({ text });
+};
+
+const chain = (...actions: Array<(event: WebhookEvent) => Promise<void>>) => {
+  return async (event: WebhookEvent) => {
+    await Promise.all(actions.map((a) => a(event)));
+  };
+};
+
+
+const updateFinishedRoom = async (event: WebhookEvent) => {
+  const info = event.egressInfo;
+  if (!event.room?.name || !info) {
+    return;
+  }
+  if (info.status !== EgressStatus.EGRESS_COMPLETE) {
+    return;
+  }
+  const egressUrl =
+    info.fileResults[0]?.location ??
+    info.segmentResults[0]?.playlistLocation ??
+    "";
+  await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
+};
+
+const livekitEventRouter = (eventName: WebhookEventNames) => {
+  switch (eventName) {
+    case "room_started":
+      return notifyOnEvent;
+    case "room_finished":
+      return notifyOnEvent;
+    case "participant_joined":
+      return notifyOnEvent;
+    case "participant_left":
+      return notifyOnEvent;
+    case "egress_started":
+      return notifyOnEvent;
+    case "egress_ended":
+      return chain(updateFinishedRoom, notifyOnEvent);
+    default:
+      return ignore;
+  }
+};
 
 export const Route = createFileRoute("/api/webhooks/livekit")({
   server: {
@@ -34,9 +73,8 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
           return new Response(JSON.stringify({ ok: true }));
         }
 
-        if (!WATCHED_EVENTS.includes(event.event)) {
-          return new Response(JSON.stringify({ ok: true }));
-        }
+        const action = livekitEventRouter(event.event);
+        await action(event);
 
         if (event.room?.name) {
           try {
@@ -49,10 +87,6 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
             console.warn(`egress ${event.event} failed`, e);
           }
         }
-
-        const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
-
-        await notifyAdmins({ text });
 
         return new Response(JSON.stringify({ ok: true }));
       },

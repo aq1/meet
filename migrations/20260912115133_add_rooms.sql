@@ -6,6 +6,7 @@ CREATE TABLE "room" (
 	"created_at" timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX "room_created_by_idx" ON "room" ("created_by");
+CREATE INDEX "room_public_id_idx" ON "room" ("public_id");
 
 -- +goose Down
 DROP TABLE "room";

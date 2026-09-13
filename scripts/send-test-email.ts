@@ -2,7 +2,6 @@ import { sendEmail } from "#/lib/email";
 
 const to = process.argv[2] ?? "delivered@resend.dev";
 
-
 const data = await sendEmail({
   to,
   subject: "Meet test email",

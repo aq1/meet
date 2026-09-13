@@ -31,6 +31,8 @@ export interface Account {
 export interface Room {
   createdAt: Generated<Timestamp>;
   createdBy: number | null;
+  egressUrl: Generated<string | null>;
+  finishedAt: Timestamp | null;
   id: Generated<number>;
   publicId: string;
 }
