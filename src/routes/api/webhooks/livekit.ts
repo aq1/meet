@@ -1,13 +1,16 @@
 import { EgressStatus, type WebhookEvent } from "@livekit/protocol";
 import { createFileRoute } from "@tanstack/react-router";
+import { s3 } from "bun";
 import type { WebhookEventNames } from "livekit-server-sdk";
+import { env } from "#/env";
+import { getRoom, updateRoom } from "#/lib/db/rooms";
+import { sendEmail } from "#/lib/email";
 import {
   receiveLivekitWebhook,
   startRoomRecording,
   stopRoomRecording,
 } from "#/lib/livekit";
 import { notifyAdmins } from "#/lib/notifications";
-import { updateRoom } from "#/lib/db/rooms";
 
 const ignore = async (_: WebhookEvent) => { };
 
@@ -16,14 +19,47 @@ const notifyOnEvent = async (event: WebhookEvent) => {
   await notifyAdmins({ text });
 };
 
-const chain = (...actions: Array<(event: WebhookEvent) => Promise<void>>) => {
-  return async (event: WebhookEvent) => {
-    await Promise.all(actions.map((a) => a(event)));
-  };
+const EGRESS_DOWNLOAD_URL_TTL = 7 * 24 * 60 * 60;
+
+const egressObjectKey = (location: string) => {
+  const path = decodeURIComponent(new URL(location).pathname).replace(
+    /^\/+/,
+    "",
+  );
+  const bucketPrefix = `${env.S3_BUCKET}/`;
+  return path.startsWith(bucketPrefix) ? path.slice(bucketPrefix.length) : path;
 };
 
+const presignEgressFile = (location: string) => {
+  try {
+    return s3.presign(egressObjectKey(location), {
+      method: "GET",
+      expiresIn: EGRESS_DOWNLOAD_URL_TTL,
+    });
+  } catch {
+    return "";
+  }
+};
 
-const updateFinishedRoom = async (event: WebhookEvent) => {
+const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
+  if (!url) {
+    return;
+  }
+  const room = await getRoom(roomId);
+  if (!room?.email) {
+    return;
+  }
+  const greeting = room.name ? `Hi ${room.name},` : "Hi,";
+  await sendEmail({
+    to: room.email,
+    subject: "Your call recording is here",
+    html: `<p>${greeting}</p><p>The recording of your call ${roomId} is ready.</p><p>Download it here (link expires in 7 days):<br><a href="${url}">${url}</a></p>`,
+    text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 7 days):\n${url}`,
+    idempotencyKey: `egress-finished/${roomId}`,
+  });
+};
+
+const onEgressEndedEvent = async (event: WebhookEvent) => {
   const info = event.egressInfo;
   if (!event.room?.name || !info) {
     return;
@@ -35,7 +71,14 @@ const updateFinishedRoom = async (event: WebhookEvent) => {
     info.fileResults[0]?.location ??
     info.segmentResults[0]?.playlistLocation ??
     "";
+
+  const egressDownloadUrl = presignEgressFile(egressUrl);
+  await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
+
   await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
+  await notifyAdmins({
+    text: `${event.room.name} ${event.event}`,
+  });
 };
 
 const livekitEventRouter = (eventName: WebhookEventNames) => {
@@ -51,7 +94,7 @@ const livekitEventRouter = (eventName: WebhookEventNames) => {
     case "egress_started":
       return notifyOnEvent;
     case "egress_ended":
-      return chain(updateFinishedRoom, notifyOnEvent);
+      return onEgressEndedEvent;
     default:
       return ignore;
   }

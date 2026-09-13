@@ -11,6 +11,15 @@ export const roomExists = async (roomId: string) => {
   return Boolean(row);
 };
 
+export const getRoom = async (roomId: string) => {
+  return await db
+    .selectFrom("room")
+    .leftJoin("user", "user.id", "createdBy")
+    .selectAll()
+    .where("publicId", "=", roomId)
+    .executeTakeFirst();
+};
+
 export const updateRoom = async (roomId: string, fields: Updateable<Room>) => {
   await db
     .updateTable("room")
