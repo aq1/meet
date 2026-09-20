@@ -15,7 +15,8 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as PublicHomeRouteImport } from './routes/_public/home'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
-import { Route as PrivateTestIndexRouteImport } from './routes/_private/test/index'
+import { Route as PrivateTestSentryRouteImport } from './routes/_private/test/sentry'
+import { Route as PrivateTestStreamRouteImport } from './routes/_private/test/stream'
 import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -49,9 +50,14 @@ const ApiSentryRoute = ApiSentryRouteImport.update({
   path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivateTestIndexRoute = PrivateTestIndexRouteImport.update({
-  id: '/test/',
-  path: '/test/',
+const PrivateTestSentryRoute = PrivateTestSentryRouteImport.update({
+  id: '/test/sentry',
+  path: '/test/sentry',
+  getParentRoute: () => PrivateRoute,
+} as any)
+const PrivateTestStreamRoute = PrivateTestStreamRouteImport.update({
+  id: '/test/stream',
+  path: '/test/stream',
   getParentRoute: () => PrivateRoute,
 } as any)
 const PublicEgressIndexRoute = PublicEgressIndexRouteImport.update({
@@ -80,10 +86,11 @@ export interface FileRoutesByFullPath {
   '/home': typeof PublicHomeRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
+  '/test/sentry': typeof PrivateTestSentryRoute
+  '/test/stream': typeof PrivateTestStreamRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
-  '/test/': typeof PrivateTestIndexRoute
   '/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesByTo {
@@ -91,10 +98,11 @@ export interface FileRoutesByTo {
   '/home': typeof PublicHomeRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
+  '/test/sentry': typeof PrivateTestSentryRoute
+  '/test/stream': typeof PrivateTestStreamRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
-  '/test': typeof PrivateTestIndexRoute
   '/egress': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesById {
@@ -105,10 +113,11 @@ export interface FileRoutesById {
   '/_public/home': typeof PublicHomeRoute
   '/_public/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
+  '/_private/test/sentry': typeof PrivateTestSentryRoute
+  '/_private/test/stream': typeof PrivateTestStreamRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
-  '/_private/test/': typeof PrivateTestIndexRoute
   '/_public/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRouteTypes {
@@ -118,10 +127,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/api/sentry'
+    | '/test/sentry'
+    | '/test/stream'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
-    | '/test/'
     | '/egress/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -129,10 +139,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/api/sentry'
+    | '/test/sentry'
+    | '/test/stream'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
-    | '/test'
     | '/egress'
   id:
     | '__root__'
@@ -142,10 +153,11 @@ export interface FileRouteTypes {
     | '/_public/home'
     | '/_public/login'
     | '/api/sentry'
+    | '/_private/test/sentry'
+    | '/_private/test/stream'
     | '/_public/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
-    | '/_private/test/'
     | '/_public/egress/'
   fileRoutesById: FileRoutesById
 }
@@ -202,11 +214,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSentryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_private/test/': {
-      id: '/_private/test/'
-      path: '/test'
-      fullPath: '/test/'
-      preLoaderRoute: typeof PrivateTestIndexRouteImport
+    '/_private/test/sentry': {
+      id: '/_private/test/sentry'
+      path: '/test/sentry'
+      fullPath: '/test/sentry'
+      preLoaderRoute: typeof PrivateTestSentryRouteImport
+      parentRoute: typeof PrivateRoute
+    }
+    '/_private/test/stream': {
+      id: '/_private/test/stream'
+      path: '/test/stream'
+      fullPath: '/test/stream'
+      preLoaderRoute: typeof PrivateTestStreamRouteImport
       parentRoute: typeof PrivateRoute
     }
     '/_public/egress/': {
@@ -241,11 +260,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface PrivateRouteChildren {
-  PrivateTestIndexRoute: typeof PrivateTestIndexRoute
+  PrivateTestSentryRoute: typeof PrivateTestSentryRoute
+  PrivateTestStreamRoute: typeof PrivateTestStreamRoute
 }
 
 const PrivateRouteChildren: PrivateRouteChildren = {
-  PrivateTestIndexRoute: PrivateTestIndexRoute,
+  PrivateTestSentryRoute: PrivateTestSentryRoute,
+  PrivateTestStreamRoute: PrivateTestStreamRoute,
 }
 
 const PrivateRouteWithChildren =
