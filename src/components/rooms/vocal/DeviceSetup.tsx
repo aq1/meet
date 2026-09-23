@@ -18,6 +18,8 @@ import {
 } from "#/components/ui/select";
 import { useControls } from "./controls/controls-state";
 
+const SYSTEM_DEFAULT = "default";
+
 const DeviceSelector = ({
   kind,
   value,
@@ -35,12 +37,12 @@ const DeviceSelector = ({
 
   const items = useMemo(
     () => [
-      { label: "System default", value: "" },
+      { label: "System default", value: SYSTEM_DEFAULT },
       ...devices
         .filter(
           (d) =>
             d.deviceId &&
-            d.deviceId !== "default" &&
+            d.deviceId !== SYSTEM_DEFAULT &&
             d.deviceId !== "communications",
         )
         .map((d, index) => ({
@@ -54,9 +56,9 @@ const DeviceSelector = ({
   return (
     <Select
       items={items}
-      value={value ?? ""}
+      value={value || SYSTEM_DEFAULT}
       onValueChange={(next) => {
-        onChange(next ?? "");
+        onChange(!next || next === SYSTEM_DEFAULT ? "" : next);
       }}
     >
       <SelectTrigger size="sm" aria-label={label}>
