@@ -1,12 +1,6 @@
 import { useMediaDeviceSelect } from "@livekit/components-react";
 import type * as React from "react";
-import {
-  MenuGroup,
-  MenuGroupLabel,
-  MenuItem,
-  MenuRadioGroup,
-  MenuRadioItem,
-} from "#/components/ui/menu";
+import { MenuGroup, MenuGroupLabel, MenuItem, MenuRadioGroup, MenuRadioItem } from "#/components/ui/menu";
 
 export const MediaDeviceSelect = ({
   kind,
@@ -17,8 +11,7 @@ export const MediaDeviceSelect = ({
   label: string;
   icon: React.ReactNode;
 }) => {
-  const { devices, activeDeviceId, setActiveMediaDevice } =
-    useMediaDeviceSelect({ kind, requestPermissions: true });
+  const { devices, activeDeviceId, setActiveMediaDevice } = useMediaDeviceSelect({ kind, requestPermissions: true });
 
   const items = devices
     .filter((d) => d.deviceId && d.deviceId !== "communications")

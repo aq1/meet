@@ -1,8 +1,4 @@
-import {
-  TrackRefContext,
-  useSpeakingParticipants,
-  useTracks,
-} from "@livekit/components-react";
+import { TrackRefContext, useSpeakingParticipants, useTracks } from "@livekit/components-react";
 import { ParticipantKind, Track } from "livekit-client";
 import { useEffect, useState } from "react";
 import { ParticipantTile } from "./ParticipantTile";
@@ -28,16 +24,10 @@ export const ActiveSpeakerPanel = () => {
     if (loudest) setActiveIdentity(loudest.identity);
   }, [speakers]);
 
-  const screenShareTrack = tracks.find(
-    (t) => t.source === Track.Source.ScreenShare,
-  );
+  const screenShareTrack = tracks.find((t) => t.source === Track.Source.ScreenShare);
   const activeTrack =
     screenShareTrack ??
-    tracks.find(
-      (t) =>
-        t.participant.identity === activeIdentity &&
-        t.source === Track.Source.Camera,
-    ) ??
+    tracks.find((t) => t.participant.identity === activeIdentity && t.source === Track.Source.Camera) ??
     tracks.find((t) => t.source === Track.Source.Camera) ??
     tracks[0];
 

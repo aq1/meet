@@ -1,21 +1,12 @@
 import { useTrackToggle } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  VideoIcon,
-  VideoOffIcon,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, VideoIcon, VideoOffIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Group, GroupSeparator } from "#/components/ui/group";
 import { Menu, MenuPopup, MenuTrigger } from "#/components/ui/menu";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
 
-const VideoMenu = ({
-  variant,
-}: {
-  variant: "outline" | "destructive-outline";
-}) => {
+const VideoMenu = ({ variant }: { variant: "outline" | "destructive-outline" }) => {
   return (
     <Menu>
       <MenuTrigger
@@ -33,11 +24,7 @@ const VideoMenu = ({
         <ChevronDownIcon className="hidden md:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
-        <MediaDeviceSelect
-          kind="videoinput"
-          label="Camera"
-          icon={<VideoIcon />}
-        />
+        <MediaDeviceSelect kind="videoinput" label="Camera" icon={<VideoIcon />} />
       </MenuPopup>
     </Menu>
   );

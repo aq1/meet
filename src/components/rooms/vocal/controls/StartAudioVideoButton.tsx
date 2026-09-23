@@ -1,8 +1,4 @@
-import {
-  useRoomContext,
-  useStartAudio,
-  useStartVideo,
-} from "@livekit/components-react";
+import { useRoomContext, useStartAudio, useStartVideo } from "@livekit/components-react";
 import { Button } from "#/components/ui/button";
 
 export const StartVideoButton = () => {
@@ -14,12 +10,7 @@ export const StartVideoButton = () => {
   }
 
   return (
-    <Button
-      {...mergedProps}
-      variant="default"
-      size="icon-xl"
-      title="Start audio"
-    >
+    <Button {...mergedProps} variant="default" size="icon-xl" title="Start audio">
       Allow incoming video
     </Button>
   );
@@ -34,12 +25,7 @@ export const StartAudioButton = () => {
   }
 
   return (
-    <Button
-      {...mergedProps}
-      variant="default"
-      size="icon-xl"
-      title="Start audio"
-    >
+    <Button {...mergedProps} variant="default" size="icon-xl" title="Start audio">
       Allow incoming audio
     </Button>
   );

@@ -60,15 +60,9 @@ export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
     [onRelease],
   );
 
-  const { send: liveKitSendPress } = useDataChannel(
-    "piano-press",
-    lkPressCallback,
-  );
+  const { send: liveKitSendPress } = useDataChannel("piano-press", lkPressCallback);
 
-  const { send: liveKitSendRelease } = useDataChannel(
-    "piano-release",
-    lkReleaseCallback,
-  );
+  const { send: liveKitSendRelease } = useDataChannel("piano-release", lkReleaseCallback);
 
   const onNote = useCallback(
     (kind: "press" | "release", midi: number) => {
@@ -83,13 +77,7 @@ export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
         });
       }
     },
-    [
-      localParticipant,
-      onPress,
-      onRelease,
-      liveKitSendPress,
-      liveKitSendRelease,
-    ],
+    [localParticipant, onPress, onRelease, liveKitSendPress, liveKitSendRelease],
   );
 
   useEffect(() => {

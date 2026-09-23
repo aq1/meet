@@ -1,9 +1,4 @@
-import {
-  GridLayout,
-  RoomAudioRenderer,
-  RoomContext,
-  useTracks,
-} from "@livekit/components-react";
+import { GridLayout, RoomAudioRenderer, RoomContext, useTracks } from "@livekit/components-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { type DisconnectReason, Room, RoomEvent, Track } from "livekit-client";
 import { useEffect, useState } from "react";
@@ -49,9 +44,7 @@ const PianoSound = () => {
 function EgressPage() {
   const { url, token } = Route.useSearch();
   const setControls = useControls((state) => state.set);
-  const [room] = useState(
-    () => new Room({ adaptiveStream: false, dynacast: false }),
-  );
+  const [room] = useState(() => new Room({ adaptiveStream: false, dynacast: false }));
 
   useEffect(() => {
     setControls("showChat", true);

@@ -1,21 +1,9 @@
 import { useMediaDevices, usePreviewTracks } from "@livekit/components-react";
 import { LocalVideoTrack } from "livekit-client";
-import {
-  MicIcon,
-  MicOffIcon,
-  VideoIcon,
-  VideoOffIcon,
-  VolumeIcon,
-} from "lucide-react";
+import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, VolumeIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "#/components/ui/button";
-import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
 import { useControls } from "./controls/controls-state";
 
 const DeviceSelector = ({
@@ -37,12 +25,7 @@ const DeviceSelector = ({
     () => [
       { label: "System default", value: "" },
       ...devices
-        .filter(
-          (d) =>
-            d.deviceId &&
-            d.deviceId !== "default" &&
-            d.deviceId !== "communications",
-        )
+        .filter((d) => d.deviceId && d.deviceId !== "default" && d.deviceId !== "communications")
         .map((d, index) => ({
           label: d.label || `${label} ${index + 1}`,
           value: d.deviceId,
@@ -104,9 +87,7 @@ export const DeviceSetup = () => {
     setMicEnabled(false);
   });
 
-  const videoTrack = tracks?.find(
-    (t): t is LocalVideoTrack => t instanceof LocalVideoTrack,
-  );
+  const videoTrack = tracks?.find((t): t is LocalVideoTrack => t instanceof LocalVideoTrack);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -123,13 +104,7 @@ export const DeviceSetup = () => {
     <div className="grid gap-3">
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted">
         {cameraEnabled && videoTrack ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            className="size-full -scale-x-100 object-cover"
-          />
+          <video ref={videoRef} autoPlay muted playsInline className="size-full -scale-x-100 object-cover" />
         ) : (
           <div className="flex size-full items-center justify-center">
             <VideoOffIcon className="size-8 text-muted-foreground" />
@@ -145,9 +120,7 @@ export const DeviceSetup = () => {
               setMicEnabled(!micEnabled);
             }}
             title={micEnabled ? "Turn off microphone" : "Turn on microphone"}
-            aria-label={
-              micEnabled ? "Turn off microphone" : "Turn on microphone"
-            }
+            aria-label={micEnabled ? "Turn off microphone" : "Turn on microphone"}
           >
             {micEnabled ? <MicIcon /> : <MicOffIcon />}
           </Button>
@@ -168,8 +141,7 @@ export const DeviceSetup = () => {
 
       {permissionError ? (
         <p className="text-destructive text-sm">
-          Camera/mic access blocked — check your browser permissions, then turn
-          them back on.
+          Camera/mic access blocked — check your browser permissions, then turn them back on.
         </p>
       ) : null}
 

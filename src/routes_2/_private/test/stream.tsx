@@ -7,8 +7,7 @@ type Message = {
   content: string;
 };
 
-const sleep = (ms: number) =>
-  new Promise<void>((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 const generateMessages = (): Message[] =>
   "The quick brown fox jumps over the lazy dog and keeps on running."
@@ -51,9 +50,7 @@ function StreamTestPage() {
         {chunks.join("")}
         {streaming && <span className="animate-pulse">▍</span>}
       </p>
-      <span className="text-muted-foreground text-xs">
-        {chunks.length} chunks received
-      </span>
+      <span className="text-muted-foreground text-xs">{chunks.length} chunks received</span>
     </div>
   );
 }

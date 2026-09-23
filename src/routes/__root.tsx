@@ -39,12 +39,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="relative">
-        <div className="relative isolate flex min-h-svh flex-col">
-          {children}
-        </div>
+        <div className="relative isolate flex min-h-svh flex-col">{children}</div>
         <Scripts />
       </body>
     </html>
   );
 }
-

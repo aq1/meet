@@ -24,11 +24,8 @@ type MessageT = {
 
 const Message = memo(({ message, previousMessage }: MessageT) => {
   const time = new Date(message.timestamp).toLocaleTimeString();
-  const prevTime = previousMessage
-    ? new Date(previousMessage.timestamp).toLocaleTimeString()
-    : null;
-  const fromSameParticipant =
-    previousMessage?.from?.identity === message.from?.identity;
+  const prevTime = previousMessage ? new Date(previousMessage.timestamp).toLocaleTimeString() : null;
+  const fromSameParticipant = previousMessage?.from?.identity === message.from?.identity;
 
   return (
     <motion.div
@@ -40,16 +37,12 @@ const Message = memo(({ message, previousMessage }: MessageT) => {
       className="flex items-center justify-between text-sm"
     >
       <div className="flex flex-col">
-        <span
-          className={message.from?.isLocal ? "text-green-500" : "text-blue-500"}
-        >
+        <span className={message.from?.isLocal ? "text-green-500" : "text-blue-500"}>
           {fromSameParticipant ? null : message.from?.identity}
         </span>
         <span>{message.message}</span>
       </div>
-      <span className="text-xs opacity-50">
-        {fromSameParticipant && time === prevTime ? null : time}
-      </span>
+      <span className="text-xs opacity-50">{fromSameParticipant && time === prevTime ? null : time}</span>
     </motion.div>
   );
 });
@@ -88,11 +81,7 @@ const ChatContent = ({ readonly = false }: ChatT) => {
           <div className="flex flex-col gap-1">
             <AnimatePresence initial={false}>
               {chatMessages.map((m, index) => (
-                <Message
-                  key={m.id}
-                  message={m}
-                  previousMessage={index ? chatMessages.at(index - 1) : null}
-                />
+                <Message key={m.id} message={m} previousMessage={index ? chatMessages.at(index - 1) : null} />
               ))}
             </AnimatePresence>
             <div ref={bottomRef} />
@@ -113,11 +102,7 @@ const ChatContent = ({ readonly = false }: ChatT) => {
                 }
               }}
             />
-            <Button
-              disabled={isSending}
-              onClick={sendDraft}
-              title="Send message"
-            >
+            <Button disabled={isSending} onClick={sendDraft} title="Send message">
               <Send />
             </Button>
           </div>
@@ -143,10 +128,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
           >
             <div className="flex items-center justify-between">
               <DialogTitle>Chat</DialogTitle>
-              <DialogClose
-                aria-label="Close"
-                render={<Button size="icon" variant="ghost" title="Close" />}
-              >
+              <DialogClose aria-label="Close" render={<Button size="icon" variant="ghost" title="Close" />}>
                 <XIcon />
               </DialogClose>
             </div>
@@ -160,12 +142,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
   }
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 basis-1/4 justify-end gap-4",
-        !showChat && "hidden",
-      )}
-    >
+    <div className={cn("flex min-h-0 basis-1/4 justify-end gap-4", !showChat && "hidden")}>
       <div className="flex size-full min-h-0 flex-col px-4">
         <ChatContent readonly={readonly} />
       </div>

@@ -3,19 +3,8 @@ import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldLabel } from "#/components/ui/field";
 import { Fieldset, FieldsetLegend } from "#/components/ui/fieldset";
-import {
-  Popover,
-  PopoverPopup,
-  PopoverTitle,
-  PopoverTrigger,
-} from "#/components/ui/popover";
-import {
-  Select,
-  SelectItem,
-  SelectPopup,
-  SelectTrigger,
-  SelectValue,
-} from "#/components/ui/select";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "#/components/ui/popover";
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
 import { Separator } from "#/components/ui/separator";
 import { Slider } from "#/components/ui/slider";
 import { Switch } from "#/components/ui/switch";
@@ -30,12 +19,7 @@ const PianoVolumeSlider = () => {
 
   return (
     <Field>
-      <Slider
-        value={volume}
-        onValueChange={(next) =>
-          setVolume(Array.isArray(next) ? next[0] : next)
-        }
-      >
+      <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <PianoIcon />
           Piano
@@ -51,12 +35,7 @@ const ParticipantsVolumeSlider = () => {
 
   return (
     <Field>
-      <Slider
-        value={volume}
-        onValueChange={(next) =>
-          setVolume(Array.isArray(next) ? next[0] : next)
-        }
-      >
+      <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <UsersIcon />
           Participants
@@ -76,10 +55,7 @@ const PianoToggle = () => {
         <PianoIcon />
         Show piano
       </FieldLabel>
-      <Switch
-        checked={showKeyboard}
-        onCheckedChange={() => toggle("showKeyboard")}
-      />
+      <Switch checked={showKeyboard} onCheckedChange={() => toggle("showKeyboard")} />
     </Field>
   );
 };
@@ -138,15 +114,7 @@ export const SettingsMenu = () => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button
-            variant={open ? "default" : "outline"}
-            size="icon-xl"
-            title="Settings"
-          />
-        }
-      >
+      <PopoverTrigger render={<Button variant={open ? "default" : "outline"} size="icon-xl" title="Settings" />}>
         <Settings />
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">

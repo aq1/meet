@@ -37,8 +37,7 @@ export const PreConnectDialog = ({ open, onSubmit }: PreConnectDialogProps) => {
         <DialogHeader>
           <DialogTitle>Join room</DialogTitle>
           <DialogDescription>
-            Check your camera and microphone, then choose a name to display to
-            others.
+            Check your camera and microphone, then choose a name to display to others.
           </DialogDescription>
         </DialogHeader>
         <Form className="contents" onSubmit={handleSubmit}>

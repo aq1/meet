@@ -1,25 +1,13 @@
-import {
-  createFileRoute,
-  redirect,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "#/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardPanel,
-  CardTitle,
-} from "#/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from "#/components/ui/card";
 import { Field } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { authClient } from "#/lib/auth/client";
-import { getSession } from "#/lib/auth/session";
-import { createRoom as createRoomServerFn } from "#/lib/rooms";
+import { getSession } from "#/lib/auth/get-session";
+import { createRoomServerFn } from "#/lib/rooms/create-room-server-fn";
 import { useUser } from "#/lib/user-store";
 
 export const Route = createFileRoute("/")({
@@ -69,10 +57,7 @@ function Welcome() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Welcome{username ? `, ${username}` : ""}</CardTitle>
-          <CardDescription>
-            Signed in as {user.email}. Create a new room or join an existing
-            one.
-          </CardDescription>
+          <CardDescription>Signed in as {user.email}. Create a new room or join an existing one.</CardDescription>
         </CardHeader>
         <CardPanel className="grid gap-6">
           <Button onClick={createRoom}>Create room</Button>

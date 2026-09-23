@@ -11,13 +11,7 @@ type SendEmailT = {
   idempotencyKey?: string;
 };
 
-export const sendEmail = async ({
-  to,
-  subject,
-  html,
-  text,
-  idempotencyKey,
-}: SendEmailT) => {
+export const sendEmail = async ({ to, subject, html, text, idempotencyKey }: SendEmailT) => {
   const { data, error } = await resend.emails.send(
     { from: env.EMAIL_FROM, to, subject, html, text },
     { idempotencyKey },

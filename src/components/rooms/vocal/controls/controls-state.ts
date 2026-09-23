@@ -44,8 +44,7 @@ export const useControls = create<ControlsState>()(
       name: "controls",
       storage: createJSONStorage(() => localStorage),
       version: 1,
-      partialize: ({ cameraDeviceId, micDeviceId, speakerDeviceId, ...rest }) =>
-        rest,
+      partialize: ({ cameraDeviceId, micDeviceId, speakerDeviceId, ...rest }) => rest,
     },
   ),
 );

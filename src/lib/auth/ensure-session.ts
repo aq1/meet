@@ -1,10 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "#/lib/auth";
-
-export const getSession = createServerFn({ method: "GET" }).handler(
-  async () => await auth.api.getSession({ headers: getRequestHeaders() }),
-)
+import { auth } from "#/lib/auth/server";
 
 export const ensureSession = createServerFn({ method: "GET" }).handler(async () => {
   const headers = getRequestHeaders();
@@ -13,4 +9,4 @@ export const ensureSession = createServerFn({ method: "GET" }).handler(async () 
     throw new Error("Unauthorized");
   }
   return session;
-})
+});

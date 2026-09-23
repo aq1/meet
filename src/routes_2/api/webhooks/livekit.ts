@@ -3,16 +3,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { s3 } from "bun";
 import type { WebhookEventNames } from "livekit-server-sdk";
 import { env } from "#/env";
-import { getRoom, updateRoom } from "#/lib/db/rooms";
-import { sendEmail } from "#/lib/email";
-import {
-  receiveLivekitWebhook,
-  startRoomRecording,
-  stopRoomRecording,
-} from "#/lib/livekit";
-import { notifyAdmins } from "#/lib/notifications";
+import { getRoom } from "#/lib/db/rooms/get-room";
+import { updateRoom } from "#/lib/db/rooms/update-room";
+import { sendEmail } from "#/lib/email/send-email";
+import { receiveLivekitWebhook } from "#/lib/livekit/receive-livekit-webhook";
+import { startRoomRecording } from "#/lib/livekit/start-room-recording";
+import { stopRoomRecording } from "#/lib/livekit/stop-room-recording";
+import { notifyAdmins } from "#/lib/notifications/notify-admins";
 
-const ignore = async (_: WebhookEvent) => { };
+const ignore = async (_: WebhookEvent) => {};
 
 const notifyOnEvent = async (event: WebhookEvent) => {
   const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
@@ -22,10 +21,7 @@ const notifyOnEvent = async (event: WebhookEvent) => {
 const EGRESS_DOWNLOAD_URL_TTL = 7 * 24 * 60 * 60;
 
 const egressObjectKey = (location: string) => {
-  const path = decodeURIComponent(new URL(location).pathname).replace(
-    /^\/+/,
-    "",
-  );
+  const path = decodeURIComponent(new URL(location).pathname).replace(/^\/+/, "");
   const bucketPrefix = `${env.S3_BUCKET}/`;
   return path.startsWith(bucketPrefix) ? path.slice(bucketPrefix.length) : path;
 };
@@ -67,10 +63,7 @@ const onEgressEndedEvent = async (event: WebhookEvent) => {
   if (info.status !== EgressStatus.EGRESS_COMPLETE) {
     return;
   }
-  const egressUrl =
-    info.fileResults[0]?.location ??
-    info.segmentResults[0]?.playlistLocation ??
-    "";
+  const egressUrl = info.fileResults[0]?.location ?? info.segmentResults[0]?.playlistLocation ?? "";
 
   const egressDownloadUrl = presignEgressFile(egressUrl);
   await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);

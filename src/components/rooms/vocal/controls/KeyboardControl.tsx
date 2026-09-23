@@ -1,13 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon, PianoIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Group, GroupSeparator } from "#/components/ui/group";
-import {
-  Menu,
-  MenuPopup,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuTrigger,
-} from "#/components/ui/menu";
+import { Menu, MenuPopup, MenuRadioGroup, MenuRadioItem, MenuTrigger } from "#/components/ui/menu";
 import { useMidiStore } from "../piano/midi";
 import { useControls } from "./controls-state";
 
@@ -33,10 +27,7 @@ const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
         <ChevronDownIcon className="hidden lg:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
-        <MenuRadioGroup
-          value={selectedInput?.id}
-          onValueChange={setSelectedInput}
-        >
+        <MenuRadioGroup value={selectedInput?.id} onValueChange={setSelectedInput}>
           {inputs.map((i) => (
             <MenuRadioItem closeOnClick key={i.id} value={i.id}>
               {i.name}

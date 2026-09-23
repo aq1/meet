@@ -3,7 +3,7 @@ import { Button } from "#/components/ui/button";
 import { Field } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
-import { getSession } from "#/lib/auth/session";
+import { getSession } from "#/lib/auth/get-session";
 
 export const Route = createFileRoute("/_public/home")({
   loader: async () => {
@@ -29,12 +29,8 @@ function HomePage() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-8 p-6 text-center">
       <div className="grid gap-3">
-        <h1 className="font-heading font-semibold text-4xl tracking-tight sm:text-5xl">
-          Vocal Room
-        </h1>
-        <p className="max-w-md text-balance text-muted-foreground">
-          Sing, play and rehearse together in real time.
-        </p>
+        <h1 className="font-heading font-semibold text-4xl tracking-tight sm:text-5xl">Vocal Room</h1>
+        <p className="max-w-md text-balance text-muted-foreground">Sing, play and rehearse together in real time.</p>
       </div>
       <div className="grid w-full max-w-xs gap-4">
         <Form className="grid gap-2" onSubmit={joinRoom}>

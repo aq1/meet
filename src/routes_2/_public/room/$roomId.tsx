@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { VocalRoom } from "#/components/rooms/vocal/Room";
-import { getRoom } from "#/lib/rooms";
+import { getRoomServerFn as getRoom } from "#/lib/rooms/get-room-server-fn";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
   loader: async ({ params }) => {

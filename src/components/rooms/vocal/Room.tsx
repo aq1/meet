@@ -4,8 +4,8 @@ import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { Chat } from "#/components/chat/Chat";
 import { useIsTablet } from "#/hooks/use-media-query";
-import { roomExists } from "#/lib/db/rooms";
-import { grantLivekitToken } from "#/lib/livekit";
+import { roomExists } from "#/lib/db/rooms/room-exists";
+import { grantLivekitToken } from "#/lib/livekit/grant-livekit-token";
 import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
@@ -52,13 +52,7 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
       data: { username, roomId },
     });
     await room.connect(wss, token);
-    const {
-      cameraEnabled,
-      micEnabled,
-      cameraDeviceId,
-      micDeviceId,
-      speakerDeviceId,
-    } = useControls.getState();
+    const { cameraEnabled, micEnabled, cameraDeviceId, micDeviceId, speakerDeviceId } = useControls.getState();
     try {
       if (micEnabled) {
         await room.localParticipant.setMicrophoneEnabled(true, {

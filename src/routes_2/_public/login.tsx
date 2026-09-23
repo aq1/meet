@@ -2,20 +2,13 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { Button } from "#/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardPanel,
-  CardTitle,
-} from "#/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from "#/components/ui/card";
 import { Field, FieldError, FieldLabel } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { OTPField, OTPFieldInput } from "#/components/ui/otp-field";
 import { authClient } from "#/lib/auth/client";
-import { getSession } from "#/lib/auth/session";
+import { getSession } from "#/lib/auth/get-session";
 
 const OTP_LENGTH = 6;
 const OTP_SLOTS = ["a", "b", "c", "d", "e", "f"];
@@ -86,9 +79,7 @@ function LoginPage() {
           <Form className="contents" onSubmit={sendCode}>
             <CardHeader>
               <CardTitle>Sign in</CardTitle>
-              <CardDescription>
-                Enter your email and we will send you a one-time code.
-              </CardDescription>
+              <CardDescription>Enter your email and we will send you a one-time code.</CardDescription>
             </CardHeader>
             <CardPanel>
               <Field>
@@ -123,14 +114,7 @@ function LoginPage() {
             <CardPanel>
               <Field>
                 <FieldLabel>Code</FieldLabel>
-                <OTPField
-                  autoFocus
-                  length={OTP_LENGTH}
-                  size="lg"
-                  value={otp}
-                  onValueChange={setOtp}
-                  autoSubmit
-                >
+                <OTPField autoFocus length={OTP_LENGTH} size="lg" value={otp} onValueChange={setOtp} autoSubmit>
                   {OTP_SLOTS.map((slot) => (
                     <OTPFieldInput key={slot} />
                   ))}
@@ -139,11 +123,7 @@ function LoginPage() {
               </Field>
             </CardPanel>
             <CardFooter className="grid gap-2">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={pending || otp.length !== OTP_LENGTH}
-              >
+              <Button type="submit" className="w-full" disabled={pending || otp.length !== OTP_LENGTH}>
                 Sign in
               </Button>
               <Button

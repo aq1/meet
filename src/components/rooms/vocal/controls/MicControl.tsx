@@ -1,27 +1,12 @@
 import { useTrackToggle } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  MicIcon,
-  MicOffIcon,
-  VolumeIcon,
-} from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, MicIcon, MicOffIcon, VolumeIcon } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Group, GroupSeparator } from "#/components/ui/group";
-import {
-  Menu,
-  MenuPopup,
-  MenuSeparator,
-  MenuTrigger,
-} from "#/components/ui/menu";
+import { Menu, MenuPopup, MenuSeparator, MenuTrigger } from "#/components/ui/menu";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
 
-const MicMenu = ({
-  variant,
-}: {
-  variant: "outline" | "destructive-outline";
-}) => {
+const MicMenu = ({ variant }: { variant: "outline" | "destructive-outline" }) => {
   return (
     <Menu>
       <MenuTrigger
@@ -39,17 +24,9 @@ const MicMenu = ({
         <ChevronDownIcon className="hidden lg:inline" aria-hidden="true" />
       </MenuTrigger>
       <MenuPopup side="top" sideOffset={14} align="end" className="w-72">
-        <MediaDeviceSelect
-          kind="audioinput"
-          label="Microphone"
-          icon={<MicIcon />}
-        />
+        <MediaDeviceSelect kind="audioinput" label="Microphone" icon={<MicIcon />} />
         <MenuSeparator />
-        <MediaDeviceSelect
-          kind="audiooutput"
-          label="Speaker"
-          icon={<VolumeIcon />}
-        />
+        <MediaDeviceSelect kind="audiooutput" label="Speaker" icon={<VolumeIcon />} />
       </MenuPopup>
     </Menu>
   );

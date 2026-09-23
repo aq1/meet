@@ -26,9 +26,7 @@ const loadEnv = async (path: string) => {
     return;
   }
   for (const line of (await file.text()).split("\n")) {
-    const match = line.match(
-      /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/,
-    );
+    const match = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
     if (!match) {
       continue;
     }
@@ -97,9 +95,7 @@ const deploy = async () => {
   const commit = (await $`git rev-parse --short HEAD`.text()).trim();
 
   const stateFile = Bun.file(STATE_FILE);
-  const deployed = (await stateFile.exists())
-    ? (await stateFile.text()).trim()
-    : "";
+  const deployed = (await stateFile.exists()) ? (await stateFile.text()).trim() : "";
 
   if (after === deployed) {
     log(`Already built and deployed (${commit}). Nothing to do.`);
@@ -122,9 +118,7 @@ const deploy = async () => {
 
   const subject = (await $`git log -1 --pretty=%s`.text()).trim();
   log(`Done. ${CONTAINER} is running.`);
-  await notify(
-    `✅ meet updated and restarted on ${branch} @ ${commit}: ${subject}`,
-  );
+  await notify(`✅ meet updated and restarted on ${branch} @ ${commit}: ${subject}`);
 };
 
 if (!acquireLock()) {
@@ -140,11 +134,7 @@ try {
   const message = error instanceof Error ? error.message : String(error);
   console.error(error);
   const tail = await tailLog();
-  const details = tail
-    ? `\n\nLast lines of ${LOG_FILE}:\n${tail}`
-    : " See server logs.";
-  await notify(
-    `❌ meet update failed at "${currentStep}": ${message}.${details}`,
-  );
+  const details = tail ? `\n\nLast lines of ${LOG_FILE}:\n${tail}` : " See server logs.";
+  await notify(`❌ meet update failed at "${currentStep}": ${message}.${details}`);
   process.exit(1);
 }

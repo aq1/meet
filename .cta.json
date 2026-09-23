@@ -12,12 +12,5 @@
   "routerOnly": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "biome",
-    "nitro",
-    "compiler",
-    "form",
-    "t3env",
-    "better-auth"
-  ]
+  "chosenAddOns": ["biome", "nitro", "compiler", "form", "t3env", "better-auth"]
 }

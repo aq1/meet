@@ -23,11 +23,7 @@ export const LeaveButton = () => {
     <AlertDialog>
       <AlertDialogTrigger
         render={
-          <Button
-            variant="destructive-outline"
-            size={isTablet ? "icon-xl" : "xl"}
-            title="Leave"
-          >
+          <Button variant="destructive-outline" size={isTablet ? "icon-xl" : "xl"} title="Leave">
             <PhoneOff />
             <span className="hidden lg:inline">Leave</span>
           </Button>
@@ -41,9 +37,7 @@ export const LeaveButton = () => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogClose
-            render={<Button variant="outline">Cancel</Button>}
-          />
+          <AlertDialogClose render={<Button variant="outline">Cancel</Button>} />
           <AlertDialogClose
             render={<Button variant="destructive" />}
             onClick={async () => {
