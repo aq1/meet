@@ -17,6 +17,10 @@ const config = defineConfig({
   environments: {
     client: { build: { sourcemap: sentryUpload ? "hidden" : false } },
   },
+  optimizeDeps: {
+    // "bun" is a runtime builtin, so the dev dependency scanner should not try to resolve it
+    exclude: ["bun"],
+  },
   plugins: [
     devtools(),
     nitro({ preset: "bun", rollupConfig: { external: [/^@sentry\//] } }),

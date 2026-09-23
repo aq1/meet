@@ -4,11 +4,11 @@ import { auth } from "#/lib/auth";
 import { db } from "#/lib/db";
 import { roomExists } from "#/lib/db/rooms";
 
-export const getRoom = createServerFn({ method: "GET" })
+export const getRoomServerFn = createServerFn({ method: "GET" })
   .validator((roomId: string) => roomId)
   .handler(async ({ data }) => ({ exists: await roomExists(data) }));
 
-export const createRoom = createServerFn({ method: "POST" }).handler(
+export const createRoomServerFn = createServerFn({ method: "POST" }).handler(
   async () => {
     const session = await auth.api.getSession({ headers: getRequestHeaders() });
     if (!session) {
