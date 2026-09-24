@@ -14,6 +14,7 @@ import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dash
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
+import { Route as ProtectedDebugSentryRouteImport } from './routes/_protected/debug/sentry'
 import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -43,6 +44,11 @@ const ApiSentryRoute = ApiSentryRouteImport.update({
   path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedDebugSentryRoute = ProtectedDebugSentryRouteImport.update({
+  id: '/debug/sentry',
+  path: '/debug/sentry',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
 const PublicEgressIndexRoute = PublicEgressIndexRouteImport.update({
   id: '/_public/egress/',
   path: '/egress/',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
+  '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
+  '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/_public/login': typeof PublicLoginRoute
   '/api/sentry': typeof ApiSentryRoute
   '/_public/': typeof PublicIndexRoute
+  '/_protected/debug/sentry': typeof ProtectedDebugSentryRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/api/sentry'
+    | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/api/sentry'
+    | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/_public/login'
     | '/api/sentry'
     | '/_public/'
+    | '/_protected/debug/sentry'
     | '/_public/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
@@ -178,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSentryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/debug/sentry': {
+      id: '/_protected/debug/sentry'
+      path: '/debug/sentry'
+      fullPath: '/debug/sentry'
+      preLoaderRoute: typeof ProtectedDebugSentryRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_public/egress/': {
       id: '/_public/egress/'
       path: '/egress'
@@ -211,10 +230,12 @@ declare module '@tanstack/react-router' {
 
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedDebugSentryRoute: typeof ProtectedDebugSentryRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedDebugSentryRoute: ProtectedDebugSentryRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
