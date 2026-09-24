@@ -2,7 +2,6 @@ import { EgressStatus, type WebhookEvent } from "@livekit/protocol";
 import { getRoom } from "#/lib/db/rooms/get-room";
 import { updateRoom } from "#/lib/db/rooms/update-room";
 import { sendEmail } from "#/lib/email/send-email";
-import { notifyAdmins } from "#/lib/notifications/notify-admins";
 import { presignS3Download } from "../s3/persign-download";
 
 const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
@@ -37,7 +36,4 @@ export const sendEgressResults = async (event: WebhookEvent) => {
   await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
 
   await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
-  await notifyAdmins({
-    text: `${event.room.name} ${event.event}`,
-  });
 };
