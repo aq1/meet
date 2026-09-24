@@ -6,7 +6,7 @@ import { VolumeIcon, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon } from "lucide
 import { Button } from "#/components/ui/button";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
 import { Spinner } from "#/components/ui/spinner";
-import { Field, FieldLabel } from "#/components/ui/field";
+import { Field } from "#/components/ui/field";
 import { Input } from "#/components/ui/input";
 import { useUser } from "#/lib/user-store";
 import { Form } from "#/components/ui/form";
@@ -112,10 +112,8 @@ export function DeviceSetup({ onJoin }: DeviceSetupT) {
   });
 
   useEffect(() => {
-    if (tracks) {
-      setState("idle");
-    }
-  }, [tracks]);
+    setState("idle");
+  }, []);
 
   const videoTrack = tracks?.find((t): t is LocalVideoTrack => t instanceof LocalVideoTrack);
 
@@ -222,7 +220,7 @@ export function DeviceSetup({ onJoin }: DeviceSetupT) {
               />
             </Field>
             <Button type="submit" className="px-10" disabled={state !== "idle"}>
-              {state === "joining" ? <Spinner /> : "Join"}
+              {state !== "idle" ? <Spinner /> : "Join"}
             </Button>
           </Form>
         </div>
