@@ -13,7 +13,10 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as ApiSentryRouteImport } from './routes/api/sentry'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
@@ -34,9 +37,24 @@ const PublicLoginRoute = PublicLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSentryRoute = ApiSentryRouteImport.update({
+  id: '/api/sentry',
+  path: '/api/sentry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRoomRoomIdRoute = PublicRoomRoomIdRouteImport.update({
   id: '/_public/room/$roomId',
   path: '/room/$roomId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
+  id: '/api/webhooks/livekit',
+  path: '/api/webhooks/livekit',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -44,41 +62,70 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_public/login': typeof PublicLoginRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/_public/': typeof PublicIndexRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/room/$roomId'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/api/sentry'
+    | '/room/$roomId'
+    | '/api/auth/$'
+    | '/api/webhooks/livekit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/room/$roomId'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/api/sentry'
+    | '/room/$roomId'
+    | '/api/auth/$'
+    | '/api/webhooks/livekit'
   id:
     | '__root__'
     | '/_protected'
     | '/_protected/dashboard'
     | '/_public/login'
+    | '/api/sentry'
     | '/_public/'
     | '/_public/room/$roomId'
+    | '/api/auth/$'
+    | '/api/webhooks/livekit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   PublicLoginRoute: typeof PublicLoginRoute
+  ApiSentryRoute: typeof ApiSentryRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicRoomRoomIdRoute: typeof PublicRoomRoomIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -111,11 +158,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sentry': {
+      id: '/api/sentry'
+      path: '/api/sentry'
+      fullPath: '/api/sentry'
+      preLoaderRoute: typeof ApiSentryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/room/$roomId': {
       id: '/_public/room/$roomId'
       path: '/room/$roomId'
       fullPath: '/room/$roomId'
       preLoaderRoute: typeof PublicRoomRoomIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/livekit': {
+      id: '/api/webhooks/livekit'
+      path: '/api/webhooks/livekit'
+      fullPath: '/api/webhooks/livekit'
+      preLoaderRoute: typeof ApiWebhooksLivekitRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -136,8 +204,11 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   PublicLoginRoute: PublicLoginRoute,
+  ApiSentryRoute: ApiSentryRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicRoomRoomIdRoute: PublicRoomRoomIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

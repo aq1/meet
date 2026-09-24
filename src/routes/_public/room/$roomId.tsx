@@ -8,7 +8,7 @@ import { useUser } from "#/lib/user-store";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const grantToken = createServerFn({ method: "POST" })
   .validator((data: { username: string; roomId: string }) => data)
@@ -27,7 +27,7 @@ function RouteComponent() {
   const { roomId } = Route.useParams();
 
   const username = useUser((state) => state.username);
-  const [connected, setConnected] = useState(false);
+  const [joined, setJoined] = useState(false);
   const grant = useServerFn(grantToken);
   const cameraEnabled = useControls((s) => s.cameraEnabled);
   const micEnabled = useControls((s) => s.micEnabled);
@@ -40,13 +40,32 @@ function RouteComponent() {
       new Room({
         adaptiveStream: true,
         dynacast: true,
+        disconnectOnPageLeave: false,
         publishDefaults: {
           videoCodec: "vp8",
         },
       }),
   );
 
-  const connect = async () => {
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+
+    const handlePageHide = () => {
+      room.disconnect();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, [room]);
+
+  const join = async () => {
     if (!room || !username) {
       return;
     }
@@ -71,12 +90,10 @@ function RouteComponent() {
         await room.switchActiveDevice("audiooutput", speakerDeviceId);
       }
     } catch {}
-    setConnected(true);
+    setJoined(true);
   };
 
   return (
-    <RoomContext.Provider value={room}>
-      {connected ? <VocalRoom room={room} /> : <DeviceSetup onJoin={connect} />}
-    </RoomContext.Provider>
+    <RoomContext.Provider value={room}>{joined ? <VocalRoom /> : <DeviceSetup onJoin={join} />}</RoomContext.Provider>
   );
 }
