@@ -14,6 +14,7 @@ import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dash
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
+import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
@@ -42,6 +43,11 @@ const ApiSentryRoute = ApiSentryRouteImport.update({
   path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicEgressIndexRoute = PublicEgressIndexRouteImport.update({
+  id: '/_public/egress/',
+  path: '/egress/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRoomRoomIdRoute = PublicRoomRoomIdRouteImport.update({
   id: '/_public/room/$roomId',
   path: '/room/$roomId',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/egress': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/_public/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/egress/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/egress'
   id:
     | '__root__'
     | '/_protected'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/_public/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/_public/egress/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -126,6 +138,7 @@ export interface RootRouteChildren {
   PublicRoomRoomIdRoute: typeof PublicRoomRoomIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
+  PublicEgressIndexRoute: typeof PublicEgressIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/api/sentry'
       fullPath: '/api/sentry'
       preLoaderRoute: typeof ApiSentryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/egress/': {
+      id: '/_public/egress/'
+      path: '/egress'
+      fullPath: '/egress/'
+      preLoaderRoute: typeof PublicEgressIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/room/$roomId': {
@@ -209,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRoomRoomIdRoute: PublicRoomRoomIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
+  PublicEgressIndexRoute: PublicEgressIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

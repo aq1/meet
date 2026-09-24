@@ -13,12 +13,15 @@ import {
 } from "#/components/ui/alert-dialog";
 import { Button } from "#/components/ui/button";
 import { useIsTablet } from "#/hooks/use-media-query";
+import { authClient } from "#/lib/auth/client";
 
 export const LeaveButton = () => {
   const isTablet = useIsTablet();
   const room = useRoomContext();
   const navigate = useNavigate();
 
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   return (
     <AlertDialog>
       <AlertDialogTrigger
@@ -42,7 +45,7 @@ export const LeaveButton = () => {
             render={<Button variant="destructive" />}
             onClick={async () => {
               await room.disconnect();
-              navigate({ to: "/" });
+              navigate({ to: user ? "/dashboard" : "/" });
             }}
           >
             Leave
