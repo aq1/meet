@@ -1,0 +1,173 @@
+import { useMediaDevices, usePreviewTracks } from "@livekit/components-react";
+import { LocalVideoTrack } from "livekit-client";
+import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, VolumeIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "#/components/ui/button";
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
+import { useControls } from "./controls/controls-state";
+
+const DeviceSelector = ({
+  kind,
+  value,
+  onChange,
+  icon,
+  label,
+}: {
+  kind: MediaDeviceKind;
+  value: string | undefined;
+  onChange: (deviceId: string) => void;
+  icon: React.ReactNode;
+  label: string;
+}) => {
+  const devices = useMediaDevices({ kind });
+
+  const items = useMemo(
+    () => [
+      { label: "System default", value: "" },
+      ...devices
+        .filter((d) => d.deviceId && d.deviceId !== "default" && d.deviceId !== "communications")
+        .map((d, index) => ({
+          label: d.label || `${label} ${index + 1}`,
+          value: d.deviceId,
+        })),
+    ],
+    [devices, label],
+  );
+
+  return (
+    <Select
+      items={items}
+      value={value ?? ""}
+      onValueChange={(next) => {
+        onChange(next ?? "");
+      }}
+    >
+      <SelectTrigger size="sm" aria-label={label}>
+        <span className="flex min-w-0 items-center gap-2 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:opacity-80">
+          {icon}
+          <SelectValue placeholder={`No ${label.toLowerCase()} detected`} />
+        </span>
+      </SelectTrigger>
+      <SelectPopup>
+        {items.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectPopup>
+    </Select>
+  );
+};
+
+export const DeviceSetup = () => {
+  const cameraEnabled = useControls((s) => s.cameraEnabled);
+  const micEnabled = useControls((s) => s.micEnabled);
+  const cameraDeviceId = useControls((s) => s.cameraDeviceId);
+  const micDeviceId = useControls((s) => s.micDeviceId);
+  const speakerDeviceId = useControls((s) => s.speakerDeviceId);
+  const setCameraEnabled = useControls((s) => s.setCameraEnabled);
+  const setMicEnabled = useControls((s) => s.setMicEnabled);
+  const setCameraDeviceId = useControls((s) => s.setCameraDeviceId);
+  const setMicDeviceId = useControls((s) => s.setMicDeviceId);
+  const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
+
+  const [permissionError, setPermissionError] = useState(false);
+
+  const previewOptions = useMemo(
+    () => ({
+      audio: micEnabled ? { deviceId: micDeviceId || undefined } : false,
+      video: cameraEnabled ? { deviceId: cameraDeviceId || undefined } : false,
+    }),
+    [micEnabled, cameraEnabled, micDeviceId, cameraDeviceId],
+  );
+
+  const tracks = usePreviewTracks(previewOptions, () => {
+    setPermissionError(true);
+    setCameraEnabled(false);
+    setMicEnabled(false);
+  });
+
+  const videoTrack = tracks?.find((t): t is LocalVideoTrack => t instanceof LocalVideoTrack);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !videoTrack) return;
+    videoTrack.attach(el);
+    return () => {
+      videoTrack.detach(el);
+    };
+  }, [videoTrack]);
+
+  return (
+    <div className="grid gap-3">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-muted">
+        {cameraEnabled && videoTrack ? (
+          <video ref={videoRef} autoPlay muted playsInline className="size-full -scale-x-100 object-cover" />
+        ) : (
+          <div className="flex size-full items-center justify-center">
+            <VideoOffIcon className="size-8 text-muted-foreground" />
+          </div>
+        )}
+
+        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-3 bg-linear-to-t from-black/40 to-transparent p-3">
+          <Button
+            variant={micEnabled ? "outline" : "destructive-outline"}
+            size="icon-lg"
+            onClick={() => {
+              setPermissionError(false);
+              setMicEnabled(!micEnabled);
+            }}
+            title={micEnabled ? "Turn off microphone" : "Turn on microphone"}
+            aria-label={micEnabled ? "Turn off microphone" : "Turn on microphone"}
+          >
+            {micEnabled ? <MicIcon /> : <MicOffIcon />}
+          </Button>
+          <Button
+            variant={cameraEnabled ? "outline" : "destructive-outline"}
+            size="icon-lg"
+            onClick={() => {
+              setPermissionError(false);
+              setCameraEnabled(!cameraEnabled);
+            }}
+            title={cameraEnabled ? "Turn off camera" : "Turn on camera"}
+            aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
+          >
+            {cameraEnabled ? <VideoIcon /> : <VideoOffIcon />}
+          </Button>
+        </div>
+      </div>
+
+      {permissionError ? (
+        <p className="text-destructive text-sm">
+          Camera/mic access blocked — check your browser permissions, then turn them back on.
+        </p>
+      ) : null}
+
+      <div className="grid gap-2">
+        <DeviceSelector
+          kind="audioinput"
+          value={micDeviceId}
+          onChange={setMicDeviceId}
+          icon={<MicIcon />}
+          label="Microphone"
+        />
+        <DeviceSelector
+          kind="videoinput"
+          value={cameraDeviceId}
+          onChange={setCameraDeviceId}
+          icon={<VideoIcon />}
+          label="Camera"
+        />
+        <DeviceSelector
+          kind="audiooutput"
+          value={speakerDeviceId}
+          onChange={setSpeakerDeviceId}
+          icon={<VolumeIcon />}
+          label="Speaker"
+        />
+      </div>
+    </div>
+  );
+};

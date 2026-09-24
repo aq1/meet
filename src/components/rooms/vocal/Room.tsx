@@ -1,74 +1,22 @@
 import { RoomContext } from "@livekit/components-react";
-import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Chat } from "#/components/chat/Chat";
 import { useIsTablet } from "#/hooks/use-media-query";
-import { roomExists } from "#/lib/db/rooms/room-exists";
-import { grantLivekitToken } from "#/lib/livekit/grant-livekit-token";
-import { useUser } from "#/lib/user-store";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
-import { PreConnectDialog } from "./PreConnectDialog";
 import { Piano } from "./piano/Piano";
 
-const grantToken = createServerFn({ method: "POST" })
-  .validator((data: { username: string; roomId: string }) => data)
-  .handler(async ({ data }) => {
-    if (!(await roomExists(data.roomId))) {
-      throw new Response("Room not found", { status: 404 });
-    }
-    return await grantLivekitToken(data.username, data.roomId);
-  });
+type VocalRoom = {
+  room: Room;
+};
 
-export const VocalRoom = ({ roomId }: { roomId: string }) => {
-  const [isReady, setIsReady] = useState(false);
-
-  const [room] = useState(
-    () =>
-      new Room({
-        adaptiveStream: true,
-        dynacast: true,
-        publishDefaults: {
-          videoCodec: "vp8",
-        },
-      }),
-  );
+export const VocalRoom = ({ room }: VocalRoom) => {
   const showKeyboard = useControls((state) => state.showKeyboard);
   const isTablet = useIsTablet();
   const setControls = useControls((state) => state.set);
-  const grant = useServerFn(grantToken);
-  const username = useUser((state) => state.username);
-
-  const connect = async () => {
-    if (!room || !username) {
-      return;
-    }
-    room.startAudio();
-    setIsReady(true);
-    const { wss, token } = await grant({
-      data: { username, roomId },
-    });
-    await room.connect(wss, token);
-    const { cameraEnabled, micEnabled, cameraDeviceId, micDeviceId, speakerDeviceId } = useControls.getState();
-    try {
-      if (micEnabled) {
-        await room.localParticipant.setMicrophoneEnabled(true, {
-          deviceId: micDeviceId || undefined,
-        });
-      }
-      if (cameraEnabled) {
-        await room.localParticipant.setCameraEnabled(true, {
-          deviceId: cameraDeviceId || undefined,
-        });
-      }
-      if (speakerDeviceId) {
-        await room.switchActiveDevice("audiooutput", speakerDeviceId);
-      }
-    } catch {}
-  };
 
   useEffect(() => {
     setControls("showChat", !isTablet);
@@ -90,7 +38,6 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
 
   return (
     <RoomContext.Provider value={room}>
-      <PreConnectDialog open={!isReady} onSubmit={connect} />
       <div className="h-dvh w-dvw lg:pt-4">
         <div className="flex size-full flex-col lg:gap-2">
           <div className="order-last lg:order-none">
@@ -100,11 +47,10 @@ export const VocalRoom = ({ roomId }: { roomId: string }) => {
             <Participants />
             <Chat />
           </div>
-          {isReady ? (
-            <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
-              <Piano />
-            </div>
-          ) : null}
+          <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
+            <Piano />
+          </div>
+          )
         </div>
       </div>
     </RoomContext.Provider>
