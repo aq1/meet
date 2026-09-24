@@ -1,4 +1,4 @@
-import { EncodedFileOutput, EncodedFileType, SegmentedFileOutput } from "livekit-server-sdk";
+import { EncodedFileOutput, EncodedFileType } from "livekit-server-sdk";
 import { env } from "#/env";
 import { egressClient } from "#/lib/livekit/egress-client";
 
@@ -15,12 +15,6 @@ export const startRoomRecording = async (roomName: string) => {
       file: new EncodedFileOutput({
         fileType: EncodedFileType.MP4,
         filepath: `${prefix}/{time}.mp4`,
-      }),
-      segments: new SegmentedFileOutput({
-        filenamePrefix: `segments/{time}`,
-        playlistName: `${prefix}/{time}.m3u8`,
-        livePlaylistName: `${prefix}/{time}-live.m3u8`,
-        segmentDuration: 6,
       }),
     },
     {
