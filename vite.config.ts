@@ -16,6 +16,7 @@ const config = defineConfig({
   define: { __APP_VERSION__: JSON.stringify(version) },
   environments: {
     client: { build: { sourcemap: sentryUpload ? "hidden" : false } },
+    ssr: { build: { sourcemap: sentryUpload ? "hidden" : false } },
   },
   optimizeDeps: {
     // "bun" is a runtime builtin, so the dev dependency scanner should not try to resolve it
@@ -23,7 +24,7 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro({ preset: "bun", rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({ preset: "bun" }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),

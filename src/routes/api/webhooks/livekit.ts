@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/tanstackstart-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { logLivekitEvent } from "#/lib/db/rooms/log-event";
 import { receiveLivekitWebhook } from "#/lib/livekit/receive-livekit-webhook";
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
       POST: async ({ request }) => {
         const { event, error } = await receiveLivekitWebhook(request);
         if (error) {
-          console.warn("livekit webhook rejected", error.message);
+          Sentry.logger.warn("livekit webhook rejected", { error: error.message });
           return new Response(JSON.stringify({ error: "invalid webhook" }), {
             status: 401,
           });
@@ -40,8 +41,12 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
               await sendEgressResults(event);
               break;
           }
-        } catch (_e) {
-          console.warn("Webhook action failed");
+        } catch (e) {
+          Sentry.logger.warn("livekit webhook action failed", {
+            event: event.event,
+            roomId,
+            error: e instanceof Error ? e.message : String(e),
+          });
         }
         return new Response(JSON.stringify({ ok: true }));
       },
