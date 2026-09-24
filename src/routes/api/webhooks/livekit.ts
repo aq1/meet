@@ -1,97 +1,9 @@
-import { EgressStatus, type WebhookEvent } from "@livekit/protocol";
 import { createFileRoute } from "@tanstack/react-router";
-import { s3 } from "bun";
-import type { WebhookEventNames } from "livekit-server-sdk";
-import { env } from "#/env";
-import { getRoom } from "#/lib/db/rooms/get-room";
-import { updateRoom } from "#/lib/db/rooms/update-room";
-import { sendEmail } from "#/lib/email/send-email";
+import { logLivekitEvent } from "#/lib/db/rooms/log-event";
 import { receiveLivekitWebhook } from "#/lib/livekit/receive-livekit-webhook";
+import { sendEgressResults } from "#/lib/livekit/send-egress-results";
 import { startRoomRecording } from "#/lib/livekit/start-room-recording";
 import { stopRoomRecording } from "#/lib/livekit/stop-room-recording";
-import { notifyAdmins } from "#/lib/notifications/notify-admins";
-
-const ignore = async (_: WebhookEvent) => {};
-
-const notifyOnEvent = async (event: WebhookEvent) => {
-  const text = `${event.room?.name ?? "untitled"} ${event.event} ${event.participant?.identity ?? ""}`;
-  await notifyAdmins({ text });
-};
-
-const EGRESS_DOWNLOAD_URL_TTL = 7 * 24 * 60 * 60;
-
-const egressObjectKey = (location: string) => {
-  const path = decodeURIComponent(new URL(location).pathname).replace(/^\/+/, "");
-  const bucketPrefix = `${env.S3_BUCKET}/`;
-  return path.startsWith(bucketPrefix) ? path.slice(bucketPrefix.length) : path;
-};
-
-const presignEgressFile = (location: string) => {
-  try {
-    return s3.presign(egressObjectKey(location), {
-      method: "GET",
-      expiresIn: EGRESS_DOWNLOAD_URL_TTL,
-    });
-  } catch {
-    return "";
-  }
-};
-
-const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
-  if (!url) {
-    return;
-  }
-  const room = await getRoom(roomId);
-  if (!room?.email) {
-    return;
-  }
-  const greeting = room.name ? `Hi ${room.name},` : "Hi,";
-  await sendEmail({
-    to: room.email,
-    subject: "Your call recording is here",
-    html: `<p>${greeting}</p><p>The recording of your call ${roomId} is ready.</p><p>Download it here (link expires in 7 days):<br><a href="${url}">${url}</a></p>`,
-    text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 7 days):\n${url}`,
-    idempotencyKey: `egress-finished/${roomId}`,
-  });
-};
-
-const onEgressEndedEvent = async (event: WebhookEvent) => {
-  const info = event.egressInfo;
-  if (!event.room?.name || !info) {
-    return;
-  }
-  if (info.status !== EgressStatus.EGRESS_COMPLETE) {
-    return;
-  }
-  const egressUrl = info.fileResults[0]?.location ?? info.segmentResults[0]?.playlistLocation ?? "";
-
-  const egressDownloadUrl = presignEgressFile(egressUrl);
-  await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
-
-  await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
-  await notifyAdmins({
-    text: `${event.room.name} ${event.event}`,
-  });
-};
-
-const livekitEventRouter = (eventName: WebhookEventNames) => {
-  switch (eventName) {
-    case "room_started":
-      return notifyOnEvent;
-    case "room_finished":
-      return notifyOnEvent;
-    case "participant_joined":
-      return notifyOnEvent;
-    case "participant_left":
-      return notifyOnEvent;
-    case "egress_started":
-      return notifyOnEvent;
-    case "egress_ended":
-      return onEgressEndedEvent;
-    default:
-      return ignore;
-  }
-};
 
 export const Route = createFileRoute("/api/webhooks/livekit")({
   server: {
@@ -109,21 +21,28 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
           return new Response(JSON.stringify({ ok: true }));
         }
 
-        const action = livekitEventRouter(event.event);
-        await action(event);
-
-        if (event.room?.name) {
-          try {
-            if (event.event === "room_started") {
-              await startRoomRecording(event.room.name);
-            } else if (event.event === "room_finished") {
-              await stopRoomRecording(event.room.name);
-            }
-          } catch (e) {
-            console.warn(`egress ${event.event} failed`, e);
-          }
+        const roomId = event.room?.sid;
+        if (!roomId) {
+          return;
         }
 
+        await logLivekitEvent({ eventName: event.event, roomId, data: event });
+
+        try {
+          switch (event.event) {
+            case "room_started":
+              event.room ? await startRoomRecording(event.room.name) : null;
+              break;
+            case "room_finished":
+              event.room ? await stopRoomRecording(event.room.name) : null;
+              break;
+            case "egress_ended":
+              await sendEgressResults(event);
+              break;
+          }
+        } catch (_e) {
+          console.warn("Webhook action failed");
+        }
         return new Response(JSON.stringify({ ok: true }));
       },
     },

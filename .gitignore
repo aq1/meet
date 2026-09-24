@@ -18,4 +18,5 @@ todos.json
 
 # Sentry Config File
 .env.sentry-build-plugin
+postgres-language-server.jsonc
 /src/lib/db/schema.d.ts

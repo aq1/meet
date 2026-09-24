@@ -1,15 +1,15 @@
 import { useMediaDevices, usePreviewTracks } from "@livekit/components-react";
 import { LocalVideoTrack } from "livekit-client";
-import { useState, useMemo, useRef, useEffect } from "react";
-import { useControls } from "./controls/controls-state";
-import { VolumeIcon, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon } from "lucide-react";
+import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, VolumeIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "#/components/ui/button";
+import { Field } from "#/components/ui/field";
+import { Form } from "#/components/ui/form";
+import { Input } from "#/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
 import { Spinner } from "#/components/ui/spinner";
-import { Field } from "#/components/ui/field";
-import { Input } from "#/components/ui/input";
 import { useUser } from "#/lib/user-store";
-import { Form } from "#/components/ui/form";
+import { useControls } from "./controls/controls-state";
 
 type DeviceSelectorT = {
   kind: MediaDeviceKind;
@@ -25,10 +25,10 @@ const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT)
   const items = useMemo(() => {
     const mapped = devices
       .sort((a, b) => {
-        if (a.deviceId == "default") {
+        if (a.deviceId === "default") {
           return -1;
         }
-        if (b.deviceId == "default") {
+        if (b.deviceId === "default") {
           return 1;
         }
         return 0;
@@ -46,7 +46,7 @@ const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT)
     if (items.length) {
       onChange(items[0].value);
     }
-  }, [items]);
+  }, [items, onChange]);
 
   return (
     <Select

@@ -5,10 +5,21 @@
 
 import type { ColumnType } from "kysely";
 
-export type Generated<T> =
-  T extends ColumnType<infer S, infer I, infer U>
-    ? ColumnType<S, I | undefined, U>
-    : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
+
+export type Json = JsonValue;
+
+export type JsonArray = JsonValue[];
+
+export type JsonObject = {
+  [x: string]: JsonValue | undefined;
+};
+
+export type JsonPrimitive = boolean | number | string | null;
+
+export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
@@ -35,6 +46,14 @@ export interface Room {
   finishedAt: Timestamp | null;
   id: Generated<number>;
   publicId: string;
+}
+
+export interface RoomEvent {
+  createdAt: Generated<Timestamp>;
+  data: Json | null;
+  event: string | null;
+  id: Generated<number>;
+  roomId: string | null;
 }
 
 export interface Session {
@@ -70,6 +89,7 @@ export interface Verification {
 export interface DB {
   account: Account;
   room: Room;
+  roomEvent: RoomEvent;
   session: Session;
   user: User;
   verification: Verification;

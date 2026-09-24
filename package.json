@@ -15,6 +15,7 @@
     "check": "biome check --write . --unsafe",
     "db:generate": "kysely-codegen --camel-case --exclude-pattern goose_db_version --out-file ./src/lib/db/schema.d.ts",
     "postdb:generate": "biome check --write",
+    "postdb:migrate": "bun run db:generate",
     "db:migrate": "goose up",
     "db:status": "goose status",
     "db:new": "goose create",
