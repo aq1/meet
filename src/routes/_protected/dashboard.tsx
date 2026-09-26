@@ -65,7 +65,7 @@ function DashboardPage() {
             </CardPanel>
           </Card>
         </CardFrame>
-        <CardFrame className="hidden">
+        <CardFrame>
           <CardFrameHeader>
             <CardFrameTitle>History</CardFrameTitle>
             <CardFrameDescription>Your recent rooms</CardFrameDescription>
