@@ -7,7 +7,6 @@ import { Field } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "#/components/ui/select";
-import { Spinner } from "#/components/ui/spinner";
 import { useUser } from "#/lib/user-store";
 import { useControls } from "./controls/controls-state";
 
@@ -219,8 +218,8 @@ export function DeviceSetup({ onJoin }: DeviceSetupT) {
                 type="text"
               />
             </Field>
-            <Button type="submit" className="px-10" disabled={state !== "idle"}>
-              {state !== "idle" ? <Spinner /> : "Join"}
+            <Button type="submit" className="px-10" loading={state === "joining"} disabled={state !== "idle"}>
+              Join
             </Button>
           </Form>
         </div>
