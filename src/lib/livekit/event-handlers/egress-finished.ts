@@ -35,5 +35,5 @@ export const egressFinishedEventHandler = async (event: WebhookEvent) => {
   const egressDownloadUrl = presignS3Download(egressUrl);
   await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
 
-  await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
+  await updateRoom(info.roomName, { egressUrl: egressDownloadUrl, finishedAt: new Date() });
 };
