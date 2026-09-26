@@ -72,11 +72,11 @@ const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT)
   );
 };
 
-type DeviceSetupT = {
+type RoomLobbyT = {
   onJoin: () => void;
 };
 
-export function DeviceSetup({ onJoin }: DeviceSetupT) {
+export function RoomLobby({ onJoin }: RoomLobbyT) {
   const [state, setState] = useState<"loading" | "idle" | "joining">("loading");
 
   const username = useUser((state) => state.username);

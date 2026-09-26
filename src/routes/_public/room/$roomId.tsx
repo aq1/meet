@@ -4,7 +4,7 @@ import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { useControls } from "#/components/rooms/vocal/controls/controls-state";
-import { DeviceSetup } from "#/components/rooms/vocal/DeviceSetup";
+import { RoomLobby } from "#/components/rooms/vocal/RoomLobby";
 import { VocalRoom } from "#/components/rooms/vocal/Room";
 import { roomExists } from "#/lib/db/rooms/room-exists";
 import { grantLivekitToken } from "#/lib/livekit/grant-livekit-token";
@@ -94,6 +94,6 @@ function RouteComponent() {
   };
 
   return (
-    <RoomContext.Provider value={room}>{joined ? <VocalRoom /> : <DeviceSetup onJoin={join} />}</RoomContext.Provider>
+    <RoomContext.Provider value={room}>{joined ? <VocalRoom /> : <RoomLobby onJoin={join} />}</RoomContext.Provider>
   );
 }
