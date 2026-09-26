@@ -48,6 +48,17 @@ function IndexPage() {
   );
 }
 
+function ToolbarButtons() {
+  return (
+    <div className="flex gap-2">
+      <Button render={<Link to="/dashboard" />} variant="outline">
+        Profile
+      </Button>
+      <CreateRoomButton />
+    </div>
+  );
+}
+
 function Toolbar({ loggedIn }: { loggedIn: boolean }) {
   return (
     <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
@@ -56,7 +67,7 @@ function Toolbar({ loggedIn }: { loggedIn: boolean }) {
           <AudioLinesIcon className="size-5 text-primary" />
           Vocal Room
         </Link>
-        {loggedIn ? <CreateRoomButton /> : <Button render={<Link to="/login" />}>Log in</Button>}
+        {loggedIn ? <ToolbarButtons /> : <Button render={<Link to="/login" />}>Log in</Button>}
       </div>
     </header>
   );
