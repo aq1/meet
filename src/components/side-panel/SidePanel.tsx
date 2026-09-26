@@ -112,7 +112,7 @@ const ChatContent = ({ readonly = false }: ChatT) => {
   );
 };
 
-export const Chat = ({ readonly = false }: ChatT) => {
+export const SidePanel = ({ readonly = false }: ChatT) => {
   const isTablet = useIsTablet();
   const showChat = useControls((state) => state.showChat);
   const toggle = useControls((state) => state.toggle);

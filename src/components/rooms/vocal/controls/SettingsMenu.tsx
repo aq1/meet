@@ -1,4 +1,4 @@
-import { Music2Icon, PianoIcon, Settings, UsersIcon } from "lucide-react";
+import { Music2Icon, AudioLines, PianoIcon, Settings, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldLabel } from "#/components/ui/field";
@@ -45,6 +45,21 @@ const ParticipantsVolumeSlider = () => {
   );
 };
 
+const FileVolumeSlider = () => {
+  const volume = useControls((state) => state.fileVolume);
+  const setVolume = useControls((state) => state.setFileVolume);
+
+  return (
+    <Field>
+      <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
+        <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
+          <AudioLines />
+          Audio Files
+        </FieldLabel>
+      </Slider>
+    </Field>
+  );
+};
 const PianoToggle = () => {
   const showKeyboard = useControls((state) => state.showKeyboard);
   const toggle = useControls((state) => state.toggle);
@@ -103,6 +118,7 @@ const VolumeControls = () => {
     <Fieldset className="flex w-full flex-col gap-3">
       <FieldsetLegend>Volume</FieldsetLegend>
       <ParticipantsVolumeSlider />
+      <FileVolumeSlider />
       <PianoVolumeSlider />
     </Fieldset>
   );

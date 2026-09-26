@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Chat } from "#/components/chat/Chat";
+import { SidePanel } from "#/components/side-panel/SidePanel";
 import { useIsTablet } from "#/hooks/use-media-query";
 import { cn } from "#/lib/utils";
 import { Controls } from "./controls";
@@ -25,7 +25,7 @@ export const VocalRoom = () => {
         </div>
         <div className="order-first flex size-full min-h-0 basis-full lg:order-0">
           <Participants />
-          <Chat />
+          <SidePanel />
         </div>
         <div className={cn("w-full h-50 basis-1/3", !showKeyboard && "hidden")}>
           <Piano />
