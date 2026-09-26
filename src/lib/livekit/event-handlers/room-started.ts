@@ -2,7 +2,7 @@ import { EncodedFileOutput, EncodedFileType } from "livekit-server-sdk";
 import { env } from "#/env";
 import { egressClient } from "#/lib/livekit/egress-client";
 
-export const startRoomRecording = async (roomName: string) => {
+export const roomStartedEventHandler = async (roomName: string) => {
   if (!env.EGRESS_TEMPLATE_URL) {
     throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }

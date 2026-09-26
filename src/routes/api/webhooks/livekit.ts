@@ -2,9 +2,9 @@ import * as Sentry from "@sentry/tanstackstart-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { logLivekitEvent } from "#/lib/db/rooms/log-event";
 import { receiveLivekitWebhook } from "#/lib/livekit/receive-livekit-webhook";
-import { sendEgressResults } from "#/lib/livekit/send-egress-results";
-import { startRoomRecording } from "#/lib/livekit/start-room-recording";
-import { stopRoomRecording } from "#/lib/livekit/stop-room-recording";
+import { roomStartedEventHandler } from "#/lib/livekit/event-handlers/room-started";
+import { roomFinishedHandler as roomFinishedEventHandler } from "#/lib/livekit/event-handlers/room-finished";
+import { egressFinishedEventHandler } from "#/lib/livekit/event-handlers/egress-finished";
 
 export const Route = createFileRoute("/api/webhooks/livekit")({
   server: {
@@ -32,13 +32,13 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
         try {
           switch (event.event) {
             case "room_started":
-              event.room ? await startRoomRecording(event.room.name) : null;
+              event.room ? await roomStartedEventHandler(event.room.name) : null;
               break;
             case "room_finished":
-              event.room ? await stopRoomRecording(event.room.name) : null;
+              event.room ? await roomFinishedEventHandler(event.room.name) : null;
               break;
             case "egress_ended":
-              await sendEgressResults(event);
+              await egressFinishedEventHandler(event);
               break;
           }
         } catch (e) {
