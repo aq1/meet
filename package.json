@@ -19,7 +19,8 @@
     "db:migrate": "goose up",
     "db:status": "goose status",
     "db:new": "goose create",
-    "deploy": "bun scripts/deploy.ts"
+    "deploy": "bun scripts/deploy.ts",
+    "livekit-dev": "livekit-server --dev --config ~/.config/livekit/livekit.yml"
   },
   "dependencies": {
     "@base-ui/react": "1.5.0",

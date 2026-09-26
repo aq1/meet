@@ -52,8 +52,9 @@ export interface RoomEvent {
   createdAt: Generated<Timestamp>;
   data: Json | null;
   event: string | null;
+  eventId: string;
   id: Generated<number>;
-  roomId: string | null;
+  roomName: Generated<string>;
 }
 
 export interface RoomUser {

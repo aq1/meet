@@ -19,16 +19,15 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
           });
         }
 
-        if (event.room?.name.startsWith("test-")) {
-          return new Response(JSON.stringify({ ok: true }));
-        }
-
-        const roomId = event.room?.sid;
-        if (!roomId) {
+        const roomName = event.room?.name;
+        if (!roomName) {
           return;
         }
 
-        await logLivekitEvent({ eventName: event.event, roomId, data: event });
+        const isNewEvent = await logLivekitEvent({ eventId: event.id, eventName: event.event, roomName, data: event });
+        if (!isNewEvent) {
+          return new Response(JSON.stringify({ ok: true }));
+        }
 
         try {
           switch (event.event) {
@@ -50,7 +49,7 @@ export const Route = createFileRoute("/api/webhooks/livekit")({
         } catch (e) {
           Sentry.logger.warn("livekit webhook action failed", {
             event: event.event,
-            roomId,
+            roomName,
             error: e instanceof Error ? e.message : String(e),
           });
         }

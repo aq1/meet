@@ -1,11 +1,13 @@
 import type { WebhookEvent } from "@livekit/protocol";
 import { db } from "#/lib/db/client";
 
-type LogLivekitEventT = { eventName: string; roomId: string; data: WebhookEvent };
+type LogLivekitEventT = { eventId: string; eventName: string; roomName: string; data: WebhookEvent };
 
-export const logLivekitEvent = async ({ eventName, roomId, data }: LogLivekitEventT) => {
-  await db
+export const logLivekitEvent = async ({ eventId, eventName, roomName, data }: LogLivekitEventT) => {
+  const result = await db
     .insertInto("roomEvent")
-    .values({ event: eventName, roomId, data: JSON.stringify(data) })
-    .execute();
+    .values({ eventId, event: eventName, roomName, data: JSON.stringify(data) })
+    .onConflict((oc) => oc.column("eventId").doNothing())
+    .executeTakeFirst();
+  return Boolean(result.numInsertedOrUpdatedRows);
 };
