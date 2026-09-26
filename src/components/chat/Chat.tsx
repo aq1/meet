@@ -38,7 +38,7 @@ const Message = memo(({ message, previousMessage }: MessageT) => {
     >
       <div className="flex flex-col">
         <span className={message.from?.isLocal ? "text-green-500" : "text-blue-500"}>
-          {fromSameParticipant ? null : message.from?.identity}
+          {fromSameParticipant ? null : message.from?.name}
         </span>
         <span>{message.message}</span>
       </div>

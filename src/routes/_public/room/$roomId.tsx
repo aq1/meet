@@ -4,13 +4,13 @@ import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { useControls } from "#/components/rooms/vocal/controls/controls-state";
-import { RoomLobby } from "#/components/rooms/vocal/RoomLobby";
 import { VocalRoom } from "#/components/rooms/vocal/Room";
+import { RoomLobby } from "#/components/rooms/vocal/RoomLobby";
+import { getSession } from "#/lib/auth/get-session";
+import { db } from "#/lib/db/client";
 import { roomExists } from "#/lib/db/rooms/room-exists";
 import { grantLivekitToken } from "#/lib/livekit/grant-livekit-token";
 import { useUser } from "#/lib/user-store";
-import { getSession } from "#/lib/auth/get-session";
-import { db } from "#/lib/db/client";
 
 const __tempEnsureUser = async (name: string) => {
   const session = await getSession();

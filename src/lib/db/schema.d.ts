@@ -56,6 +56,12 @@ export interface RoomEvent {
   roomId: string | null;
 }
 
+export interface RoomUser {
+  id: Generated<number>;
+  roomId: number;
+  userId: number;
+}
+
 export interface Session {
   createdAt: Generated<Timestamp>;
   expiresAt: Timestamp;
@@ -90,6 +96,7 @@ export interface DB {
   account: Account;
   room: Room;
   roomEvent: RoomEvent;
+  roomUser: RoomUser;
   session: Session;
   user: User;
   verification: Verification;
