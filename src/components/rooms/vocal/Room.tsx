@@ -20,14 +20,14 @@ export const VocalRoom = () => {
   return (
     <div className="h-dvh w-dvw lg:pt-4">
       <div className="flex size-full flex-col lg:gap-2">
-        <div className="order-last lg:order-none">
+        <div className="order-last lg:order-0">
           <Controls />
         </div>
-        <div className="order-first flex size-full min-h-0 basis-full lg:order-none">
+        <div className="order-first flex size-full min-h-0 basis-full lg:order-0">
           <Participants />
           <Chat />
         </div>
-        <div className={cn("w-full basis-1/3", !showKeyboard && "hidden")}>
+        <div className={cn("w-full h-50 basis-1/3", !showKeyboard && "hidden")}>
           <Piano />
         </div>
       </div>
