@@ -41,7 +41,7 @@ export interface Account {
 
 export interface Room {
   createdAt: Generated<Timestamp>;
-  createdBy: number | null;
+  createdBy: number;
   egressUrl: Generated<string | null>;
   finishedAt: Timestamp | null;
   id: Generated<number>;

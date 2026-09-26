@@ -12,7 +12,7 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!room?.email) {
     return;
   }
-  const greeting = room.name ? `Hi ${room.name},` : "Hi,";
+  const greeting = room.username ? `Hi ${room.username},` : "Hi,";
   await sendEmail({
     to: room.email,
     subject: "Your call recording is here",
@@ -35,5 +35,5 @@ export const egressFinishedEventHandler = async (event: WebhookEvent) => {
   const egressDownloadUrl = presignS3Download(egressUrl);
   await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
 
-  await updateRoom(info.roomName, { egressUrl: egressDownloadUrl, finishedAt: new Date() });
+  await updateRoom(info.roomName, { egressUrl, finishedAt: new Date() });
 };

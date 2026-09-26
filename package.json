@@ -12,7 +12,7 @@
     "test": "vitest run",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check --write . --unsafe",
+    "check": "biome check --write . --unsafe && tsc --noEmit",
     "db:generate": "kysely-codegen --camel-case --exclude-pattern goose_db_version --out-file ./src/lib/db/schema.d.ts",
     "postdb:generate": "biome check --write",
     "postdb:migrate": "bun run db:generate",

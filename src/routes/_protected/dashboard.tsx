@@ -1,6 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronRightIcon, DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
+import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "#/components/ui/avatar";
 import { Badge } from "#/components/ui/badge";
 import { Button, buttonVariants } from "#/components/ui/button";
@@ -99,8 +99,6 @@ function DashboardPage() {
   );
 }
 
-type RoomItem = ReturnType<typeof Route.useLoaderData>[number];
-
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 
 function formatDuration(from: Date, to: Date) {
@@ -109,29 +107,46 @@ function formatDuration(from: Date, to: Date) {
   return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
 }
 
-function RoomRow({ room }: { room: RoomItem }) {
+type RoomRowT = {
+  room: {
+    id: number;
+    createdAt: Date;
+    createdBy: number;
+    egressUrl: string | null;
+    finishedAt: Date | null;
+    publicId: string;
+    users: {
+      id: number;
+      name: string;
+      image: string | null;
+    }[];
+  };
+};
+
+function RoomRow({ room }: RoomRowT) {
   const createdAt = new Date(room.createdAt);
   const finishedAt = room.finishedAt ? new Date(room.finishedAt) : null;
+  const participans = room.users
+    .filter((u) => u.id !== room.createdBy)
+    .map((u) => u.name)
+    .join(", ");
+  const title = participans.length ? `Call with ${participans}` : "Call";
 
   return (
     <div className="group flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-accent/50">
-      <Link
-        to="/room/$roomId"
-        params={{ roomId: room.publicId }}
-        className="flex min-w-0 flex-1 items-center gap-3 outline-none"
-      >
+      <div className="flex min-w-0 flex-1 items-center gap-3 outline-none">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground">
           <VideoIcon className="size-4" />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-medium font-mono text-sm">{room.publicId}</span>
+          <span className="truncate font-medium font-mono text-sm">{title}</span>
           <span className="text-muted-foreground text-xs">
             {dateFormat.format(createdAt)}
             {finishedAt && ` · ${formatDuration(createdAt, finishedAt)}`}
           </span>
         </div>
         {finishedAt ? <Badge variant="outline">Ended</Badge> : <Badge variant="success">Active</Badge>}
-      </Link>
+      </div>
       {room.egressUrl && (
         <a
           href={room.egressUrl}
@@ -143,7 +158,6 @@ function RoomRow({ room }: { room: RoomItem }) {
           <DownloadIcon />
         </a>
       )}
-      <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />
     </div>
   );
 }

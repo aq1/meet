@@ -12,5 +12,5 @@ export const participantJoinedEventHandler = async (event: WebhookEvent) => {
     return;
   }
 
-  await createRoomUser(Number(event.participant.identity), Number(room.id));
+  await createRoomUser(Number(room.id), Number(event.participant.identity));
 };
