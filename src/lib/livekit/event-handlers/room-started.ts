@@ -1,8 +1,12 @@
-import { EncodedFileOutput, EncodedFileType } from "livekit-server-sdk";
+import { EncodedFileOutput, EncodedFileType, type WebhookEvent } from "livekit-server-sdk";
 import { env } from "#/env";
 import { egressClient } from "#/lib/livekit/egress-client";
 
-export const roomStartedEventHandler = async (roomName: string) => {
+export const roomStartedEventHandler = async (event: WebhookEvent) => {
+  if (!event.room?.name) {
+    return;
+  }
+
   if (!env.EGRESS_TEMPLATE_URL) {
     throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }
@@ -10,7 +14,7 @@ export const roomStartedEventHandler = async (roomName: string) => {
   const prefix = `${new Date().toISOString().slice(0, 10)}/{room_name}`;
 
   return await egressClient.startRoomCompositeEgress(
-    roomName,
+    event.room.name,
     {
       file: new EncodedFileOutput({
         fileType: EncodedFileType.MP4,

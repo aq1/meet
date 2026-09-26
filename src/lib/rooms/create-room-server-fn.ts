@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "#/lib/auth/server";
-import { db } from "#/lib/db/client";
+import { createRoom } from "#/lib/db/rooms/create-room";
 
 export const createRoomServerFn = createServerFn({ method: "POST" }).handler(async () => {
   const session = await auth.api.getSession({ headers: getRequestHeaders() });
@@ -10,9 +10,6 @@ export const createRoomServerFn = createServerFn({ method: "POST" }).handler(asy
   }
   const id = Math.random().toString(36).slice(2, 10);
   const roomId = import.meta.env.PROD ? id : `test-${id}`;
-  await db
-    .insertInto("room")
-    .values({ publicId: roomId, createdBy: Number(session.user.id) })
-    .execute();
+  await createRoom(roomId, Number(session.user.id));
   return { roomId };
 });
