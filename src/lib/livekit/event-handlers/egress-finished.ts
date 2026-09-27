@@ -2,7 +2,7 @@ import { EgressStatus, type WebhookEvent } from "@livekit/protocol";
 import { getRoom } from "#/lib/db/rooms/get-room";
 import { updateRoom } from "#/lib/db/rooms/update-room";
 import { sendEmail } from "#/lib/email/send-email";
-import { presignS3Download } from "#/lib/s3/persign-download";
+import { presignS3Download } from "#/lib/s3/presign-download";
 
 const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!url) {
