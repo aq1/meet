@@ -33,7 +33,7 @@ export const VocalRoom = () => {
             </div>
           </SidePanel>
         </div>
-        <div className={cn("w-full h-50 basis-1/3", !showKeyboard && "hidden")}>
+        <div className={cn("w-full min-h-50 h-50 basis-1/3", !showKeyboard && "hidden")}>
           <Piano />
         </div>
       </div>

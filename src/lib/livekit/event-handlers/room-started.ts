@@ -11,7 +11,7 @@ export const roomStartedEventHandler = async (event: WebhookEvent) => {
     throw new Error("EGRESS_TEMPLATE_URL is not configured");
   }
 
-  const prefix = `${new Date().toISOString().slice(0, 10)}/{room_name}`;
+  const prefix = "{room_name}/recording";
 
   return await egressClient.startRoomCompositeEgress(
     event.room.name,

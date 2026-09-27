@@ -1,10 +1,36 @@
-import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
+import { type ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react";
+import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { Plus, Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
+import { roomExists } from "#/lib/db/rooms/room-exists";
+import { presignS3Upload } from "#/lib/s3/presign-upload";
+import { putWithProgress } from "#/lib/s3/put-with-progress";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
+
+const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
+
+const presignChatUpload = createServerFn({ method: "POST" })
+  .validator((data: { roomId: string; name: string; type: string; size: number }) => data)
+  .handler(async ({ data }) => {
+    if (!data.type.startsWith("audio/")) {
+      throw new Response("Unsupported file type", { status: 415 });
+    }
+    if (data.size > MAX_UPLOAD_SIZE) {
+      throw new Response("File too large", { status: 413 });
+    }
+    if (!(await roomExists(data.roomId))) {
+      throw new Response("Room not found", { status: 404 });
+    }
+    const key = `${data.roomId}/files/${Date.now()}${data.name}`;
+    const url = presignS3Upload(key, data.type);
+    if (!url) {
+      throw new Response("Failed to presign upload", { status: 500 });
+    }
+    return { url, key };
+  });
 
 type MessageT = {
   message: ReceivedChatMessage;
@@ -45,8 +71,11 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { chatMessages, send, isSending } = useChat();
+  const room = useRoomContext();
+  const presignUpload = useServerFn(presignChatUpload);
 
   const [draft, setDraft] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const messageCount = chatMessages.length;
   useEffect(() => {
@@ -64,6 +93,19 @@ export const Chat = ({ readonly = false }: ChatT) => {
     setDraft("");
   };
 
+  const uploadFile = async (file: File) => {
+    setUploadProgress(0);
+    try {
+      const { url } = await presignUpload({
+        data: { roomId: room.name, name: file.name, type: file.type, size: file.size },
+      });
+      await putWithProgress(url, file, setUploadProgress);
+    } catch {
+    } finally {
+      setUploadProgress(null);
+    }
+  };
+
   return (
     <div className="size-full">
       <div className="flex size-full flex-col justify-between align-center">
@@ -79,9 +121,27 @@ export const Chat = ({ readonly = false }: ChatT) => {
         </ScrollArea>
         {readonly ? null : (
           <div className="flex items-center gap-2">
-            <input ref={fileInputRef} type="file" id="file-select" accept="audio/*" className="hidden" />
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()} title="Attach file">
-              <Plus />
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="file-select"
+              accept="audio/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.currentTarget.files?.[0];
+                e.currentTarget.value = "";
+                if (file) {
+                  uploadFile(file);
+                }
+              }}
+            />
+            <Button
+              variant="outline"
+              disabled={uploadProgress !== null}
+              onClick={() => fileInputRef.current?.click()}
+              title="Attach file"
+            >
+              {uploadProgress === null ? <Plus /> : `${Math.round(uploadProgress * 100)}%`}
             </Button>
             <Input
               aria-label="Chat"
