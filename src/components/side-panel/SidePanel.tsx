@@ -11,13 +11,10 @@ type SidePanelT = {
 
 export const SidePanel = ({ children }: SidePanelT) => {
   const isTablet = useIsTablet();
-  const showPanel = useControls((state) => state.showChat || state.showFiles);
+  const showPanel = useControls((state) => state.showChat);
   const setControls = useControls((state) => state.set);
 
-  const closePanel = () => {
-    setControls("showChat", false);
-    setControls("showFiles", false);
-  };
+  const closePanel = () => setControls("showChat", false);
 
   return (
     <>

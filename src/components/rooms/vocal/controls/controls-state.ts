@@ -4,7 +4,6 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface ControlsState {
   showChat: boolean;
   showKeyboard: boolean;
-  showFiles: boolean;
   volume: number;
   fileVolume: number;
   cameraEnabled: boolean;
@@ -12,8 +11,8 @@ interface ControlsState {
   cameraDeviceId?: string;
   micDeviceId?: string;
   speakerDeviceId?: string;
-  toggle: (name: "showChat" | "showKeyboard" | "showFiles") => void;
-  set: (name: "showChat" | "showKeyboard" | "showFiles", value: boolean) => void;
+  toggle: (name: "showChat" | "showKeyboard") => void;
+  set: (name: "showChat" | "showKeyboard", value: boolean) => void;
   setVolume: (volume: number) => void;
   setFileVolume: (volume: number) => void;
   setCameraEnabled: (value: boolean) => void;
@@ -28,7 +27,6 @@ export const useControls = create<ControlsState>()(
     (set) => ({
       showChat: true,
       showKeyboard: true,
-      showFiles: false,
       volume: 100,
       fileVolume: 100,
       cameraEnabled: true,
@@ -37,16 +35,7 @@ export const useControls = create<ControlsState>()(
       micDeviceId: "",
       speakerDeviceId: "",
       toggle: (name) =>
-        set((state) => {
-          const newValue = !state[name];
-          if (name === "showChat" && newValue) {
-            state.showFiles = false;
-          }
-          if (name === "showFiles" && newValue) {
-            state.showChat = false;
-          }
-          return { ...state, [name]: newValue };
-        }),
+        set((state) => ({ ...state, [name]: !state[name] })),
       set: (name, value) => set((state) => ({ ...state, [name]: value })),
       setVolume: (volume) => set({ volume }),
       setFileVolume: (fileVolume) => set({ fileVolume }),

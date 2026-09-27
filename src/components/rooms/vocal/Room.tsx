@@ -10,8 +10,7 @@ import { Chat } from "#/components/chat/Chat";
 
 export const VocalRoom = () => {
   const isTablet = useIsTablet();
-  const showChat = useControls((state) => state.showChat && !state.showFiles);
-  const showFiles = useControls((state) => state.showFiles && !state.showChat);
+  const showChat = useControls((state) => state.showChat);
   const showKeyboard = useControls((state) => state.showKeyboard);
   const setControls = useControls((state) => state.set);
 
@@ -32,7 +31,6 @@ export const VocalRoom = () => {
             <div className={cn("size-full", !showChat && "hidden")}>
               <Chat />
             </div>
-            <div className={cn("size-full", !showFiles && "hidden")}></div>
           </SidePanel>
         </div>
         <div className={cn("w-full h-50 basis-1/3", !showKeyboard && "hidden")}>

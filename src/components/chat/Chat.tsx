@@ -1,5 +1,5 @@
 import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
-import { Send } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -77,7 +77,11 @@ export const Chat = ({ readonly = false }: ChatT) => {
           </div>
         </ScrollArea>
         {readonly ? null : (
-          <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <Button variant="outline">
+              <input type="file" id="file-select" accept="audio/*" />
+              <Plus />
+            </Button>
             <Input
               aria-label="Chat"
               placeholder="Write a message..."
