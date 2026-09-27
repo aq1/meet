@@ -43,6 +43,7 @@ type ChatT = {
 
 export const Chat = ({ readonly = false }: ChatT) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { chatMessages, send, isSending } = useChat();
 
   const [draft, setDraft] = useState("");
@@ -78,8 +79,8 @@ export const Chat = ({ readonly = false }: ChatT) => {
         </ScrollArea>
         {readonly ? null : (
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <input type="file" id="file-select" accept="audio/*" />
+            <input ref={fileInputRef} type="file" id="file-select" accept="audio/*" className="hidden" />
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} title="Attach file">
               <Plus />
             </Button>
             <Input

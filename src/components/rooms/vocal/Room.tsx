@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Chat } from "#/components/chat/Chat";
 import { SidePanel } from "#/components/side-panel/SidePanel";
 import { useIsTablet } from "#/hooks/use-media-query";
 import { cn } from "#/lib/utils";
@@ -6,7 +7,6 @@ import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
-import { Chat } from "#/components/chat/Chat";
 
 export const VocalRoom = () => {
   const isTablet = useIsTablet();

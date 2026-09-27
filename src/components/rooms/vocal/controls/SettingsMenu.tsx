@@ -1,4 +1,4 @@
-import { Music2Icon, AudioLines, PianoIcon, Settings, UsersIcon } from "lucide-react";
+import { AudioLines, Music2Icon, PianoIcon, Settings, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Field, FieldLabel } from "#/components/ui/field";

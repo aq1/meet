@@ -34,8 +34,7 @@ export const useControls = create<ControlsState>()(
       cameraDeviceId: "",
       micDeviceId: "",
       speakerDeviceId: "",
-      toggle: (name) =>
-        set((state) => ({ ...state, [name]: !state[name] })),
+      toggle: (name) => set((state) => ({ ...state, [name]: !state[name] })),
       set: (name, value) => set((state) => ({ ...state, [name]: value })),
       setVolume: (volume) => set({ volume }),
       setFileVolume: (fileVolume) => set({ fileVolume }),
