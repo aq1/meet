@@ -13,7 +13,6 @@ import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
-import { Route as ApiSentryRouteImport } from './routes/api/sentry'
 import { Route as ProtectedDebugSentryRouteImport } from './routes/_protected/debug/sentry'
 import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
@@ -38,11 +37,6 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiSentryRoute = ApiSentryRouteImport.update({
-  id: '/api/sentry',
-  path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtectedDebugSentryRoute = ProtectedDebugSentryRouteImport.update({
@@ -80,7 +74,6 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
-  '/api/sentry': typeof ApiSentryRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -92,7 +85,6 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
-  '/api/sentry': typeof ApiSentryRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -105,7 +97,6 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_public/login': typeof PublicLoginRoute
-  '/api/sentry': typeof ApiSentryRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/debug/sentry': typeof ProtectedDebugSentryRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
@@ -120,7 +111,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
-    | '/api/sentry'
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
@@ -132,7 +122,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
-    | '/api/sentry'
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
@@ -144,7 +133,6 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/_protected/dashboard'
     | '/_public/login'
-    | '/api/sentry'
     | '/_public/'
     | '/_protected/debug/sentry'
     | '/_public/room/$roomId'
@@ -157,7 +145,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   PublicLoginRoute: typeof PublicLoginRoute
-  ApiSentryRoute: typeof ApiSentryRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicRoomRoomIdRoute: typeof PublicRoomRoomIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -194,13 +181,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/sentry': {
-      id: '/api/sentry'
-      path: '/api/sentry'
-      fullPath: '/api/sentry'
-      preLoaderRoute: typeof ApiSentryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/debug/sentry': {
@@ -265,7 +245,6 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   PublicLoginRoute: PublicLoginRoute,
-  ApiSentryRoute: ApiSentryRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicRoomRoomIdRoute: PublicRoomRoomIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

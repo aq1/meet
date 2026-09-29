@@ -1,7 +1,7 @@
+import * as Sentry from "@sentry/tanstackstart-react";
 import type { AnyRouter } from "@tanstack/react-router";
 
-export async function instrumentRouter(router: AnyRouter) {
-  if (import.meta.env.SSR) return;
-  const Sentry = await import("@sentry/tanstackstart-react");
+export function instrumentRouter(router: AnyRouter) {
+  if (router.isServer) return;
   Sentry.addIntegration(Sentry.tanstackRouterBrowserTracingIntegration(router));
 }

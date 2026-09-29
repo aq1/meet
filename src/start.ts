@@ -6,6 +6,6 @@ const csrfMiddleware = createCsrfMiddleware({
 });
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [csrfMiddleware, sentryGlobalRequestMiddleware],
+  requestMiddleware: [sentryGlobalRequestMiddleware, csrfMiddleware],
   functionMiddleware: [sentryGlobalFunctionMiddleware],
 }));
