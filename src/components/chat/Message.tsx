@@ -9,8 +9,6 @@ type MessageT = {
 };
 
 export const Message = memo(({ message, previousMessage }: MessageT) => {
-  const time = new Date(message.timestamp).toLocaleTimeString();
-  const prevTime = previousMessage ? new Date(previousMessage.timestamp).toLocaleTimeString() : null;
   const fromSameParticipant = previousMessage?.from?.identity === message.from?.identity;
 
   return (
@@ -30,7 +28,6 @@ export const Message = memo(({ message, previousMessage }: MessageT) => {
           <MessageContent message={message} />
         </div>
       </div>
-      <span className="text-xs opacity-50">{fromSameParticipant && time === prevTime ? null : time}</span>
     </motion.div>
   );
 });

@@ -47,7 +47,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
         data: { roomId: room.name, name: file.name, type: file.type, size: file.size },
       });
       await putWithProgress(url, file, setUploadProgress);
-      send(url);
+      send(`audio:${url}`);
     } catch {
     } finally {
       setUploadProgress(null);

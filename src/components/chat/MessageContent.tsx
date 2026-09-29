@@ -6,15 +6,9 @@ type MessageContentT = {
 };
 
 export const MessageContent = ({ message }: MessageContentT) => {
-  if (import.meta.env.DEV) {
-    if (message.message.startsWith("/api/mock-s3")) {
-      return <AudioMessage url={message.message} />;
-    }
-  }
-  if (import.meta.env.PROD) {
-    if (message.message.startsWith("https://s3.snek.sh")) {
-      return <AudioMessage url={message.message} />;
-    }
+  const [type, ...rest] = message.message.split(":");
+  if (type === "audio" && rest.length) {
+    return <AudioMessage url={rest.join(":")} />;
   }
   return message.message;
 };
