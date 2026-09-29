@@ -8,7 +8,7 @@ import { Form } from "#/components/ui/form";
 import { Input } from "#/components/ui/input";
 import { OTPField, OTPFieldInput } from "#/components/ui/otp-field";
 import { authClient } from "#/lib/auth/client";
-import { getSession } from "#/lib/auth/get-session";
+import { getSession } from "#/lib/auth/functions/get-session.function";
 
 const OTP_LENGTH = 6;
 const OTP_SLOTS = ["a", "b", "c", "d", "e", "f"];

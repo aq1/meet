@@ -7,8 +7,8 @@ import { Button, buttonVariants } from "#/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "#/components/ui/empty";
 import { Field, FieldLabel } from "#/components/ui/field";
 import { Form } from "#/components/ui/form";
-import { createRoomServerFn } from "#/lib/rooms/create-room-server-fn";
-import { listMyRoomsServerFn } from "#/lib/rooms/list-my-rooms-fn";
+import { createRoomServerFn } from "#/lib/rooms/functions/create-room.function";
+import { listMyRoomsServerFn } from "#/lib/rooms/functions/list-my-rooms.function";
 import {
   Card,
   CardFrame,

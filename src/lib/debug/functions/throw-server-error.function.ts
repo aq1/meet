@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getSession } from "#/lib/auth/get-session";
+import { getSession } from "#/lib/auth/functions/get-session.function";
 
 export const throwServerErrorServerFn = createServerFn({ method: "POST" }).handler(async () => {
   const session = await getSession();

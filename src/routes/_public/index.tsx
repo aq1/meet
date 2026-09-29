@@ -3,8 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { AudioLinesIcon, PianoIcon, PlusIcon, UsersIcon, VideoIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
-import { getSession } from "#/lib/auth/get-session";
-import { createRoomServerFn } from "#/lib/rooms/create-room-server-fn";
+import { getSession } from "#/lib/auth/functions/get-session.function";
+import { createRoomServerFn } from "#/lib/rooms/functions/create-room.function";
 
 export const Route = createFileRoute("/_public/")({
   loader: async () => {

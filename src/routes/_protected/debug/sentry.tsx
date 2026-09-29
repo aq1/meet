@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
 import { Card, CardPanel } from "#/components/ui/card";
-import { throwServerErrorServerFn } from "#/lib/debug/throw-server-error-server-fn";
+import { throwServerErrorServerFn } from "#/lib/debug/functions/throw-server-error.function";
 
 export const Route = createFileRoute("/_protected/debug/sentry")({
   component: SentryDebugPage,

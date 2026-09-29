@@ -1,52 +1,15 @@
 import { type ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react";
-import { createServerFn, useServerFn } from "@tanstack/react-start";
+import { useServerFn } from "@tanstack/react-start";
 import { Pause, Play, Plus, Send } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import { roomExists } from "#/lib/db/rooms/room-exists";
-import { presignS3Download } from "#/lib/s3/presign-download";
-import { presignS3Upload } from "#/lib/s3/presign-upload";
+import { presignChatDownloadServerFn } from "#/lib/chat/functions/presign-chat-download.function";
+import { presignChatUploadServerFn } from "#/lib/chat/functions/presign-chat-upload.function";
 import { putWithProgress } from "#/lib/s3/put-with-progress";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
-
-const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
-
-const presignChatUpload = createServerFn({ method: "POST" })
-  .validator((data: { roomId: string; name: string; type: string; size: number }) => data)
-  .handler(async ({ data }) => {
-    if (!data.type.startsWith("audio/")) {
-      throw new Response("Unsupported file type", { status: 415 });
-    }
-    if (data.size > MAX_UPLOAD_SIZE) {
-      throw new Response("File too large", { status: 413 });
-    }
-    if (!(await roomExists(data.roomId))) {
-      throw new Response("Room not found", { status: 404 });
-    }
-    const key = `${data.roomId}/files/${Date.now()}${data.name}`;
-    const url = presignS3Upload(key, data.type);
-    if (!url) {
-      throw new Response("Failed to presign upload", { status: 500 });
-    }
-    return { url, key };
-  });
-
-const presignChatDownload = createServerFn({ method: "POST" })
-  .validator((data: { roomId: string; url: string }) => data)
-  .handler(({ data }) => {
-    const path = decodeURIComponent(new URL(data.url).pathname);
-    if (!path.includes(`/${data.roomId}/files/`)) {
-      throw new Response("Forbidden", { status: 403 });
-    }
-    const url = presignS3Download(data.url);
-    if (!url) {
-      throw new Response("Failed to presign download", { status: 500 });
-    }
-    return url;
-  });
 
 type MessageT = {
   message: ReceivedChatMessage;
@@ -65,7 +28,7 @@ const AudioMessage = ({ url }: AudioMessageT) => {
   const room = useRoomContext();
   const waveRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
-  const presignDownload = useServerFn(presignChatDownload);
+  const presignDownload = useServerFn(presignChatDownloadServerFn);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -199,7 +162,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { chatMessages, send, isSending } = useChat();
   const room = useRoomContext();
-  const presignUpload = useServerFn(presignChatUpload);
+  const presignUpload = useServerFn(presignChatUploadServerFn);
 
   const [draft, setDraft] = useState("");
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
