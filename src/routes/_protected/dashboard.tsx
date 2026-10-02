@@ -1,6 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
+import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
+import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -16,8 +18,6 @@ import {
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
-import { createRoomServerFn } from "@/lib/rooms/functions/create-room.function";
-import { listMyRoomsServerFn } from "@/lib/rooms/functions/list-my-rooms.function";
 
 export const Route = createFileRoute("/_protected/dashboard")({
   component: DashboardPage,

@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import { anyUserMiddleware } from "@/apps/auth/services/any-user-middleware";
+import { auth } from "@/apps/auth/services/server";
 import { roomIsActive } from "@/apps/rooms/queries";
-import { anyUserMiddleware } from "@/lib/auth/any-user-middleware";
-import { auth } from "@/lib/auth/server";
-import { grantLivekitToken } from "@/lib/livekit/grant-livekit-token";
+import { grantLivekitToken } from "@/apps/rooms/services/livekit/grant-livekit-token";
 
 export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
   .middleware([anyUserMiddleware])

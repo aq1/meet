@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/email/send-email";
+import { sendEmail } from "@/apps/notifications/services/send-email";
 
 const to = process.argv[2] ?? "delivered@resend.dev";
 

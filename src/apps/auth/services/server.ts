@@ -7,9 +7,9 @@ import { account } from "@/apps/auth/models/account";
 import { session } from "@/apps/auth/models/session";
 import { user } from "@/apps/auth/models/user";
 import { verification } from "@/apps/auth/models/verification";
+import { sendVerificationOTP } from "@/apps/auth/services/send-verification-otp";
 import { reassignRoomUsers } from "@/apps/rooms/queries";
 import { env } from "@/env";
-import { sendVerificationOTP } from "@/lib/auth/send-verification-otp";
 import { db } from "@/lib/db/client";
 
 export const auth = betterAuth({

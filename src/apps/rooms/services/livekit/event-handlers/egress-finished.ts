@@ -1,7 +1,7 @@
 import { EgressStatus, type WebhookEvent } from "livekit-server-sdk";
+import { sendEmail } from "@/apps/notifications/services/send-email";
 import { getRoom, updateRoom } from "@/apps/rooms/queries";
-import { sendEmail } from "@/lib/email/send-email";
-import { presignS3Download } from "@/lib/s3/presign-download";
+import { presignS3Download } from "@/apps/storage/services/presign-download";
 
 const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!url) {

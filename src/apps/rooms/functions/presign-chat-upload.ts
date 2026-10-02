@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
+import { anyUserMiddleware } from "@/apps/auth/services/any-user-middleware";
 import { roomIsActive } from "@/apps/rooms/queries";
-import { anyUserMiddleware } from "@/lib/auth/any-user-middleware";
-import { verifyLivekitRoomToken } from "@/lib/livekit/verify-livekit-room-token";
-import { presignS3Upload } from "@/lib/s3/presign-upload";
+import { verifyLivekitRoomToken } from "@/apps/rooms/services/livekit/verify-livekit-room-token";
+import { presignS3Upload } from "@/apps/storage/services/presign-upload";
 
 const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
 

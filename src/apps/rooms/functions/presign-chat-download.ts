@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { publicMiddleware } from "@/lib/auth/public-middleware";
-import { verifyLivekitRoomToken } from "@/lib/livekit/verify-livekit-room-token";
-import { presignS3Download, s3KeyFromLocation } from "@/lib/s3/presign-download";
+import { publicMiddleware } from "@/apps/auth/services/public-middleware";
+import { verifyLivekitRoomToken } from "@/apps/rooms/services/livekit/verify-livekit-room-token";
+import { presignS3Download, s3KeyFromLocation } from "@/apps/storage/services/presign-download";
 
 export const presignChatDownloadServerFn = createServerFn({ method: "POST" })
   .middleware([publicMiddleware])

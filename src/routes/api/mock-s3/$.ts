@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { readMockS3, writeMockS3 } from "@/lib/s3/mock-s3";
+import { readMockS3, writeMockS3 } from "@/apps/storage/services/mock-s3";
 
 export const Route = createFileRoute("/api/mock-s3/$")({
   server: {

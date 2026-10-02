@@ -3,8 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
+import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
 import { Button } from "@/components/ui/button";
-import { presignChatDownloadServerFn } from "@/lib/chat/functions/presign-chat-download.function";
 import { useRoomToken } from "../room-token";
 
 type AudioMessageT = { url: string };

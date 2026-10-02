@@ -1,10 +1,10 @@
 import * as Sentry from "@sentry/tanstackstart-react";
 import { logLivekitEvent } from "@/apps/rooms/queries";
-import { egressFinishedEventHandler } from "@/lib/livekit/event-handlers/egress-finished";
-import { participantJoinedEventHandler } from "@/lib/livekit/event-handlers/participant-joined";
-import { roomFinishedEventHandler } from "@/lib/livekit/event-handlers/room-finished";
-import { roomStartedEventHandler } from "@/lib/livekit/event-handlers/room-started";
-import { receiveLivekitWebhook } from "@/lib/livekit/receive-livekit-webhook";
+import { egressFinishedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/egress-finished";
+import { participantJoinedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/participant-joined";
+import { roomFinishedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/room-finished";
+import { roomStartedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/room-started";
+import { receiveLivekitWebhook } from "@/apps/rooms/services/livekit/receive-livekit-webhook";
 
 export const handleLivekitWebhook = async (request: Request) => {
   const { event, error } = await receiveLivekitWebhook(request);
