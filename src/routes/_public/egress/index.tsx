@@ -7,6 +7,7 @@ import { Chat } from "@/components/rooms/vocal/chat/Chat";
 import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { ParticipantTile } from "@/components/rooms/vocal/ParticipantTile";
 import { usePiano } from "@/components/rooms/vocal/piano/usePiano";
+import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
 import { SidePanel } from "@/components/side-panel/SidePanel";
 
 export const Route = createFileRoute("/_public/egress/")({
@@ -70,14 +71,16 @@ function EgressPage() {
 
   return (
     <RoomContext.Provider value={room}>
-      <RoomAudioRenderer />
-      <PianoSound />
-      <div className="flex h-dvh w-dvw gap-2 p-4">
-        <Grid />
-        <SidePanel>
-          <Chat readonly />
-        </SidePanel>
-      </div>
+      <RoomTokenContext.Provider value={token}>
+        <RoomAudioRenderer />
+        <PianoSound />
+        <div className="flex h-dvh w-dvw gap-2 p-4">
+          <Grid />
+          <SidePanel>
+            <Chat readonly />
+          </SidePanel>
+        </div>
+      </RoomTokenContext.Provider>
     </RoomContext.Provider>
   );
 }

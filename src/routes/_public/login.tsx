@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_public/login")({
   }),
   beforeLoad: async ({ search }) => {
     const session = await getSession();
-    if (session) {
+    if (session && !session.user.isAnonymous) {
       throw redirect({ href: safeRedirect(search.redirect) });
     }
   },

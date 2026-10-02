@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { VocalRoom } from "@/components/rooms/vocal/Room";
 import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
+import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
 import { useUser } from "@/hooks/use-user";
+import { authClient } from "@/lib/auth/client";
 import { grantRoomTokenServerFn } from "@/lib/rooms/functions/grant-room-token.function";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
@@ -18,6 +20,7 @@ function RouteComponent() {
 
   const username = useUser((state) => state.username);
   const [joined, setJoined] = useState(false);
+  const [token, setToken] = useState("");
   const grant = useServerFn(grantRoomTokenServerFn);
   const cameraEnabled = useControls((s) => s.cameraEnabled);
   const micEnabled = useControls((s) => s.micEnabled);
@@ -60,10 +63,15 @@ function RouteComponent() {
       return;
     }
     room.startAudio();
-    const { wss, token } = await grant({
+    const { data: session } = await authClient.getSession();
+    if (!session) {
+      await authClient.signIn.anonymous();
+    }
+    const grantResult = await grant({
       data: { username, roomId },
     });
-    await room.connect(wss, token);
+    await room.connect(grantResult.wss, grantResult.token);
+    setToken(grantResult.token);
 
     try {
       if (micEnabled) {
@@ -84,6 +92,10 @@ function RouteComponent() {
   };
 
   return (
-    <RoomContext.Provider value={room}>{joined ? <VocalRoom /> : <RoomLobby onJoin={join} />}</RoomContext.Provider>
+    <RoomContext.Provider value={room}>
+      <RoomTokenContext.Provider value={token}>
+        {joined ? <VocalRoom /> : <RoomLobby onJoin={join} />}
+      </RoomTokenContext.Provider>
+    </RoomContext.Provider>
   );
 }

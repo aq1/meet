@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { presignChatUploadServerFn } from "@/lib/chat/functions/presign-chat-upload.function";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
+import { useRoomToken } from "../room-token";
 import { Message } from "./Message";
 
 type ChatT = {
@@ -19,6 +20,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { chatMessages, send, isSending } = useChat();
   const room = useRoomContext();
+  const token = useRoomToken();
   const presignUpload = useServerFn(presignChatUploadServerFn);
 
   const [draft, setDraft] = useState("");
@@ -44,7 +46,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
     setUploadProgress(0);
     try {
       const { url } = await presignUpload({
-        data: { roomId: room.name, name: file.name, type: file.type, size: file.size },
+        data: { roomId: room.name, token, name: file.name, type: file.type, size: file.size },
       });
       await putWithProgress(url, file, setUploadProgress);
       send(`audio:${url}`);

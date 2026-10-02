@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth/functions/get-session.function";
 export const Route = createFileRoute("/_protected")({
   beforeLoad: async ({ location }) => {
     const session = await getSession();
-    if (!session) {
+    if (!session || session.user.isAnonymous) {
       throw redirect({ to: "/login", search: { redirect: location.href } });
     }
     return { user: session.user };

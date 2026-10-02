@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { WebhookEvent } from "livekit-server-sdk";
 import { user } from "@/apps/auth/models/user";
 import { db } from "@/lib/db/client";
@@ -28,8 +28,12 @@ export const getRoom = async (publicId: string) => {
   return row;
 };
 
-export const roomExists = async (publicId: string) => {
-  const [row] = await db.select({ id: room.id }).from(room).where(eq(room.publicId, publicId)).limit(1);
+export const roomIsActive = async (publicId: string) => {
+  const [row] = await db
+    .select({ id: room.id })
+    .from(room)
+    .where(and(eq(room.publicId, publicId), isNull(room.finishedAt)))
+    .limit(1);
   return Boolean(row);
 };
 

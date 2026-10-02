@@ -45,7 +45,7 @@ export const LeaveButton = () => {
             render={<Button variant="destructive" />}
             onClick={async () => {
               await room.disconnect();
-              navigate({ to: user ? "/dashboard" : "/" });
+              navigate({ to: user && !user.isAnonymous ? "/dashboard" : "/" });
             }}
           >
             Leave

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { Button } from "@/components/ui/button";
 import { presignChatDownloadServerFn } from "@/lib/chat/functions/presign-chat-download.function";
+import { useRoomToken } from "../room-token";
 
 type AudioMessageT = { url: string };
 
@@ -16,6 +17,7 @@ const formatTime = (seconds: number) => {
 
 export const AudioMessage = ({ url }: AudioMessageT) => {
   const room = useRoomContext();
+  const token = useRoomToken();
   const waveRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
   const presignDownload = useServerFn(presignChatDownloadServerFn);
@@ -63,7 +65,7 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
     if (import.meta.env.DEV) {
       create(url);
     } else {
-      presignDownload({ data: { roomId: room.name, url } })
+      presignDownload({ data: { roomId: room.name, token, url } })
         .then(create)
         .catch(() => {});
     }
@@ -73,7 +75,7 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
       wsRef.current?.destroy();
       wsRef.current = null;
     };
-  }, [presignDownload, room.name, url]);
+  }, [presignDownload, room.name, token, url]);
 
   return (
     <div className="flex w-full items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2">

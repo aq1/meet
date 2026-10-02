@@ -25,7 +25,7 @@ function IndexPage() {
 
   return (
     <div className="flex min-h-svh flex-col">
-      <Toolbar loggedIn={Boolean(user)} />
+      <Toolbar loggedIn={Boolean(user && !user.isAnonymous)} />
       <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-16">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,--theme(--color-primary/12%),transparent_60%)]" />
         <div className="flex max-w-xl flex-col items-center gap-4 text-center">
