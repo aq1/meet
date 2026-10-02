@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/tanstackstart-react";
-import { logLivekitEvent } from "@/apps/rooms/models/room-event";
+import { logLivekitEvent } from "@/apps/rooms/queries";
 import { egressFinishedEventHandler } from "@/lib/livekit/event-handlers/egress-finished";
 import { participantJoinedEventHandler } from "@/lib/livekit/event-handlers/participant-joined";
 import { roomFinishedEventHandler } from "@/lib/livekit/event-handlers/room-finished";

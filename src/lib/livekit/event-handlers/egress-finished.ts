@@ -1,5 +1,5 @@
 import { EgressStatus, type WebhookEvent } from "livekit-server-sdk";
-import { getRoom, updateRoom } from "@/apps/rooms/models/room";
+import { getRoom, updateRoom } from "@/apps/rooms/queries";
 import { sendEmail } from "@/lib/email/send-email";
 import { presignS3Download } from "@/lib/s3/presign-download";
 

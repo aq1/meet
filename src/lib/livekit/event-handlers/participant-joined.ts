@@ -1,6 +1,5 @@
 import type { WebhookEvent } from "livekit-server-sdk";
-import { getRoom } from "@/apps/rooms/models/room";
-import { createRoomUser } from "@/apps/rooms/models/room-user";
+import { createRoomUser, getRoom } from "@/apps/rooms/queries";
 
 export const participantJoinedEventHandler = async (event: WebhookEvent) => {
   if (!(event.room && event.participant)) {

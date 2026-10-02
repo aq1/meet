@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { roomExists } from "@/apps/rooms/models/room";
+import { roomExists } from "@/apps/rooms/queries";
 import { publicMiddleware } from "@/lib/auth/public-middleware";
 import { presignS3Upload } from "@/lib/s3/presign-upload";
 

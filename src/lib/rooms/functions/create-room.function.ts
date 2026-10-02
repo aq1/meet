@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createRoom } from "@/apps/rooms/models/room";
+import { createRoom } from "@/apps/rooms/queries";
 import { authMiddleware } from "@/lib/auth/auth-middleware";
 
 export const createRoomServerFn = createServerFn({ method: "POST" })

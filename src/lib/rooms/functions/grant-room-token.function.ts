@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createTempUser } from "@/apps/auth/models/user";
-import { roomExists } from "@/apps/rooms/models/room";
+import { createTempUser } from "@/apps/auth/queries";
+import { roomExists } from "@/apps/rooms/queries";
 import { sessionMiddleware } from "@/lib/auth/session-middleware";
 import { grantLivekitToken } from "@/lib/livekit/grant-livekit-token";
 
