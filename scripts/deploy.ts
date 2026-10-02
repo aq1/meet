@@ -105,9 +105,6 @@ const deploy = async () => {
   log(`Building image (${CONTAINER}) @ ${commit}...`);
   await $`docker compose build ${CONTAINER}`;
 
-  log("Running database migrations...");
-  await $`goose up`;
-
   log(`Starting container (${CONTAINER})...`);
   await $`docker compose up -d`;
 
