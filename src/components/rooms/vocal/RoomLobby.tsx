@@ -7,7 +7,7 @@ import { Field } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser } from "@/lib/user-store";
+import { useUser } from "@/hooks/use-user";
 import { useControls } from "./controls/controls-state";
 
 type DeviceSelectorT = {
