@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { roomExists } from "@/apps/rooms/models/room";
 import { publicMiddleware } from "@/lib/auth/public-middleware";
-import { roomExists } from "@/lib/db/rooms/room-exists";
 import { presignS3Upload } from "@/lib/s3/presign-upload";
 
 const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;

@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, index } from "drizzle-orm/pg-core";
+import { index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { user } from "./user";
 export const session = pgTable(
   "auth_session",

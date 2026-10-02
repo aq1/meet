@@ -1,16 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
+import { createTempUser } from "@/apps/auth/models/user";
+import { roomExists } from "@/apps/rooms/models/room";
 import { sessionMiddleware } from "@/lib/auth/session-middleware";
-import { db } from "@/lib/db/client";
-import { roomExists } from "@/lib/db/rooms/room-exists";
 import { grantLivekitToken } from "@/lib/livekit/grant-livekit-token";
 
 const __tempCreateUser = async (name: string) => {
-  const result = await db
-    .insertInto("user")
-    .values({ email: `temp${crypto.randomUUID()}@snek.sh`, emailVerified: true, name })
-    .returning("id")
-    .executeTakeFirstOrThrow();
-
+  const result = await createTempUser(name);
   return result.id.toString();
 };
 

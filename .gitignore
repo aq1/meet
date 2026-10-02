@@ -19,7 +19,6 @@ todos.json
 # Sentry Config File
 .env.sentry-build-plugin
 postgres-language-server.jsonc
-/src/lib/db/schema.d.ts
 
 # local mock of s3 uploads
 .mock-s3

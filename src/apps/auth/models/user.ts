@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { db } from "@/lib/db/client";
 
 export const user = pgTable("auth_user", {
   id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
@@ -13,3 +14,11 @@ export const user = pgTable("auth_user", {
     .notNull(),
   isAnonymous: boolean("is_anonymous").default(false),
 });
+
+export const createTempUser = async (name: string) => {
+  const [row] = await db
+    .insert(user)
+    .values({ email: `temp${crypto.randomUUID()}@snek.sh`, emailVerified: true, name })
+    .returning({ id: user.id });
+  return row;
+};
