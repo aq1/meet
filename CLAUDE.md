@@ -4,5 +4,6 @@
 - Do not write comments unless they are 100% necessary.
 - Edit files only when explicitly asked.
 - UI dir is a component library. It is readonly.
-- All server logic lives in `src/lib/<area>/` (e.g. `lib/rooms`, `lib/livekit`, `lib/s3`). Routes and components only import from lib; API route handlers just delegate to a lib function.
-- Server functions (`createServerFn`) go in `src/lib/<area>/functions/` and are named `<name>.function.ts` (e.g. `lib/rooms/functions/create-room.function.ts`).
+- Project is split in Django-like apps. Each app have models, functions, services and utils.
+    - Models are Drizzle models related to the app. Each model lives in it's own file. The file also contains related functions like getModel, updateModel, listModel, etc.
+    - Functions are Tanstack server functions. Each funciton lives in it's own file. Each function should have auth middleware explicitly set. If function is public it should have publicMiddleware anyway. publicMiddleware is a do-nothing function.
