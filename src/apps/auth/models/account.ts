@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, integer, index } from "drizzle-orm/pg-core";
 import { user } from "./user";
 
 export const account = pgTable(
-  "account",
+  "auth_account",
   {
     id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
     accountId: text("account_id").notNull(),

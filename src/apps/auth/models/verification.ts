@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, integer, index } from "drizzle-orm/pg-core";
 export const verification = pgTable(
-  "verification",
+  "auth_verification",
   {
     id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
     identifier: text("identifier").notNull(),
