@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import { publicMiddleware } from "@/lib/auth/public-middleware";
 import { presignS3Download } from "@/lib/s3/presign-download";
 
 export const presignChatDownloadServerFn = createServerFn({ method: "POST" })
+  .middleware([publicMiddleware])
   .validator((data: { roomId: string; url: string }) => data)
   .handler(({ data }) => {
     const path = decodeURIComponent(new URL(data.url).pathname);

@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
+import { publicMiddleware } from "@/lib/auth/public-middleware";
 import { roomExists } from "@/lib/db/rooms/room-exists";
 import { presignS3Upload } from "@/lib/s3/presign-upload";
 
 const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
 
 export const presignChatUploadServerFn = createServerFn({ method: "POST" })
+  .middleware([publicMiddleware])
   .validator((data: { roomId: string; name: string; type: string; size: number }) => data)
   .handler(async ({ data }) => {
     if (!data.type.startsWith("audio/")) {
