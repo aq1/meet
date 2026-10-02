@@ -1,5 +1,5 @@
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "#/lib/auth/server";
+import { auth } from "@/lib/auth/server";
 
 // TODO: Learn how really work with session in tanstack and better auth
 

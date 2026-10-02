@@ -3,11 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { type DisconnectReason, Room, RoomEvent, Track } from "livekit-client";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { Chat } from "#/components/chat/Chat";
-import { useControls } from "#/components/rooms/vocal/controls/controls-state";
-import { ParticipantTile } from "#/components/rooms/vocal/ParticipantTile";
-import { usePiano } from "#/components/rooms/vocal/piano/usePiano";
-import { SidePanel } from "#/components/side-panel/SidePanel";
+import { Chat } from "@/components/rooms/vocal/chat/Chat";
+import { useControls } from "@/components/rooms/vocal/controls/controls-state";
+import { ParticipantTile } from "@/components/rooms/vocal/ParticipantTile";
+import { usePiano } from "@/components/rooms/vocal/piano/usePiano";
+import { SidePanel } from "@/components/side-panel/SidePanel";
 
 export const Route = createFileRoute("/_public/egress/")({
   validateSearch: z.object({

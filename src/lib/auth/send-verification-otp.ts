@@ -1,4 +1,4 @@
-import { sendEmail } from "#/lib/email/send-email";
+import { sendEmail } from "@/lib/email/send-email";
 
 type SendVerificationOtpT = { email: string; otp: string; type: string };
 

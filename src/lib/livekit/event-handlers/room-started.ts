@@ -1,6 +1,6 @@
 import { EncodedFileOutput, EncodedFileType, type WebhookEvent } from "livekit-server-sdk";
-import { env } from "#/env";
-import { egressClient } from "#/lib/livekit/egress-client";
+import { env } from "@/env";
+import { egressClient } from "@/lib/livekit/egress-client";
 
 export const roomStartedEventHandler = async (event: WebhookEvent) => {
   if (!event.room?.name) {

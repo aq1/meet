@@ -1,5 +1,5 @@
 import { jsonArrayFrom } from "kysely/helpers/postgres";
-import { db } from "#/lib/db/client";
+import { db } from "@/lib/db/client";
 
 export const getMyRooms = async (userId: number, offset: number, limit: number) => {
   return await db

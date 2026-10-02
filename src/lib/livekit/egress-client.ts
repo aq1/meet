@@ -1,5 +1,5 @@
 import { EgressClient } from "livekit-server-sdk";
-import { env } from "#/env";
+import { env } from "@/env";
 
 export const egressClient = new EgressClient(
   env.LIVEKIT_URL,

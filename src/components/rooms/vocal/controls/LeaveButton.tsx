@@ -10,10 +10,10 @@ import {
   AlertDialogPopup,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "#/components/ui/alert-dialog";
-import { Button } from "#/components/ui/button";
-import { useIsTablet } from "#/hooks/use-media-query";
-import { authClient } from "#/lib/auth/client";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useIsTablet } from "@/hooks/use-media-query";
+import { authClient } from "@/lib/auth/client";
 
 export const LeaveButton = () => {
   const isTablet = useIsTablet();

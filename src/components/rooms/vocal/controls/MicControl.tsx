@@ -1,9 +1,9 @@
 import { useTrackToggle } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import { ChevronDownIcon, ChevronUpIcon, MicIcon, MicOffIcon, VolumeIcon } from "lucide-react";
-import { Button } from "#/components/ui/button";
-import { Group, GroupSeparator } from "#/components/ui/group";
-import { Menu, MenuPopup, MenuSeparator, MenuTrigger } from "#/components/ui/menu";
+import { Button } from "@/components/ui/button";
+import { Group, GroupSeparator } from "@/components/ui/group";
+import { Menu, MenuPopup, MenuSeparator, MenuTrigger } from "@/components/ui/menu";
 import { MediaDeviceSelect } from "./MediaDeviceSelect";
 
 const MicMenu = ({ variant }: { variant: "outline" | "destructive-outline" }) => {

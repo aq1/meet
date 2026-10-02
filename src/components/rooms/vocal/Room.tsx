@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { Chat } from "#/components/chat/Chat";
-import { SidePanel } from "#/components/side-panel/SidePanel";
-import { useIsTablet } from "#/hooks/use-media-query";
-import { cn } from "#/lib/utils";
+import { Chat } from "@/components/rooms/vocal/chat/Chat";
+import { SidePanel } from "@/components/side-panel/SidePanel";
+import { useIsTablet } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";

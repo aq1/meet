@@ -1,4 +1,4 @@
-import { Separator } from "#/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { CameraControl } from "./CameraControl";
 import { ChatToggle } from "./ChatToggle";
 import { KeyboardControl } from "./KeyboardControl";

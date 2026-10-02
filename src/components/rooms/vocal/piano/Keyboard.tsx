@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority";
-import { ScrollArea } from "#/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { NOTES, type Note } from "./constants";
 import { useKeysStore } from "./keys";
 

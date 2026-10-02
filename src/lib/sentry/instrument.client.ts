@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/tanstackstart-react";
-import { SENTRY_DSN } from "#/lib/sentry/config";
+import { SENTRY_DSN } from "@/lib/sentry/config";
 
 Sentry.init({
   dsn: SENTRY_DSN,

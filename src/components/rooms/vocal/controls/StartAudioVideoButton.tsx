@@ -1,5 +1,5 @@
 import { useRoomContext, useStartAudio, useStartVideo } from "@livekit/components-react";
-import { Button } from "#/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export const StartVideoButton = () => {
   const room = useRoomContext();

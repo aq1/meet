@@ -1,7 +1,7 @@
 import { XIcon } from "lucide-react";
-import { Dialog, DialogClose, DialogPopup } from "#/components/ui/dialog";
-import { useIsTablet } from "#/hooks/use-media-query";
-import { cn } from "#/lib/utils";
+import { Dialog, DialogClose, DialogPopup } from "@/components/ui/dialog";
+import { useIsTablet } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 import { useControls } from "../rooms/vocal/controls/controls-state";
 import { Button } from "../ui/button";
 

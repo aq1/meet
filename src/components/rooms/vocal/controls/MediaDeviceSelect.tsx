@@ -1,6 +1,6 @@
 import { useMediaDeviceSelect } from "@livekit/components-react";
 import type * as React from "react";
-import { MenuGroup, MenuGroupLabel, MenuItem, MenuRadioGroup, MenuRadioItem } from "#/components/ui/menu";
+import { MenuGroup, MenuGroupLabel, MenuItem, MenuRadioGroup, MenuRadioItem } from "@/components/ui/menu";
 
 export const MediaDeviceSelect = ({
   kind,

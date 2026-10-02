@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon, PianoIcon } from "lucide-react";
-import { Button } from "#/components/ui/button";
-import { Group, GroupSeparator } from "#/components/ui/group";
-import { Menu, MenuPopup, MenuRadioGroup, MenuRadioItem, MenuTrigger } from "#/components/ui/menu";
+import { Button } from "@/components/ui/button";
+import { Group, GroupSeparator } from "@/components/ui/group";
+import { Menu, MenuPopup, MenuRadioGroup, MenuRadioItem, MenuTrigger } from "@/components/ui/menu";
 import { useMidiStore } from "../piano/midi";
 import { useControls } from "./controls-state";
 

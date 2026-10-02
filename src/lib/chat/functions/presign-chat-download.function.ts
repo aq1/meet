@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { presignS3Download } from "#/lib/s3/presign-download";
+import { presignS3Download } from "@/lib/s3/presign-download";
 
 export const presignChatDownloadServerFn = createServerFn({ method: "POST" })
   .validator((data: { roomId: string; url: string }) => data)

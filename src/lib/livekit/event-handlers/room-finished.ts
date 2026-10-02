@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "livekit-server-sdk";
-import { updateRoom } from "#/lib/db/rooms/update-room";
-import { egressClient } from "#/lib/livekit/egress-client";
+import { updateRoom } from "@/lib/db/rooms/update-room";
+import { egressClient } from "@/lib/livekit/egress-client";
 
 export const roomFinishedEventHandler = async (event: WebhookEvent) => {
   if (!event.room?.name) {

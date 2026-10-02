@@ -1,7 +1,7 @@
 import { createRouter as createTanStackRouter, ErrorComponent } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { captureException } from "#/lib/sentry/capture-exception";
-import { instrumentRouter } from "#/lib/sentry/instrument-router";
+import { captureException } from "@/lib/sentry/capture-exception";
+import { instrumentRouter } from "@/lib/sentry/instrument-router";
 import { routeTree } from "./routeTree.gen";
 
 function DefaultErrorComponent({ error }: { error: Error }) {

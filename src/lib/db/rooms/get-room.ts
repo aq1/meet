@@ -1,4 +1,4 @@
-import { db } from "#/lib/db/client";
+import { db } from "@/lib/db/client";
 
 export const getRoom = async (roomId: string) => {
   return await db

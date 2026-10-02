@@ -1,4 +1,4 @@
-import "#/lib/sentry/instrument.server";
+import "@/lib/sentry/instrument.server";
 
 import { wrapFetchWithSentry } from "@sentry/tanstackstart-react";
 import handler, { createServerEntry } from "@tanstack/react-start/server-entry";

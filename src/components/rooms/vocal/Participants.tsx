@@ -1,5 +1,5 @@
 import { RoomAudioRenderer } from "@livekit/components-react";
-import { useIsTablet } from "#/hooks/use-media-query";
+import { useIsTablet } from "@/hooks/use-media-query";
 import { ActiveSpeakerPanel } from "./ActiveSpeakerPanel";
 import { useControls } from "./controls/controls-state";
 import { LocalParticipantTile } from "./LocalParticipantTile";

@@ -1,5 +1,5 @@
 import { s3 } from "bun";
-import { env } from "#/env";
+import { env } from "@/env";
 
 const DOWNLOAD_URL_TTL = 7 * 24 * 60 * 60;
 

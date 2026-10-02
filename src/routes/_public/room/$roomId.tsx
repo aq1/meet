@@ -3,11 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
-import { useControls } from "#/components/rooms/vocal/controls/controls-state";
-import { VocalRoom } from "#/components/rooms/vocal/Room";
-import { RoomLobby } from "#/components/rooms/vocal/RoomLobby";
-import { grantRoomTokenServerFn } from "#/lib/rooms/functions/grant-room-token.function";
-import { useUser } from "#/lib/user-store";
+import { useControls } from "@/components/rooms/vocal/controls/controls-state";
+import { VocalRoom } from "@/components/rooms/vocal/Room";
+import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
+import { grantRoomTokenServerFn } from "@/lib/rooms/functions/grant-room-token.function";
+import { useUser } from "@/lib/user-store";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
   component: RouteComponent,

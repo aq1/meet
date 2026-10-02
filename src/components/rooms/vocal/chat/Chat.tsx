@@ -3,11 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { Plus, Send } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { ScrollArea } from "#/components/ui/scroll-area";
-import { presignChatUploadServerFn } from "#/lib/chat/functions/presign-chat-upload.function";
-import { putWithProgress } from "#/lib/s3/put-with-progress";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { presignChatUploadServerFn } from "@/lib/chat/functions/presign-chat-upload.function";
+import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { Message } from "./Message";
 
 type ChatT = {

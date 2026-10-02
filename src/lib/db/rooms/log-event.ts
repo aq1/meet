@@ -1,5 +1,5 @@
 import type { WebhookEvent } from "@livekit/protocol";
-import { db } from "#/lib/db/client";
+import { db } from "@/lib/db/client";
 
 type LogLivekitEventT = { eventId: string; eventName: string; roomName: string; data: WebhookEvent };
 

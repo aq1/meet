@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getSession } from "#/lib/auth/functions/get-session.function";
-import { db } from "#/lib/db/client";
-import { roomExists } from "#/lib/db/rooms/room-exists";
-import { grantLivekitToken } from "#/lib/livekit/grant-livekit-token";
+import { getSession } from "@/lib/auth/functions/get-session.function";
+import { db } from "@/lib/db/client";
+import { roomExists } from "@/lib/db/rooms/room-exists";
+import { grantLivekitToken } from "@/lib/livekit/grant-livekit-token";
 
 const __tempEnsureUser = async (name: string) => {
   const session = await getSession();

@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "livekit-server-sdk";
 import { WebhookReceiver } from "livekit-server-sdk";
-import { env } from "#/env";
+import { env } from "@/env";
 
 const webhookReceiver = new WebhookReceiver(env.LIVEKIT_WEBHOOK_API_KEY, env.LIVEKIT_WEBHOOK_API_SECRET);
 
