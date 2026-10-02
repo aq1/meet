@@ -12,11 +12,12 @@ const version = readFileSync("VERSION", "utf8").trim();
 const sentryUpload = Boolean(process.env.SENTRY_AUTH_TOKEN);
 
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
+  resolve: { tsconfigPaths: true, dedupe: ["react", "react-dom"] },
   define: { __APP_VERSION__: JSON.stringify(version) },
   optimizeDeps: {
     // "bun" is a runtime builtin, so the dev dependency scanner should not try to resolve it
     exclude: ["bun"],
+    include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   plugins: [
     devtools(),
