@@ -1,12 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createTempUser } from "@/apps/auth/queries";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import { roomExists } from "@/apps/rooms/queries";
+import { auth } from "@/lib/auth/server";
 import { sessionMiddleware } from "@/lib/auth/session-middleware";
 import { grantLivekitToken } from "@/lib/livekit/grant-livekit-token";
 
-const __tempCreateUser = async (name: string) => {
-  const result = await createTempUser(name);
-  return result.id.toString();
+const signInAnonymous = async (name: string) => {
+  const { user } = await auth.api.signInAnonymous({ headers: getRequestHeaders() });
+  const ctx = await auth.$context;
+  await ctx.internalAdapter.updateUser(user.id, { name });
+  return user;
 };
 
 export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
@@ -16,6 +19,6 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
     if (!(await roomExists(data.roomId))) {
       throw new Response("Room not found", { status: 404 });
     }
-    const identity = context.session?.user.id ?? (await __tempCreateUser(data.username));
-    return await grantLivekitToken(identity, data.username, data.roomId);
+    const user = context.session?.user ?? (await signInAnonymous(data.username));
+    return await grantLivekitToken(user.id.toString(), data.username, data.roomId);
   });

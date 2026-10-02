@@ -57,6 +57,10 @@ export const createRoomUser = async (roomId: number, userId: number) => {
   return await db.insert(roomUser).values({ roomId, userId });
 };
 
+export const reassignRoomUsers = async (fromUserId: number, toUserId: number) => {
+  await db.update(roomUser).set({ userId: toUserId }).where(eq(roomUser.userId, fromUserId));
+};
+
 type LogLivekitEventT = { eventId: string; eventName: string; roomName: string; data: WebhookEvent };
 
 export const logLivekitEvent = async ({ eventId, eventName, roomName, data }: LogLivekitEventT) => {
