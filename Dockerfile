@@ -8,12 +8,15 @@ RUN --mount=type=cache,target=/app/node_modules,sharing=locked \
     --mount=type=cache,target=/root/.bun/install/cache \
     --mount=type=secret,id=sentry_auth_token \
     bun install --frozen-lockfile && \
-    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" bun run build
+    SENTRY_AUTH_TOKEN="$(cat /run/secrets/sentry_auth_token 2>/dev/null || true)" bun run build && \
+    bun build scripts/migrate.ts --target=bun --outfile=migrate.js
 
 FROM oven/bun:1-alpine AS release
 WORKDIR /app
 ENV NODE_ENV=production PORT=3000
 COPY --from=build --chown=bun:bun /app/.output ./.output
+COPY --from=build --chown=bun:bun /app/migrate.js ./migrate.js
+COPY --from=build --chown=bun:bun /app/drizzle ./drizzle
 USER bun
 EXPOSE 3000
 CMD ["bun", ".output/server/index.mjs"]

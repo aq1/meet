@@ -10,3 +10,4 @@ configs
 README.md
 CLAUDE.md
 scripts
+!scripts/migrate.ts
