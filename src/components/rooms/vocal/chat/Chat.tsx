@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { useRoomToken } from "../room-token";
+import { AudioSyncBridge } from "./AudioSyncBridge";
 import { Message } from "./Message";
 
 type ChatT = {
@@ -58,6 +59,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
 
   return (
     <div className="size-full">
+      <AudioSyncBridge />
       <div className="flex size-full flex-col justify-between align-center">
         <ScrollArea className="min-h-0 flex-1">
           <div className="flex flex-col gap-1">

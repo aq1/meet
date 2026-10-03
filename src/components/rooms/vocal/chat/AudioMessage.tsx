@@ -1,30 +1,15 @@
-import type { ReceivedDataMessage } from "@livekit/components-core";
-import { useDataChannel, useRoomContext } from "@livekit/components-react";
+import { useRoomContext } from "@livekit/components-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Pause, Play } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
 import { Button } from "@/components/ui/button";
 import { useControls } from "../controls/controls-state";
 import { useRoomToken } from "../room-token";
+import { useAudioSync } from "./audio-sync-state";
 
 type AudioMessageT = { url: string };
-
-type AudioSyncMsg = { url: string; action: "play" | "pause"; time: number };
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-
-const applySync = (ws: WaveSurfer, msg: AudioSyncMsg) => {
-  ws.setTime(msg.time);
-  if (msg.action === "play") {
-    ws.play().catch(() => {});
-  }
-  if (msg.action === "pause") {
-    ws.pause();
-  }
-};
 
 const formatTime = (seconds: number) => {
   const m = Math.floor(seconds / 60);
@@ -42,7 +27,8 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const pendingSyncRef = useRef<AudioSyncMsg | null>(null);
+  const sync = useAudioSync((state) => (state.sync?.url === url ? state.sync : null));
+  const control = useAudioSync((state) => state.control);
   const fileVolume = useControls((state) => state.fileVolume);
   const fileVolumeRef = useRef(fileVolume);
 
@@ -51,35 +37,22 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
     wsRef.current?.setVolume(fileVolume / 100);
   }, [fileVolume]);
 
-  const onSync = useCallback(
-    (msg: ReceivedDataMessage<"audio-sync">) => {
-      const data = JSON.parse(decoder.decode(msg.payload)) as AudioSyncMsg;
-      if (data.url !== url) {
-        return;
-      }
-      const ws = wsRef.current;
-      if (!ws || !ws.getDuration()) {
-        pendingSyncRef.current = data;
-        return;
-      }
-      applySync(ws, data);
-    },
-    [url],
-  );
-
-  const { send } = useDataChannel("audio-sync", onSync);
-
-  const broadcast = useCallback(
-    (action: AudioSyncMsg["action"], time: number) => {
-      send(encoder.encode(JSON.stringify({ url, action, time } satisfies AudioSyncMsg)), { reliable: true });
-    },
-    [send, url],
-  );
-
-  const broadcastRef = useRef(broadcast);
   useEffect(() => {
-    broadcastRef.current = broadcast;
-  }, [broadcast]);
+    const ws = wsRef.current;
+    if (!ready || !ws) {
+      return;
+    }
+    if (!sync) {
+      ws.pause();
+      return;
+    }
+    ws.setTime(sync.time);
+    if (sync.action === "play") {
+      ws.play().catch(() => {});
+    } else {
+      ws.pause();
+    }
+  }, [sync, ready]);
 
   useEffect(() => {
     const container = waveRef.current;
@@ -109,18 +82,13 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
       ws.on("ready", (d) => {
         setDuration(d);
         setReady(true);
-        if (pendingSyncRef.current) {
-          applySync(ws, pendingSyncRef.current);
-          pendingSyncRef.current = null;
-        }
       });
       ws.on("timeupdate", setCurrentTime);
       ws.on("play", () => setPlaying(true));
       ws.on("pause", () => setPlaying(false));
       ws.on("finish", () => setPlaying(false));
       ws.on("interaction", (time) => {
-        ws.play();
-        broadcastRef.current("play", time);
+        useAudioSync.getState().control({ url, action: "play", time });
       });
       wsRef.current = ws;
     };
@@ -152,9 +120,7 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
           if (!ws) {
             return;
           }
-          const willPlay = !ws.isPlaying();
-          ws.playPause();
-          broadcast(willPlay ? "play" : "pause", ws.getCurrentTime());
+          control({ url, action: ws.isPlaying() ? "pause" : "play", time: ws.getCurrentTime() });
         }}
       >
         {playing ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}
