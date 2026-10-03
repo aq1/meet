@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
 import { Button } from "@/components/ui/button";
+import { useControls } from "../controls/controls-state";
 import { useRoomToken } from "../room-token";
 
 type AudioMessageT = { url: string };
@@ -42,6 +43,13 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const pendingSyncRef = useRef<AudioSyncMsg | null>(null);
+  const fileVolume = useControls((state) => state.fileVolume);
+  const fileVolumeRef = useRef(fileVolume);
+
+  useEffect(() => {
+    fileVolumeRef.current = fileVolume;
+    wsRef.current?.setVolume(fileVolume / 100);
+  }, [fileVolume]);
 
   const onSync = useCallback(
     (msg: ReceivedDataMessage<"audio-sync">) => {
@@ -97,6 +105,7 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
         normalize: true,
         dragToSeek: true,
       });
+      ws.setVolume(fileVolumeRef.current / 100);
       ws.on("ready", (d) => {
         setDuration(d);
         setReady(true);
