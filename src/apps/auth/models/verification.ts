@@ -1,16 +1,12 @@
-import { index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { baseColumns } from "@/lib/db/columns";
 export const verification = pgTable(
   "auth_verification",
   {
-    id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
+    ...baseColumns,
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
