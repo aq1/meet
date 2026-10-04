@@ -21,6 +21,8 @@ Features:
     - Functions are Tanstack server functions. Each funciton lives in it's own file. Each function should have auth middleware explicitly set. If function is public it should have publicMiddleware anyway. publicMiddleware is a do-nothing function.
     - Services are business logic that does not have to be exposed to api via functions. But it still can. Notifications, webhook handlers, s3 signing etc.
 - lk usually means livekit
+- Generate migrations with bun run db:generate, don't generate them yourself
+- Do not run migrations by yourself
 
 ## Roadmap
 1. Singing audio: "original sound" mode (no AEC/NS/AGC, music stereo preset, no DTX), headphone prompt, mic meter, connection indicator.
