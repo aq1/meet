@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, isNull } from "drizzle-orm";
-import { anyUserMiddleware } from "@/apps/auth/services/any-user-middleware";
 import { room } from "@/apps/rooms/models/room";
-import { verifyLivekitRoomToken } from "@/apps/rooms/services/livekit/verify-livekit-room-token";
+import { roomTokenOwnerMiddleware } from "@/apps/rooms/services/livekit/room-token-owner-middleware";
 import { presignS3Upload } from "@/apps/storage/services/presign-upload";
 import { db } from "@/lib/db/client";
 
@@ -15,13 +14,9 @@ const sanitizeFileName = (name: string) =>
     .slice(-100);
 
 export const presignChatUploadServerFn = createServerFn({ method: "POST" })
-  .middleware([anyUserMiddleware])
+  .middleware([roomTokenOwnerMiddleware])
   .validator((data: { roomId: string; token: string; name: string; type: string; size: number }) => data)
-  .handler(async ({ data, context }) => {
-    const claims = await verifyLivekitRoomToken(data.token, data.roomId);
-    if (claims?.sub !== context.session.user.id.toString()) {
-      throw new Response("Forbidden", { status: 403 });
-    }
+  .handler(async ({ data }) => {
     if (!data.type.startsWith("audio/")) {
       throw new Response("Unsupported file type", { status: 415 });
     }
