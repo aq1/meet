@@ -23,8 +23,8 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   await sendEmail({
     to: owner.email,
     subject: "Your call recording is here",
-    html: `<p>${greeting}</p><p>The recording of your call ${roomId} is ready.</p><p>Download it here (link expires in 7 days):<br><a href="${url}">${url}</a></p>`,
-    text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 7 days):\n${url}`,
+    html: `<p>${greeting}</p><p>The recording of your call ${roomId} is ready.</p><p>Download it here (link expires in 24 hours):<br><a href="${url}">${url}</a></p>`,
+    text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 24 hours):\n${url}`,
     idempotencyKey: `egress-finished/${roomId}`,
   });
 };

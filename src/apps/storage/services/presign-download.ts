@@ -1,7 +1,7 @@
 import { s3 } from "bun";
 import { env } from "@/env";
 
-const DOWNLOAD_URL_TTL = 7 * 24 * 60 * 60;
+const DOWNLOAD_URL_TTL = 24 * 60 * 60;
 
 export const s3KeyFromLocation = (location: string) => {
   const decodedPath = decodeURIComponent(new URL(location).pathname).replace(/^\/+/, "");
