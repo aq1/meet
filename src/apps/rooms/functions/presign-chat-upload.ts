@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { and, eq, isNull } from "drizzle-orm";
 import { anyUserMiddleware } from "@/apps/auth/services/any-user-middleware";
-import { roomIsActive } from "@/apps/rooms/queries";
+import { room } from "@/apps/rooms/models/room";
 import { verifyLivekitRoomToken } from "@/apps/rooms/services/livekit/verify-livekit-room-token";
 import { presignS3Upload } from "@/apps/storage/services/presign-upload";
+import { db } from "@/lib/db/client";
 
 const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
 
@@ -26,7 +28,12 @@ export const presignChatUploadServerFn = createServerFn({ method: "POST" })
     if (data.size > MAX_UPLOAD_SIZE) {
       throw new Response("File too large", { status: 413 });
     }
-    if (!(await roomIsActive(data.roomId))) {
+    const [activeRoom] = await db
+      .select({ id: room.id })
+      .from(room)
+      .where(and(eq(room.publicId, data.roomId), isNull(room.finishedAt)))
+      .limit(1);
+    if (!activeRoom) {
       throw new Response("Room not found", { status: 404 });
     }
     const key = `${data.roomId}/files/${Date.now()}${sanitizeFileName(data.name)}`;

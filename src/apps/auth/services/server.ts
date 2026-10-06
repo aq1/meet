@@ -3,12 +3,13 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { anonymous } from "better-auth/plugins";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { eq } from "drizzle-orm";
 import { account } from "@/apps/auth/models/account";
 import { session } from "@/apps/auth/models/session";
 import { user } from "@/apps/auth/models/user";
 import { verification } from "@/apps/auth/models/verification";
 import { sendVerificationOTP } from "@/apps/auth/services/send-verification-otp";
-import { reassignRoomUsers } from "@/apps/rooms/queries";
+import { roomUser } from "@/apps/rooms/models/room-user";
 import { env } from "@/env";
 import { db } from "@/lib/db/client";
 
@@ -38,7 +39,10 @@ export const auth = betterAuth({
     }),
     anonymous({
       onLinkAccount: async ({ anonymousUser, newUser }) => {
-        await reassignRoomUsers(Number(anonymousUser.user.id), Number(newUser.user.id));
+        await db
+          .update(roomUser)
+          .set({ userId: Number(newUser.user.id) })
+          .where(eq(roomUser.userId, Number(anonymousUser.user.id)));
       },
     }),
     tanstackStartCookies(),

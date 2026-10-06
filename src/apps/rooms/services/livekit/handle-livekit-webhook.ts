@@ -1,10 +1,11 @@
 import * as Sentry from "@sentry/tanstackstart-react";
-import { logLivekitEvent } from "@/apps/rooms/queries";
+import { roomEvent } from "@/apps/rooms/models/room-event";
 import { egressFinishedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/egress-finished";
 import { participantJoinedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/participant-joined";
 import { roomFinishedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/room-finished";
 import { roomStartedEventHandler } from "@/apps/rooms/services/livekit/event-handlers/room-started";
 import { receiveLivekitWebhook } from "@/apps/rooms/services/livekit/receive-livekit-webhook";
+import { db } from "@/lib/db/client";
 
 export const handleLivekitWebhook = async (request: Request) => {
   const { event, error } = await receiveLivekitWebhook(request);
@@ -20,8 +21,12 @@ export const handleLivekitWebhook = async (request: Request) => {
     return;
   }
 
-  const isNewEvent = await logLivekitEvent({ eventId: event.id, eventName: event.event, roomName, data: event });
-  if (!isNewEvent) {
+  const inserted = await db
+    .insert(roomEvent)
+    .values({ eventId: event.id, event: event.event, roomName, data: event })
+    .onConflictDoNothing({ target: roomEvent.eventId })
+    .returning({ id: roomEvent.id });
+  if (inserted.length === 0) {
     return new Response(JSON.stringify({ ok: true }));
   }
 
