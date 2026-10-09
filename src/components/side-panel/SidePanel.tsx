@@ -2,6 +2,7 @@ import { XIcon } from "lucide-react";
 import { Dialog, DialogClose, DialogPopup } from "@/components/ui/dialog";
 import { useIsTablet } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+import { m } from "@/paraglide/messages";
 import { useControls } from "../rooms/vocal/controls/controls-state";
 import { Button } from "../ui/button";
 
@@ -22,7 +23,7 @@ export const SidePanel = ({ children }: SidePanelT) => {
         <DialogPopup portalProps={{ keepMounted: true }} className="h-full" showCloseButton={false}>
           <div className="flex min-h-0 flex-1 flex-col gap-2 p-6">
             <div className="flex items-center justify-between">
-              <DialogClose aria-label="Close" render={<Button size="icon" variant="ghost" title="Close" />}>
+              <DialogClose aria-label={m.close()} render={<Button size="icon" variant="ghost" title={m.close()} />}>
                 <XIcon />
               </DialogClose>
             </div>

@@ -2,6 +2,7 @@ import { ChevronDownIcon, ChevronUpIcon, PianoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Group, GroupSeparator } from "@/components/ui/group";
 import { Menu, MenuPopup, MenuRadioGroup, MenuRadioItem, MenuTrigger } from "@/components/ui/menu";
+import { m } from "@/paraglide/messages";
 import { useMidiStore } from "../piano/midi";
 import { useControls } from "./controls-state";
 
@@ -18,8 +19,8 @@ const MidiMenu = ({ variant }: { variant: "default" | "outline" }) => {
             variant={variant}
             size="icon-xl"
             className="w-7 lg:w-6"
-            aria-label="Select microphone"
-            title="Select microphone"
+            aria-label={m.controls_select_midi_device()}
+            title={m.controls_select_midi_device()}
           />
         }
       >
@@ -47,12 +48,12 @@ export const KeyboardControl = () => {
   const status = useMidiStore((s) => s.status);
 
   return (
-    <Group className="hidden lg:flex" aria-label="Keyboard controls">
+    <Group className="hidden lg:flex" aria-label={m.controls_keyboard_group()}>
       <Button
         onClick={() => toggle("showKeyboard")}
         variant={variant}
         size="icon-xl"
-        title={showKeyboard ? "Hide keyboard" : "Show keyboard"}
+        title={showKeyboard ? m.controls_hide_keyboard() : m.controls_show_keyboard()}
       >
         <PianoIcon />
       </Button>

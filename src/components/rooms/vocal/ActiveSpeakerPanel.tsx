@@ -1,6 +1,7 @@
 import { TrackRefContext, useSpeakingParticipants, useTracks } from "@livekit/components-react";
 import { ParticipantKind, Track } from "livekit-client";
 import { useEffect, useState } from "react";
+import { m } from "@/paraglide/messages";
 import { ParticipantTile } from "./ParticipantTile";
 
 export const ActiveSpeakerPanel = () => {
@@ -34,7 +35,7 @@ export const ActiveSpeakerPanel = () => {
   if (!activeTrack) {
     return (
       <div className="flex size-full items-center justify-center rounded-xl bg-muted text-muted-foreground text-sm">
-        Waiting for others to join…
+        {m.room_waiting_for_others()}
       </div>
     );
   }

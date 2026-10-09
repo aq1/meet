@@ -13,11 +13,12 @@ import { MicOff, Signal, SignalHigh, SignalLow, SignalMedium, VideoOff } from "l
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { m } from "@/paraglide/messages";
 
 const MicMutedIndicator = ({ participant }: { participant: Participant }) => {
   const isMuted = useIsMuted({ participant, source: Track.Source.Microphone });
   if (!isMuted) return null;
-  return <MicOff className="size-3" aria-label="Microphone muted" />;
+  return <MicOff className="size-3" aria-label={m.room_microphone_muted()} />;
 };
 
 const ConnectionQualityIndicator = ({ participant }: { participant: Participant }) => {
@@ -25,13 +26,13 @@ const ConnectionQualityIndicator = ({ participant }: { participant: Participant 
 
   switch (quality) {
     case ConnectionQuality.Excellent:
-      return <SignalHigh className="size-3 text-emerald-500" aria-label="Connection quality: excellent" />;
+      return <SignalHigh className="size-3 text-emerald-500" aria-label={m.room_connection_excellent()} />;
     case ConnectionQuality.Good:
-      return <SignalMedium className="size-3 text-yellow-500" aria-label="Connection quality: good" />;
+      return <SignalMedium className="size-3 text-yellow-500" aria-label={m.room_connection_good()} />;
     case ConnectionQuality.Poor:
-      return <SignalLow className="size-3 text-red-500" aria-label="Connection quality: poor" />;
+      return <SignalLow className="size-3 text-red-500" aria-label={m.room_connection_poor()} />;
     case ConnectionQuality.Lost:
-      return <Signal className="size-3 text-muted-foreground" aria-label="Connection lost" />;
+      return <Signal className="size-3 text-muted-foreground" aria-label={m.room_connection_lost()} />;
     default:
       return null;
   }

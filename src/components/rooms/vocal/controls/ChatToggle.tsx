@@ -1,5 +1,6 @@
 import { MessageCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { m } from "@/paraglide/messages";
 import { useControls } from "./controls-state";
 
 export const ChatToggle = () => {
@@ -11,7 +12,7 @@ export const ChatToggle = () => {
       onClick={() => toggle("showChat")}
       variant={showChat ? "default" : "outline"}
       size="icon-xl"
-      title={showChat ? "Hide chat" : "Show chat"}
+      title={showChat ? m.controls_hide_chat() : m.controls_show_chat()}
     >
       <MessageCircleIcon />
     </Button>

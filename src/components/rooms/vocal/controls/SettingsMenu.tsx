@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useIsTablet } from "@/hooks/use-media-query";
+import { m } from "@/paraglide/messages";
 import { useMidiStore } from "../piano/midi";
 import { useSamplerStore } from "../piano/sampler";
 import { useControls } from "./controls-state";
@@ -22,7 +23,7 @@ const PianoVolumeSlider = () => {
       <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <PianoIcon />
-          Piano
+          {m.settings_volume_piano()}
         </FieldLabel>
       </Slider>
     </Field>
@@ -38,7 +39,7 @@ const ParticipantsVolumeSlider = () => {
       <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <UsersIcon />
-          Participants
+          {m.settings_volume_participants()}
         </FieldLabel>
       </Slider>
     </Field>
@@ -54,7 +55,7 @@ const FileVolumeSlider = () => {
       <Slider value={volume} onValueChange={(next) => setVolume(Array.isArray(next) ? next[0] : next)}>
         <FieldLabel className="mb-3.5 gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
           <AudioLines />
-          Audio Files
+          {m.settings_volume_audio_files()}
         </FieldLabel>
       </Slider>
     </Field>
@@ -68,7 +69,7 @@ const PianoToggle = () => {
     <Field className="flex-row items-center justify-between">
       <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
         <PianoIcon />
-        Show piano
+        {m.settings_show_piano()}
       </FieldLabel>
       <Switch checked={showKeyboard} onCheckedChange={() => toggle("showKeyboard")} />
     </Field>
@@ -89,7 +90,7 @@ const MidiSelector = () => {
     <Field>
       <FieldLabel className="gap-2 font-normal text-muted-foreground [&_svg]:size-4 [&_svg]:opacity-80">
         <Music2Icon />
-        MIDI device
+        {m.settings_midi_device()}
       </FieldLabel>
       <Select
         items={inputs.map((i) => ({ label: i.name, value: i.id }))}
@@ -98,8 +99,8 @@ const MidiSelector = () => {
           if (next) setSelectedInput(next);
         }}
       >
-        <SelectTrigger size="sm" aria-label="MIDI device">
-          <SelectValue placeholder="No MIDI device detected" />
+        <SelectTrigger size="sm" aria-label={m.settings_midi_device()}>
+          <SelectValue placeholder={m.settings_no_midi_device()} />
         </SelectTrigger>
         <SelectPopup>
           {inputs.map((i) => (
@@ -116,7 +117,7 @@ const MidiSelector = () => {
 const VolumeControls = () => {
   return (
     <Fieldset className="flex w-full flex-col gap-3">
-      <FieldsetLegend>Volume</FieldsetLegend>
+      <FieldsetLegend>{m.settings_volume()}</FieldsetLegend>
       <ParticipantsVolumeSlider />
       <FileVolumeSlider />
       <PianoVolumeSlider />
@@ -130,12 +131,14 @@ export const SettingsMenu = () => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger render={<Button variant={open ? "default" : "outline"} size="icon-xl" title="Settings" />}>
+      <PopoverTrigger
+        render={<Button variant={open ? "default" : "outline"} size="icon-xl" title={m.settings_title()} />}
+      >
         <Settings />
       </PopoverTrigger>
       <PopoverPopup sideOffset={14} className="w-84">
         <div className="pb-4">
-          <PopoverTitle>Settings</PopoverTitle>
+          <PopoverTitle>{m.settings_title()}</PopoverTitle>
         </div>
         {isTablet ? (
           <>

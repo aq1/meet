@@ -1,14 +1,17 @@
 import { useMediaDeviceSelect } from "@livekit/components-react";
 import type * as React from "react";
 import { MenuGroup, MenuGroupLabel, MenuItem, MenuRadioGroup, MenuRadioItem } from "@/components/ui/menu";
+import { m } from "@/paraglide/messages";
 
 export const MediaDeviceSelect = ({
   kind,
   label,
+  emptyLabel,
   icon,
 }: {
   kind: "audioinput" | "videoinput" | "audiooutput";
   label: string;
+  emptyLabel: string;
   icon: React.ReactNode;
 }) => {
   const { devices, activeDeviceId, setActiveMediaDevice } = useMediaDeviceSelect({ kind, requestPermissions: true });
@@ -16,7 +19,7 @@ export const MediaDeviceSelect = ({
   const items = devices
     .filter((d) => d.deviceId && d.deviceId !== "communications")
     .map((d, index) => ({
-      label: d.label || `${label} ${index + 1}`,
+      label: d.label || m.device_fallback_label({ label, index: index + 1 }),
       value: d.deviceId,
     }));
 
@@ -40,7 +43,7 @@ export const MediaDeviceSelect = ({
           ))}
         </MenuRadioGroup>
       ) : (
-        <MenuItem disabled>No {label.toLowerCase()} detected</MenuItem>
+        <MenuItem disabled>{emptyLabel}</MenuItem>
       )}
     </MenuGroup>
   );

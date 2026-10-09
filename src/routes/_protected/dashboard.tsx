@@ -1,3 +1,9 @@
+import { createFileRoute, useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
+import { type ChangeEvent, type SubmitEvent, useState } from "react";
+import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
+import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import {
   AlertDialog,
   AlertDialogClose,
@@ -7,12 +13,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { createFileRoute, useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { CircleAlertIcon, DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
-import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
-import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -30,7 +30,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/client";
-import { useState, type ChangeEvent, type SubmitEvent } from "react";
+import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_protected/dashboard")({
   component: DashboardPage,
@@ -83,7 +83,7 @@ function DashboardPage() {
       const result = await authClient.updateUser({ name: user.name, image: user.image });
       setError(result.error?.message ?? "");
     } catch {
-      setError("Could not update account. Try again later");
+      setError(m.dashboard_update_error());
     }
     setLoading(false);
   };
@@ -93,12 +93,12 @@ function DashboardPage() {
       <div className="md:w-1/3 w-full flex flex-col gap-4">
         <CardFrame>
           <CardFrameHeader>
-            <CardFrameTitle>Welcome</CardFrameTitle>
-            <CardFrameDescription>Your dashboard</CardFrameDescription>
+            <CardFrameTitle>{m.dashboard_welcome()}</CardFrameTitle>
+            <CardFrameDescription>{m.dashboard_description()}</CardFrameDescription>
             <CardFrameAction>
               <Button onClick={createRoom}>
                 <PlusIcon />
-                Create room
+                {m.create_room()}
               </Button>
             </CardFrameAction>
           </CardFrameHeader>
@@ -110,26 +110,26 @@ function DashboardPage() {
                     <Field name="image">
                       <div className="w-full flex gap-4 items-center">
                         <Avatar className="size-20">
-                          <AvatarImage alt="User" src={user.image ?? ""} />
+                          <AvatarImage alt={m.dashboard_avatar_alt()} src={user.image ?? ""} />
                           <AvatarFallback>
                             <UserIcon />
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col gap-2 text-sm w-full">
-                          <span className="text-base">Account</span>
+                          <span className="text-base">{m.dashboard_account()}</span>
                           <span className="text-muted-foreground">{maskedEmail}</span>
                           <div className="flex gap-2 text-nowrap">
                             {user.image ? (
                               <>
                                 <span className="text-muted-foreground cursor-pointer" onClick={changePhoto}>
-                                  Change photo
+                                  {m.dashboard_change_photo()}
                                 </span>
                                 <span className="text-destructive-foreground cursor-pointer" onClick={deletePhoto}>
-                                  Delete photo
+                                  {m.dashboard_delete_photo()}
                                 </span>
                               </>
                             ) : (
-                              <span className="text-foreground cursor-pointer">Add photo</span>
+                              <span className="text-foreground cursor-pointer">{m.dashboard_add_photo()}</span>
                             )}
                           </div>
                         </div>
@@ -137,9 +137,14 @@ function DashboardPage() {
                       </div>
                     </Field>
                     <Field name="email" className="w-full">
-                      <FieldLabel>Name</FieldLabel>
-                      <Input value={user.name} placeholder="Enter your name" onChange={changeName} required />
-                      <FieldError match="valueMissing">Please enter your name.</FieldError>
+                      <FieldLabel>{m.dashboard_name_label()}</FieldLabel>
+                      <Input
+                        value={user.name}
+                        placeholder={m.dashboard_name_placeholder()}
+                        onChange={changeName}
+                        required
+                      />
+                      <FieldError match="valueMissing">{m.dashboard_name_required()}</FieldError>
                     </Field>
 
                     {error ? <span className="text-sm text-destructive-foreground">{error}</span> : null}
@@ -147,22 +152,22 @@ function DashboardPage() {
                     <div className="flex justify-between items-center w-full">
                       <AlertDialog>
                         <AlertDialogTrigger render={<Button variant="ghost" type="button" />}>
-                          Log Out
+                          {m.dashboard_log_out()}
                         </AlertDialogTrigger>
                         <AlertDialogPopup>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>{m.dashboard_log_out_confirm()}</AlertDialogTitle>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+                            <AlertDialogClose render={<Button variant="ghost" />}>{m.cancel()}</AlertDialogClose>
                             <AlertDialogClose render={<Button variant="destructive" onClick={logOut} />}>
-                              Log out
+                              {m.dashboard_log_out()}
                             </AlertDialogClose>
                           </AlertDialogFooter>
                         </AlertDialogPopup>
                       </AlertDialog>
                       <Button type="submit" loading={loading}>
-                        Save
+                        {m.dashboard_save()}
                       </Button>
                     </div>
                   </Form>
@@ -173,8 +178,8 @@ function DashboardPage() {
         </CardFrame>
         <CardFrame>
           <CardFrameHeader>
-            <CardFrameTitle>History</CardFrameTitle>
-            <CardFrameDescription>Your recent rooms</CardFrameDescription>
+            <CardFrameTitle>{m.dashboard_history_title()}</CardFrameTitle>
+            <CardFrameDescription>{m.dashboard_history_description()}</CardFrameDescription>
           </CardFrameHeader>
           <Card>
             <CardPanel>
@@ -184,8 +189,8 @@ function DashboardPage() {
                     <EmptyMedia variant="icon">
                       <RouteIcon />
                     </EmptyMedia>
-                    <EmptyTitle>No calls yet</EmptyTitle>
-                    <EmptyDescription>Get started by creating your first room.</EmptyDescription>
+                    <EmptyTitle>{m.dashboard_no_calls_title()}</EmptyTitle>
+                    <EmptyDescription>{m.dashboard_no_calls_description()}</EmptyDescription>
                   </EmptyHeader>
                 </Empty>
               ) : (
@@ -209,8 +214,8 @@ const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", tim
 
 function formatDuration(from: Date, to: Date) {
   const minutes = Math.max(1, Math.round((to.getTime() - from.getTime()) / 60000));
-  if (minutes < 60) return `${minutes} min`;
-  return `${Math.floor(minutes / 60)} h ${minutes % 60} min`;
+  if (minutes < 60) return m.dashboard_duration_minutes({ minutes });
+  return m.dashboard_duration_hours({ hours: Math.floor(minutes / 60), minutes: minutes % 60 });
 }
 
 type RoomRowT = {
@@ -236,7 +241,7 @@ function RoomRow({ room }: RoomRowT) {
     .filter((u) => u.id !== room.createdBy)
     .map((u) => u.name)
     .join(", ");
-  const title = participans.length ? `Call with ${participans}` : "Call";
+  const title = participans.length ? m.dashboard_call_with({ participants: participans }) : m.dashboard_call();
 
   return (
     <div className="group flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-accent/50">
@@ -251,14 +256,18 @@ function RoomRow({ room }: RoomRowT) {
             {finishedAt && ` · ${formatDuration(createdAt, finishedAt)}`}
           </span>
         </div>
-        {finishedAt ? <Badge variant="outline">Ended</Badge> : <Badge variant="success">Active</Badge>}
+        {finishedAt ? (
+          <Badge variant="outline">{m.dashboard_room_ended()}</Badge>
+        ) : (
+          <Badge variant="success">{m.dashboard_room_active()}</Badge>
+        )}
       </div>
       {room.egressUrl && (
         <a
           href={room.egressUrl}
           target="_blank"
           rel="noreferrer"
-          aria-label="Download recording"
+          aria-label={m.dashboard_download_recording()}
           className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
         >
           <DownloadIcon />

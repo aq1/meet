@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useIsTablet } from "@/hooks/use-media-query";
 import { authClient } from "@/lib/auth/client";
+import { m } from "@/paraglide/messages";
 
 export const LeaveButton = () => {
   const isTablet = useIsTablet();
@@ -26,21 +27,19 @@ export const LeaveButton = () => {
     <AlertDialog>
       <AlertDialogTrigger
         render={
-          <Button variant="destructive-outline" size={isTablet ? "icon-xl" : "xl"} title="Leave">
+          <Button variant="destructive-outline" size={isTablet ? "icon-xl" : "xl"} title={m.controls_leave()}>
             <PhoneOff />
-            <span className="hidden lg:inline">Leave</span>
+            <span className="hidden lg:inline">{m.controls_leave()}</span>
           </Button>
         }
       ></AlertDialogTrigger>
       <AlertDialogPopup>
         <AlertDialogHeader>
-          <AlertDialogTitle>Leave the room?</AlertDialogTitle>
-          <AlertDialogDescription>
-            You'll be disconnected from this room. You can rejoin at any time.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{m.controls_leave_title()}</AlertDialogTitle>
+          <AlertDialogDescription>{m.controls_leave_description()}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogClose render={<Button variant="outline">Cancel</Button>} />
+          <AlertDialogClose render={<Button variant="outline">{m.cancel()}</Button>} />
           <AlertDialogClose
             render={<Button variant="destructive" />}
             onClick={async () => {
@@ -48,7 +47,7 @@ export const LeaveButton = () => {
               navigate({ to: user && !user.isAnonymous ? "/dashboard" : "/" });
             }}
           >
-            Leave
+            {m.controls_leave()}
           </AlertDialogClose>
         </AlertDialogFooter>
       </AlertDialogPopup>

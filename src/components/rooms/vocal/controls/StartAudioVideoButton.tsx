@@ -1,5 +1,6 @@
 import { useRoomContext, useStartAudio, useStartVideo } from "@livekit/components-react";
 import { Button } from "@/components/ui/button";
+import { m } from "@/paraglide/messages";
 
 export const StartVideoButton = () => {
   const room = useRoomContext();
@@ -10,8 +11,8 @@ export const StartVideoButton = () => {
   }
 
   return (
-    <Button {...mergedProps} variant="default" size="icon-xl" title="Start audio">
-      Allow incoming video
+    <Button {...mergedProps} variant="default" size="icon-xl" title={m.controls_allow_incoming_video()}>
+      {m.controls_allow_incoming_video()}
     </Button>
   );
 };
@@ -25,8 +26,8 @@ export const StartAudioButton = () => {
   }
 
   return (
-    <Button {...mergedProps} variant="default" size="icon-xl" title="Start audio">
-      Allow incoming audio
+    <Button {...mergedProps} variant="default" size="icon-xl" title={m.controls_allow_incoming_audio()}>
+      {m.controls_allow_incoming_audio()}
     </Button>
   );
 };

@@ -1,7 +1,7 @@
 import { setLogLevel as setComponentsLogLevel } from "@livekit/components-react";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { LogLevel, setLogLevel } from "livekit-client";
-
+import { m } from "@/paraglide/messages";
 import appCss from "../styles.css?url";
 
 setLogLevel(LogLevel.warn);
@@ -18,7 +18,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Vocal Room",
+        title: m.app_name(),
       },
     ],
     links: [
@@ -29,7 +29,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  notFoundComponent: () => <p>Not Found</p>,
+  notFoundComponent: () => <p>{m.not_found()}</p>,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {

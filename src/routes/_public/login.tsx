@@ -9,6 +9,7 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { OTPField, OTPFieldInput } from "@/components/ui/otp-field";
 import { authClient } from "@/lib/auth/client";
+import { m } from "@/paraglide/messages";
 
 const OTP_LENGTH = 6;
 const OTP_SLOTS = ["a", "b", "c", "d", "e", "f"];
@@ -49,7 +50,7 @@ function LoginPage() {
     });
     setPending(false);
     if (error) {
-      setError(error.message ?? "Could not send the code");
+      setError(error.message ?? m.login_send_code_error());
       return;
     }
     setStep("otp");
@@ -65,7 +66,7 @@ function LoginPage() {
     });
     setPending(false);
     if (error) {
-      setError(error.message ?? "Invalid code");
+      setError(error.message ?? m.login_invalid_code());
       setOtp("");
       return;
     }
@@ -78,18 +79,18 @@ function LoginPage() {
         {step === "email" ? (
           <Form className="contents" onSubmit={sendCode}>
             <CardHeader>
-              <CardTitle>Sign in</CardTitle>
-              <CardDescription>Enter your email and we will send you a one-time code.</CardDescription>
+              <CardTitle>{m.login_title()}</CardTitle>
+              <CardDescription>{m.login_description()}</CardDescription>
             </CardHeader>
             <CardPanel>
               <Field>
-                <FieldLabel>Email</FieldLabel>
+                <FieldLabel>{m.login_email_label()}</FieldLabel>
                 <Input
                   autoFocus
                   type="email"
                   name="email"
                   autoComplete="email"
-                  placeholder="you@example.com"
+                  placeholder={m.login_email_placeholder()}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -99,21 +100,19 @@ function LoginPage() {
             </CardPanel>
             <CardFooter>
               <Button type="submit" className="w-full" disabled={pending}>
-                Send code
+                {m.login_send_code()}
               </Button>
             </CardFooter>
           </Form>
         ) : (
           <Form className="contents" onSubmit={verifyCode}>
             <CardHeader>
-              <CardTitle>Check your email</CardTitle>
-              <CardDescription>
-                We sent a {OTP_LENGTH}-digit code to {email}.
-              </CardDescription>
+              <CardTitle>{m.login_check_email_title()}</CardTitle>
+              <CardDescription>{m.login_check_email_description({ length: OTP_LENGTH, email })}</CardDescription>
             </CardHeader>
             <CardPanel>
               <Field>
-                <FieldLabel>Code</FieldLabel>
+                <FieldLabel>{m.login_code_label()}</FieldLabel>
                 <OTPField autoFocus length={OTP_LENGTH} size="lg" value={otp} onValueChange={setOtp} autoSubmit>
                   {OTP_SLOTS.map((slot) => (
                     <OTPFieldInput key={slot} />
@@ -124,7 +123,7 @@ function LoginPage() {
             </CardPanel>
             <CardFooter className="grid gap-2">
               <Button type="submit" className="w-full" disabled={pending || otp.length !== OTP_LENGTH}>
-                Sign in
+                {m.login_submit()}
               </Button>
               <Button
                 type="button"
@@ -137,7 +136,7 @@ function LoginPage() {
                   setError(null);
                 }}
               >
-                Use a different email
+                {m.login_use_different_email()}
               </Button>
             </CardFooter>
           </Form>

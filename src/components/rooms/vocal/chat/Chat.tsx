@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
+import { m } from "@/paraglide/messages";
 import { useRoomToken } from "../room-token";
 import { AudioSyncBridge } from "./AudioSyncBridge";
 import { Message } from "./Message";
@@ -91,13 +92,13 @@ export const Chat = ({ readonly = false }: ChatT) => {
               variant="outline"
               disabled={uploadProgress !== null}
               onClick={() => fileInputRef.current?.click()}
-              title="Attach file"
+              title={m.chat_attach_file()}
             >
               {uploadProgress === null ? <Plus /> : `${Math.round(uploadProgress * 100)}%`}
             </Button>
             <Input
-              aria-label="Chat"
-              placeholder="Write a message..."
+              aria-label={m.chat_label()}
+              placeholder={m.chat_placeholder()}
               type="text"
               value={draft}
               onChange={(e) => setDraft(e.currentTarget.value)}
@@ -108,7 +109,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
                 }
               }}
             />
-            <Button disabled={isSending} onClick={sendDraft} title="Send message">
+            <Button disabled={isSending} onClick={sendDraft} title={m.chat_send_message()}>
               <Send />
             </Button>
           </div>

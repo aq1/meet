@@ -8,6 +8,7 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser } from "@/hooks/use-user";
+import { m } from "@/paraglide/messages";
 import { useControls } from "./controls/controls-state";
 
 type DeviceSelectorT = {
@@ -16,9 +17,10 @@ type DeviceSelectorT = {
   onChange: (deviceId: string) => void;
   icon: React.ReactNode;
   label: string;
+  emptyLabel: string;
 };
 
-const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT) => {
+const DeviceSelector = ({ kind, value, onChange, icon, label, emptyLabel }: DeviceSelectorT) => {
   const devices = useMediaDevices({ kind });
 
   const items = useMemo(() => {
@@ -34,7 +36,7 @@ const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT)
       })
       .filter((d) => d.deviceId && d.deviceId !== "communications")
       .map((d, index) => ({
-        label: d.label || `${label} ${index + 1}`,
+        label: d.label || m.device_fallback_label({ label, index: index + 1 }),
         value: d.deviceId,
       }));
 
@@ -58,7 +60,7 @@ const DeviceSelector = ({ kind, value, onChange, icon, label }: DeviceSelectorT)
       <SelectTrigger size="sm" aria-label={label}>
         <span className="flex min-w-0 items-center gap-2 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:opacity-80">
           {icon}
-          <SelectValue placeholder={`No ${label.toLowerCase()} detected`} />
+          <SelectValue placeholder={emptyLabel} />
         </span>
       </SelectTrigger>
       <SelectPopup>
@@ -154,8 +156,8 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
                   setPermissionError(false);
                   setMicEnabled(!micEnabled);
                 }}
-                title={micEnabled ? "Turn off microphone" : "Turn on microphone"}
-                aria-label={micEnabled ? "Turn off microphone" : "Turn on microphone"}
+                title={micEnabled ? m.lobby_turn_off_microphone() : m.lobby_turn_on_microphone()}
+                aria-label={micEnabled ? m.lobby_turn_off_microphone() : m.lobby_turn_on_microphone()}
               >
                 {micEnabled ? <MicIcon /> : <MicOffIcon />}
               </Button>
@@ -166,8 +168,8 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
                   setPermissionError(false);
                   setCameraEnabled(!cameraEnabled);
                 }}
-                title={cameraEnabled ? "Turn off camera" : "Turn on camera"}
-                aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
+                title={cameraEnabled ? m.controls_turn_off_camera() : m.controls_turn_on_camera()}
+                aria-label={cameraEnabled ? m.controls_turn_off_camera() : m.controls_turn_on_camera()}
               >
                 {cameraEnabled ? <VideoIcon /> : <VideoOffIcon />}
               </Button>
@@ -181,28 +183,29 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
             value={micDeviceId}
             onChange={setMicDeviceId}
             icon={<MicIcon />}
-            label="Microphone"
+            label={m.device_microphone()}
+            emptyLabel={m.device_no_microphone()}
           />
           <DeviceSelector
             kind="videoinput"
             value={cameraDeviceId}
             onChange={setCameraDeviceId}
             icon={<VideoIcon />}
-            label="Camera"
+            label={m.device_camera()}
+            emptyLabel={m.device_no_camera()}
           />
           <DeviceSelector
             kind="audiooutput"
             value={speakerDeviceId}
             onChange={setSpeakerDeviceId}
             icon={<VolumeIcon />}
-            label="Speaker"
+            label={m.device_speaker()}
+            emptyLabel={m.device_no_speaker()}
           />
         </div>
         {permissionError ? (
           <div className="w-full">
-            <p className="text-destructive text-sm">
-              Camera/mic access blocked — check your browser permissions, then turn them back on.
-            </p>
+            <p className="text-destructive text-sm">{m.lobby_permission_error()}</p>
           </div>
         ) : null}
         <div className="w-full flex gap-2 items-center justify-end">
@@ -214,12 +217,12 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
                 required
                 value={username}
                 onChange={(event) => updateUsername(event.target.value)}
-                placeholder="Your name"
+                placeholder={m.lobby_name_placeholder()}
                 type="text"
               />
             </Field>
             <Button type="submit" className="px-10" loading={state === "joining"} disabled={state !== "idle"}>
-              Join
+              {m.lobby_join()}
             </Button>
           </Form>
         </div>
