@@ -1,9 +1,19 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { createFileRoute, useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
+import { CircleAlertIcon, DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
 import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -16,8 +26,11 @@ import {
   CardPanel,
 } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/client";
+import { useState, type ChangeEvent, type SubmitEvent } from "react";
 
 export const Route = createFileRoute("/_protected/dashboard")({
   component: DashboardPage,
@@ -28,10 +41,51 @@ function DashboardPage() {
   const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
   const rooms = Route.useLoaderData();
+  const router = useRouter();
+  const { user: authUser } = useRouteContext({ from: "/_protected" });
+  const [user, setUser] = useState(authUser);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const maskedEmail = user.email.replace(/^(.)[^@]*/, "$1***");
 
   const createRoom = async () => {
     const { roomId } = await createRoomFn();
     navigate({ to: "/room/$roomId", params: { roomId } });
+  };
+
+  const deletePhoto = () => {
+    setUser((p) => {
+      return { ...p, image: "" };
+    });
+  };
+
+  const changePhoto = () => {};
+
+  const changeName = (e: ChangeEvent<HTMLInputElement>) => {
+    setUser((p) => {
+      return { ...p, name: e.target.value };
+    });
+  };
+
+  const logOut = async () => {
+    await authClient.signOut();
+    await router.invalidate();
+    navigate({ to: "/" });
+  };
+
+  const submit = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      throw new Error();
+      const result = await authClient.updateUser({ name: user.name, image: user.image });
+      setError(result.error?.message ?? "");
+    } catch {
+      setError("Could not update account. Try again later");
+    }
+    setLoading(false);
   };
 
   return (
@@ -40,7 +94,7 @@ function DashboardPage() {
         <CardFrame>
           <CardFrameHeader>
             <CardFrameTitle>Welcome</CardFrameTitle>
-            <CardFrameDescription>Manage your profile here (later)</CardFrameDescription>
+            <CardFrameDescription>Your dashboard</CardFrameDescription>
             <CardFrameAction>
               <Button onClick={createRoom}>
                 <PlusIcon />
@@ -48,6 +102,74 @@ function DashboardPage() {
               </Button>
             </CardFrameAction>
           </CardFrameHeader>
+          <Card>
+            <CardPanel>
+              <div className="flex justify-center">
+                <div className="flex flex-col gap-4 w-full">
+                  <Form className="flex w-full flex-col gap-8" onSubmit={submit}>
+                    <Field name="image">
+                      <div className="w-full flex gap-4 items-center">
+                        <Avatar className="size-20">
+                          <AvatarImage alt="User" src={user.image ?? ""} />
+                          <AvatarFallback>
+                            <UserIcon />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col gap-2 text-sm w-full">
+                          <span className="text-base">Account</span>
+                          <span className="text-muted-foreground">{maskedEmail}</span>
+                          <div className="flex gap-2 text-nowrap">
+                            {user.image ? (
+                              <>
+                                <span className="text-muted-foreground cursor-pointer" onClick={changePhoto}>
+                                  Change photo
+                                </span>
+                                <span className="text-destructive-foreground cursor-pointer" onClick={deletePhoto}>
+                                  Delete photo
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-foreground cursor-pointer">Add photo</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="w-full flex justify-end items-center"></div>
+                      </div>
+                    </Field>
+                    <Field name="email" className="w-full">
+                      <FieldLabel>Name</FieldLabel>
+                      <Input value={user.name} placeholder="Enter your name" onChange={changeName} required />
+                      <FieldError match="valueMissing">Please enter your name.</FieldError>
+                    </Field>
+
+                    {error ? <span className="text-sm text-destructive-foreground">{error}</span> : null}
+
+                    <div className="flex justify-between items-center w-full">
+                      <AlertDialog>
+                        <AlertDialogTrigger render={<Button variant="ghost" type="button" />}>
+                          Log Out
+                        </AlertDialogTrigger>
+                        <AlertDialogPopup>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+                            <AlertDialogClose render={<Button variant="destructive" onClick={logOut} />}>
+                              Log out
+                            </AlertDialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogPopup>
+                      </AlertDialog>
+                      <Button type="submit" loading={loading}>
+                        Save
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              </div>
+            </CardPanel>
+          </Card>
         </CardFrame>
         <CardFrame>
           <CardFrameHeader>
