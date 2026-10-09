@@ -48,22 +48,6 @@ function DashboardPage() {
               </Button>
             </CardFrameAction>
           </CardFrameHeader>
-          <Card className="hidden">
-            <CardPanel>
-              <Form className="flex w-full flex-col gap-4">
-                <Field name="name">
-                  <div className="flex gap-4">
-                    <Avatar className="size-16">
-                      <AvatarFallback>
-                        <UserIcon className="size-8" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <FieldLabel>Click to change profile image</FieldLabel>
-                  </div>
-                </Field>
-              </Form>
-            </CardPanel>
-          </Card>
         </CardFrame>
         <CardFrame>
           <CardFrameHeader>
