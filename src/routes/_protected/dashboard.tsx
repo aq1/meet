@@ -79,7 +79,6 @@ function DashboardPage() {
     setLoading(true);
     setError("");
     try {
-      throw new Error();
       const result = await authClient.updateUser({ name: user.name, image: user.image });
       setError(result.error?.message ?? "");
     } catch {
