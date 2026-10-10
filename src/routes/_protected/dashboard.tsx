@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
-import { type ChangeEvent, type SubmitEvent, useState } from "react";
+import { type ChangeEvent, type SubmitEvent, useRef, useState } from "react";
+import { presignAvatarUploadServerFn } from "@/apps/auth/functions/presign-avatar-upload";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
 import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import {
@@ -30,6 +31,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/client";
+import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_protected/dashboard")({
@@ -40,6 +42,8 @@ export const Route = createFileRoute("/_protected/dashboard")({
 function DashboardPage() {
   const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
+  const presignAvatarUpload = useServerFn(presignAvatarUploadServerFn);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const rooms = Route.useLoaderData();
   const router = useRouter();
   const { user: authUser } = useRouteContext({ from: "/_protected" });
@@ -60,7 +64,27 @@ function DashboardPage() {
     });
   };
 
-  const changePhoto = () => {};
+  const changePhoto = () => {
+    photoInputRef.current?.click();
+  };
+
+  const uploadPhoto = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setLoading(true);
+    setError("");
+    try {
+      const { url, publicUrl } = await presignAvatarUpload({ data: { type: file.type, size: file.size } });
+      await putWithProgress(url, file, () => {});
+      setUser((p) => {
+        return { ...p, image: publicUrl };
+      });
+    } catch {
+      setError(m.dashboard_photo_upload_error());
+    }
+    setLoading(false);
+  };
 
   const changeName = (e: ChangeEvent<HTMLInputElement>) => {
     setUser((p) => {
@@ -108,6 +132,13 @@ function DashboardPage() {
                   <Form className="flex w-full flex-col gap-8" onSubmit={submit}>
                     <Field name="image">
                       <div className="w-full flex gap-4 items-center">
+                        <input
+                          ref={photoInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          className="hidden"
+                          onChange={uploadPhoto}
+                        />
                         <Avatar className="size-20">
                           <AvatarImage alt={m.dashboard_avatar_alt()} src={user.image ?? ""} />
                           <AvatarFallback>
@@ -128,7 +159,9 @@ function DashboardPage() {
                                 </span>
                               </>
                             ) : (
-                              <span className="text-foreground cursor-pointer">{m.dashboard_add_photo()}</span>
+                              <span className="text-foreground cursor-pointer" onClick={changePhoto}>
+                                {m.dashboard_add_photo()}
+                              </span>
                             )}
                           </div>
                         </div>

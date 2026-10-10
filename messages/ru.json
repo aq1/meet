@@ -41,6 +41,7 @@
   "dashboard_change_photo": "Изменить фото",
   "dashboard_delete_photo": "Удалить фото",
   "dashboard_add_photo": "Добавить фото",
+  "dashboard_photo_upload_error": "Не удалось загрузить фото",
   "dashboard_name_label": "Имя",
   "dashboard_name_placeholder": "Введите имя",
   "dashboard_name_required": "Пожалуйста, введите имя.",

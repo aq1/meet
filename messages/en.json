@@ -41,6 +41,7 @@
   "dashboard_change_photo": "Change photo",
   "dashboard_delete_photo": "Delete photo",
   "dashboard_add_photo": "Add photo",
+  "dashboard_photo_upload_error": "Failed to upload photo",
   "dashboard_name_label": "Name",
   "dashboard_name_placeholder": "Enter your name",
   "dashboard_name_required": "Please enter your name.",
