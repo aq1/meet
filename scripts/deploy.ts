@@ -103,16 +103,16 @@ const deploy = async () => {
   }
 
   log(`Building image (${CONTAINER}) @ ${commit}...`);
-  await $`docker compose build ${CONTAINER}`;
+  await $`docker compose build ${CONTAINER}`.quiet();
 
   log("Migrating database...");
   await $`docker compose run --rm --no-deps ${CONTAINER} bun migrate.js`;
 
   log(`Starting container (${CONTAINER})...`);
-  await $`docker compose up -d`;
+  await $`docker compose up -d --quiet-pull`.quiet();
 
   log("Cleaning up dangling images...");
-  await $`docker image prune -f`;
+  await $`docker image prune -f`.quiet();
 
   await Bun.write(STATE_FILE, `${after}\n`);
 
@@ -133,6 +133,9 @@ try {
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   console.error(error);
+  if (error instanceof $.ShellError) {
+    console.error(error.stderr.toString().trim().slice(-LOG_TAIL_MAX_CHARS));
+  }
   const tail = await tailLog();
   const details = tail ? `\n\nLast lines of ${LOG_FILE}:\n${tail}` : " See server logs.";
   await notify(`❌ meet update failed at "${currentStep}": ${message}.${details}`);
