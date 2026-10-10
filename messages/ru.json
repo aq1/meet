@@ -73,7 +73,8 @@
   "lobby_turn_off_microphone": "Выключить микрофон",
   "lobby_permission_error": "Доступ к камере и микрофону заблокирован — проверьте разрешения браузера и включите их снова.",
   "lobby_name_placeholder": "Ваше имя",
-  "lobby_join": "Войти",
+  "lobby_join": "Подключиться",
+  "lobby_join_error": "Не удалось подключиться к комнате. Попробуйте ещё раз.",
 
   "room_waiting_for_others": "Ждём остальных участников…",
   "room_microphone_muted": "Микрофон выключен",

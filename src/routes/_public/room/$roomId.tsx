@@ -1,5 +1,5 @@
 import { RoomContext } from "@livekit/components-react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
@@ -8,7 +8,6 @@ import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { VocalRoom } from "@/components/rooms/vocal/Room";
 import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
 import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
-import { useUser } from "@/hooks/use-user";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
@@ -17,8 +16,9 @@ export const Route = createFileRoute("/_public/room/$roomId")({
 
 function RouteComponent() {
   const { roomId } = Route.useParams();
+  const { user } = Route.useRouteContext();
+  const router = useRouter();
 
-  const username = useUser((state) => state.username);
   const [joined, setJoined] = useState(false);
   const [token, setToken] = useState("");
   const grant = useServerFn(grantRoomTokenServerFn);
@@ -58,14 +58,14 @@ function RouteComponent() {
     };
   }, [room]);
 
-  const join = async () => {
+  const join = async (username: string) => {
     if (!room || !username) {
       return;
     }
     room.startAudio();
-    const { data: session } = await authClient.getSession();
-    if (!session) {
+    if (!user) {
       await authClient.signIn.anonymous();
+      await router.invalidate();
     }
     const grantResult = await grant({
       data: { username, roomId },

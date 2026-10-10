@@ -1,5 +1,5 @@
-import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { readFileSync } from "node:fs";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import babel from "@rolldown/plugin-babel";
 import { sentryTanstackStart } from "@sentry/tanstackstart-react/vite";
 import tailwindcss from "@tailwindcss/vite";
@@ -20,7 +20,8 @@ const config = defineConfig({
     exclude: ["bun"],
     include: ["react", "react-dom", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
-  plugins: [paraglideVitePlugin({ project: './project.inlang', outdir: './src/paraglide' }),
+  plugins: [
+    paraglideVitePlugin({ project: "./project.inlang", outdir: "./src/paraglide" }),
     devtools(),
     nitro({ preset: "bun" }),
     tailwindcss(),

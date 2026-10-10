@@ -17,7 +17,6 @@ import { Route as ProtectedDebugSentryRouteImport } from './routes/_protected/de
 import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as ApiMockS3SplatRouteImport } from './routes/api/mock-s3/$'
 import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/livekit'
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
@@ -59,11 +58,6 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiMockS3SplatRoute = ApiMockS3SplatRouteImport.update({
-  id: '/api/mock-s3/$',
-  path: '/api/mock-s3/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
   id: '/api/webhooks/livekit',
   path: '/api/webhooks/livekit',
@@ -77,7 +71,6 @@ export interface FileRoutesByFullPath {
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/mock-s3/$': typeof ApiMockS3SplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
   '/egress/': typeof PublicEgressIndexRoute
 }
@@ -88,7 +81,6 @@ export interface FileRoutesByTo {
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/mock-s3/$': typeof ApiMockS3SplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
   '/egress': typeof PublicEgressIndexRoute
 }
@@ -101,7 +93,6 @@ export interface FileRoutesById {
   '/_protected/debug/sentry': typeof ProtectedDebugSentryRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/api/mock-s3/$': typeof ApiMockS3SplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
   '/_public/egress/': typeof PublicEgressIndexRoute
 }
@@ -114,7 +105,6 @@ export interface FileRouteTypes {
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
-    | '/api/mock-s3/$'
     | '/api/webhooks/livekit'
     | '/egress/'
   fileRoutesByTo: FileRoutesByTo
@@ -125,7 +115,6 @@ export interface FileRouteTypes {
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
-    | '/api/mock-s3/$'
     | '/api/webhooks/livekit'
     | '/egress'
   id:
@@ -137,7 +126,6 @@ export interface FileRouteTypes {
     | '/_protected/debug/sentry'
     | '/_public/room/$roomId'
     | '/api/auth/$'
-    | '/api/mock-s3/$'
     | '/api/webhooks/livekit'
     | '/_public/egress/'
   fileRoutesById: FileRoutesById
@@ -148,7 +136,6 @@ export interface RootRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
   PublicRoomRoomIdRoute: typeof PublicRoomRoomIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiMockS3SplatRoute: typeof ApiMockS3SplatRoute
   ApiWebhooksLivekitRoute: typeof ApiWebhooksLivekitRoute
   PublicEgressIndexRoute: typeof PublicEgressIndexRoute
 }
@@ -211,13 +198,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/mock-s3/$': {
-      id: '/api/mock-s3/$'
-      path: '/api/mock-s3/$'
-      fullPath: '/api/mock-s3/$'
-      preLoaderRoute: typeof ApiMockS3SplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/webhooks/livekit': {
       id: '/api/webhooks/livekit'
       path: '/api/webhooks/livekit'
@@ -248,7 +228,6 @@ const rootRouteChildren: RootRouteChildren = {
   PublicIndexRoute: PublicIndexRoute,
   PublicRoomRoomIdRoute: PublicRoomRoomIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiMockS3SplatRoute: ApiMockS3SplatRoute,
   ApiWebhooksLivekitRoute: ApiWebhooksLivekitRoute,
   PublicEgressIndexRoute: PublicEgressIndexRoute,
 }

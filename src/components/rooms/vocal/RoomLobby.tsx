@@ -1,4 +1,5 @@
 import { useMediaDevices, usePreviewTracks } from "@livekit/components-react";
+import { useRouteContext } from "@tanstack/react-router";
 import { LocalVideoTrack } from "livekit-client";
 import { MicIcon, MicOffIcon, VideoIcon, VideoOffIcon, VolumeIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -7,7 +8,6 @@ import { Field } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useUser } from "@/hooks/use-user";
 import { m } from "@/paraglide/messages";
 import { useControls } from "./controls/controls-state";
 
@@ -75,14 +75,13 @@ const DeviceSelector = ({ kind, value, onChange, icon, label, emptyLabel }: Devi
 };
 
 type RoomLobbyT = {
-  onJoin: () => void;
+  onJoin: (username: string) => Promise<void>;
 };
 
 export function RoomLobby({ onJoin }: RoomLobbyT) {
   const [state, setState] = useState<"loading" | "idle" | "joining">("loading");
-
-  const username = useUser((state) => state.username);
-  const updateUsername = useUser((state) => state.updateUsername);
+  const { user } = useRouteContext({ from: "__root__" });
+  const [username, setUsername] = useState(user?.name ?? "");
 
   const cameraEnabled = useControls((s) => s.cameraEnabled);
   const micEnabled = useControls((s) => s.micEnabled);
@@ -96,6 +95,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
   const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
 
   const [permissionError, setPermissionError] = useState(false);
+  const [joinError, setJoinError] = useState(false);
 
   const previewOptions = useMemo(
     () => ({
@@ -129,10 +129,16 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
     };
   }, [videoTrack]);
 
-  const join = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const join = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setState("joining");
-    onJoin();
+    setJoinError(false);
+    try {
+      await onJoin(username);
+    } catch {
+      setJoinError(true);
+    }
+    setState("idle");
   };
 
   return (
@@ -208,6 +214,11 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
             <p className="text-destructive text-sm">{m.lobby_permission_error()}</p>
           </div>
         ) : null}
+        {joinError ? (
+          <div className="w-full">
+            <p className="text-destructive text-sm">{m.lobby_join_error()}</p>
+          </div>
+        ) : null}
         <div className="w-full flex gap-2 items-center justify-end">
           <Form className="contents" onSubmit={join}>
             <Field>
@@ -216,7 +227,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
                 autoFocus
                 required
                 value={username}
-                onChange={(event) => updateUsername(event.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder={m.lobby_name_placeholder()}
                 type="text"
               />

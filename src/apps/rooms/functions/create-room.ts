@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { authMiddleware } from "@/apps/auth/services/auth-middleware";
+import { authMiddleware } from "@/apps/auth/middleware/auth-middleware";
 import { room } from "@/apps/rooms/models/room";
 import { db } from "@/lib/db/client";
 

@@ -1,13 +1,20 @@
 import { setLogLevel as setComponentsLogLevel } from "@livekit/components-react";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { LogLevel, setLogLevel } from "livekit-client";
+import { getSession } from "@/apps/auth/functions/get-session";
+import { AnchoredToastProvider, ToastProvider } from "@/components/ui/toast";
 import { m } from "@/paraglide/messages";
+import { getLocale } from "@/paraglide/runtime";
 import appCss from "../styles.css?url";
 
 setLogLevel(LogLevel.warn);
 setComponentsLogLevel("warn");
 
 export const Route = createRootRoute({
+  beforeLoad: async () => {
+    const session = await getSession();
+    return { user: session?.user ?? null };
+  },
   head: () => ({
     meta: [
       {
@@ -34,12 +41,18 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang={getLocale()} className="dark">
       <head>
         <HeadContent />
       </head>
       <body className="relative">
-        <div className="relative isolate flex min-h-svh flex-col">{children}</div>
+        <div className="relative isolate flex min-h-svh flex-col">
+          <ToastProvider>
+            <AnchoredToastProvider>
+              <main>{children}</main>
+            </AnchoredToastProvider>
+          </ToastProvider>
+        </div>
         <Scripts />
       </body>
     </html>

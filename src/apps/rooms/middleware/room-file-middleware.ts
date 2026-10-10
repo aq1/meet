@@ -1,5 +1,5 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { roomTokenMiddleware } from "@/apps/rooms/services/livekit/room-token-middleware";
+import { roomTokenMiddleware } from "@/apps/rooms/middleware/room-token-middleware";
 import { s3KeyFromLocation } from "@/apps/storage/services/presign-download";
 
 export const roomFileMiddleware = createMiddleware({ type: "function" })

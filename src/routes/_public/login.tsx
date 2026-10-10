@@ -1,7 +1,6 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
-import { getSession } from "@/apps/auth/functions/get-session";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardPanel, CardTitle } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -18,9 +17,8 @@ export const Route = createFileRoute("/_public/login")({
   validateSearch: z.object({
     redirect: z.string().optional(),
   }),
-  beforeLoad: async ({ search }) => {
-    const session = await getSession();
-    if (session && !session.user.isAnonymous) {
+  beforeLoad: ({ context, search }) => {
+    if (context.user && !context.user.isAnonymous) {
       throw redirect({ href: safeRedirect(search.redirect) });
     }
   },

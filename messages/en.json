@@ -74,6 +74,7 @@
   "lobby_permission_error": "Camera/mic access blocked — check your browser permissions, then turn them back on.",
   "lobby_name_placeholder": "Your name",
   "lobby_join": "Join",
+  "lobby_join_error": "Could not join the room. Please try again.",
 
   "room_waiting_for_others": "Waiting for others to join…",
   "room_microphone_muted": "Microphone muted",

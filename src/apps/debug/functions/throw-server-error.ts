@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { authMiddleware } from "@/apps/auth/services/auth-middleware";
+import { authMiddleware } from "@/apps/auth/middleware/auth-middleware";
 
 export const throwServerErrorServerFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])

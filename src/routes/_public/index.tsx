@@ -2,16 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AudioLinesIcon, PianoIcon, PlusIcon, UsersIcon, VideoIcon } from "lucide-react";
 import { useState } from "react";
-import { getSession } from "@/apps/auth/functions/get-session";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
 import { Button } from "@/components/ui/button";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_public/")({
-  loader: async () => {
-    const session = await getSession();
-    return { user: session?.user ?? null };
-  },
   component: IndexPage,
 });
 
@@ -22,7 +17,7 @@ const FEATURES = [
 ];
 
 function IndexPage() {
-  const { user } = Route.useLoaderData();
+  const { user } = Route.useRouteContext();
 
   return (
     <div className="flex min-h-svh flex-col">

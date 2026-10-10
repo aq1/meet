@@ -21,4 +21,3 @@ todos.json
 postgres-language-server.jsonc
 
 # local mock of s3 uploads
-.mock-s3

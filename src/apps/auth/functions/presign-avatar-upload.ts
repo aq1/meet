@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { authMiddleware } from "@/apps/auth/services/auth-middleware";
+import { authMiddleware } from "@/apps/auth/middleware/auth-middleware";
 import { presignS3Upload } from "@/apps/storage/services/presign-upload";
 import { publicS3Url } from "@/apps/storage/services/public-url";
 import { env } from "@/env";

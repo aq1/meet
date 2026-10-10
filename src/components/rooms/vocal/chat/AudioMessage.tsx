@@ -93,13 +93,9 @@ export const AudioMessage = ({ url }: AudioMessageT) => {
       wsRef.current = ws;
     };
 
-    if (import.meta.env.DEV) {
-      create(url);
-    } else {
-      presignDownload({ data: { roomId: room.name, token, url } })
-        .then(create)
-        .catch(() => {});
-    }
+    presignDownload({ data: { roomId: room.name, token, url } })
+      .then(create)
+      .catch(() => {});
 
     return () => {
       cancelled = true;

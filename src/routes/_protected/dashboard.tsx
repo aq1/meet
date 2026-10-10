@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useRouteContext, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
 import { type ChangeEvent, type SubmitEvent, useRef, useState } from "react";
@@ -30,6 +30,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toastManager } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth/client";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { m } from "@/paraglide/messages";
@@ -45,7 +46,6 @@ function DashboardPage() {
   const presignAvatarUpload = useServerFn(presignAvatarUploadServerFn);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const rooms = Route.useLoaderData();
-  const router = useRouter();
   const { user: authUser } = useRouteContext({ from: "/_protected" });
   const [user, setUser] = useState(authUser);
   const [loading, setLoading] = useState(false);
@@ -94,8 +94,7 @@ function DashboardPage() {
 
   const logOut = async () => {
     await authClient.signOut();
-    await router.invalidate();
-    navigate({ to: "/" });
+    await navigate({ to: "/" });
   };
 
   const submit = async (e: SubmitEvent<HTMLFormElement>) => {
@@ -105,6 +104,12 @@ function DashboardPage() {
     try {
       const result = await authClient.updateUser({ name: user.name, image: user.image });
       setError(result.error?.message ?? "");
+      if (!result.error) {
+        toastManager.add({
+          id: "profile-save",
+          title: "Profile Saved",
+        });
+      }
     } catch {
       setError(m.dashboard_update_error());
     }
@@ -151,17 +156,25 @@ function DashboardPage() {
                           <div className="flex gap-2 text-nowrap">
                             {user.image ? (
                               <>
-                                <span className="text-muted-foreground cursor-pointer" onClick={changePhoto}>
+                                <button
+                                  type="button"
+                                  className="text-muted-foreground cursor-pointer"
+                                  onClick={changePhoto}
+                                >
                                   {m.dashboard_change_photo()}
-                                </span>
-                                <span className="text-destructive-foreground cursor-pointer" onClick={deletePhoto}>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="text-destructive-foreground cursor-pointer"
+                                  onClick={deletePhoto}
+                                >
                                   {m.dashboard_delete_photo()}
-                                </span>
+                                </button>
                               </>
                             ) : (
-                              <span className="text-foreground cursor-pointer" onClick={changePhoto}>
+                              <button type="button" className="text-foreground cursor-pointer" onClick={changePhoto}>
                                 {m.dashboard_add_photo()}
-                              </span>
+                              </button>
                             )}
                           </div>
                         </div>
@@ -229,7 +242,7 @@ function DashboardPage() {
                 <ul className="-mx-2 flex flex-col">
                   {rooms.map((r) => (
                     <li key={r.id}>
-                      <RoomRow room={r} />
+                      <RoomRow room={r} viewerId={Number(user.id)} />
                     </li>
                   ))}
                 </ul>
@@ -251,6 +264,7 @@ function formatDuration(from: Date, to: Date) {
 }
 
 type RoomRowT = {
+  viewerId: number;
   room: {
     id: number;
     createdAt: Date;
@@ -266,11 +280,11 @@ type RoomRowT = {
   };
 };
 
-function RoomRow({ room }: RoomRowT) {
+function RoomRow({ room, viewerId }: RoomRowT) {
   const createdAt = new Date(room.createdAt);
   const finishedAt = room.finishedAt ? new Date(room.finishedAt) : null;
   const participans = room.users
-    .filter((u) => u.id !== room.createdBy)
+    .filter((u) => u.id !== viewerId)
     .map((u) => u.name)
     .join(", ");
   const title = participans.length ? m.dashboard_call_with({ participants: participans }) : m.dashboard_call();

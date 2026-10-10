@@ -9,6 +9,7 @@ import { session } from "@/apps/auth/models/session";
 import { user } from "@/apps/auth/models/user";
 import { verification } from "@/apps/auth/models/verification";
 import { sendVerificationOTP } from "@/apps/auth/services/send-verification-otp";
+import { randomUserColor } from "@/apps/auth/utils/colors";
 import { roomUser } from "@/apps/rooms/models/room-user";
 import { env } from "@/env";
 import { db } from "@/lib/db/client";
@@ -25,7 +26,13 @@ export const auth = betterAuth({
       auth_verification: verification,
     },
   }),
-  user: { modelName: "auth_user" },
+  user: {
+    modelName: "auth_user",
+    additionalFields: {
+      color: { type: "string", required: false, defaultValue: randomUserColor },
+      lang: { type: ["en", "ru"], required: false, defaultValue: "ru" },
+    },
+  },
   session: { modelName: "auth_session" },
   account: { modelName: "auth_account" },
   verification: { modelName: "auth_verification" },

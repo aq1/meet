@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, isNull } from "drizzle-orm";
+import { roomTokenOwnerMiddleware } from "@/apps/rooms/middleware/room-token-owner-middleware";
 import { room } from "@/apps/rooms/models/room";
-import { roomTokenOwnerMiddleware } from "@/apps/rooms/services/livekit/room-token-owner-middleware";
 import { presignS3Upload } from "@/apps/storage/services/presign-upload";
 import { db } from "@/lib/db/client";
 

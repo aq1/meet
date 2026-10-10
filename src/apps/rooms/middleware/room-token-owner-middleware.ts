@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { anyUserMiddleware } from "@/apps/auth/services/any-user-middleware";
-import { roomTokenMiddleware } from "@/apps/rooms/services/livekit/room-token-middleware";
+import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
+import { roomTokenMiddleware } from "@/apps/rooms/middleware/room-token-middleware";
 
 export const roomTokenOwnerMiddleware = createMiddleware({ type: "function" })
   .middleware([anyUserMiddleware, roomTokenMiddleware])

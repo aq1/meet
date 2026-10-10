@@ -1,13 +1,11 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { getSession } from "@/apps/auth/functions/get-session";
 
 export const Route = createFileRoute("/_protected")({
-  beforeLoad: async ({ location }) => {
-    const session = await getSession();
-    if (!session || session.user.isAnonymous) {
+  beforeLoad: ({ context, location }) => {
+    if (!context.user || context.user.isAnonymous) {
       throw redirect({ to: "/login", search: { redirect: location.href } });
     }
-    return { user: session.user };
+    return { user: context.user };
   },
   component: Outlet,
 });

@@ -1,5 +1,5 @@
 import { useRoomContext } from "@livekit/components-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouteContext } from "@tanstack/react-router";
 import { PhoneOff } from "lucide-react";
 import {
   AlertDialog,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useIsTablet } from "@/hooks/use-media-query";
-import { authClient } from "@/lib/auth/client";
 import { m } from "@/paraglide/messages";
 
 export const LeaveButton = () => {
@@ -21,8 +20,7 @@ export const LeaveButton = () => {
   const room = useRoomContext();
   const navigate = useNavigate();
 
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
+  const { user } = useRouteContext({ from: "__root__" });
   return (
     <AlertDialog>
       <AlertDialogTrigger
