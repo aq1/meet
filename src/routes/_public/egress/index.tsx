@@ -16,6 +16,9 @@ export const Route = createFileRoute("/_public/egress/")({
     token: z.string(),
     layout: z.string().optional(),
   }),
+  head: () => ({
+    meta: [{ name: "google", content: "notranslate" }],
+  }),
   component: EgressPage,
 });
 
