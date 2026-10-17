@@ -28,9 +28,7 @@ export const VocalRoom = () => {
         <div className="order-first flex size-full min-h-0 basis-full lg:order-0">
           <Participants />
           <SidePanel>
-            <div className={cn("size-full", !showChat && "hidden")}>
-              <Chat />
-            </div>
+            <Chat />
           </SidePanel>
         </div>
         <div className={cn("w-full min-h-50 h-50 basis-1/3", !showKeyboard && "hidden")}>

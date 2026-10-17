@@ -12,15 +12,17 @@ type SidePanelT = {
 
 export const SidePanel = ({ children }: SidePanelT) => {
   const isTablet = useIsTablet();
-  const showPanel = useControls((state) => state.showChat);
   const setControls = useControls((state) => state.set);
+
+  const showDialog = useControls((state) => isTablet && state.showChat);
+  const showSidePanel = useControls((state) => !isTablet && state.showChat);
 
   const closePanel = () => setControls("showChat", false);
 
   return (
-    <>
-      <Dialog open={isTablet && showPanel} onOpenChange={closePanel}>
-        <DialogPopup portalProps={{ keepMounted: true }} className="h-full" showCloseButton={false}>
+    <div className={cn(!(showDialog || showSidePanel) && "hidden")}>
+      <Dialog open={showDialog} onOpenChange={closePanel}>
+        <DialogPopup portalProps={{ keepMounted: true }} className="h-full min-h-48" showCloseButton={false}>
           <div className="flex min-h-0 flex-1 flex-col gap-2 p-6">
             <div className="flex items-center justify-between">
               <DialogClose aria-label={m.close()} render={<Button size="icon" variant="ghost" title={m.close()} />}>
@@ -31,9 +33,9 @@ export const SidePanel = ({ children }: SidePanelT) => {
           </div>
         </DialogPopup>
       </Dialog>
-      <div className={cn("flex min-h-0 basis-1/4 justify-end gap-4", !showPanel && "hidden")}>
+      <div className={cn("flex size-full min-h-0 basis-1/4 justify-end gap-4", !showSidePanel && "hidden")}>
         <div className="flex size-full min-h-0 flex-col px-4">{children}</div>
       </div>
-    </>
+    </div>
   );
 };
