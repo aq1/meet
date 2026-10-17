@@ -1,6 +1,6 @@
 import { useChat, useRoomContext } from "@livekit/components-react";
 import { useServerFn } from "@tanstack/react-start";
-import { Paperclip, Send } from "lucide-react";
+import { ArrowUpIcon, Paperclip, Send } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { presignChatUploadServerFn } from "@/apps/rooms/functions/presign-chat-upload";
@@ -12,6 +12,15 @@ import { m } from "@/paraglide/messages";
 import { useRoomToken } from "../room-token";
 import { AudioSyncBridge } from "./AudioSyncBridge";
 import { Message } from "./Message";
+import {
+  Composer,
+  ComposerActionGroup,
+  ComposerActions,
+  ComposerInput,
+  ComposerSubmit,
+  getComposerText,
+  type ComposerValue,
+} from "@/components/ui/composer";
 
 type ChatT = {
   readonly?: boolean;
@@ -25,7 +34,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const token = useRoomToken();
   const presignUpload = useServerFn(presignChatUploadServerFn);
 
-  const [draft, setDraft] = useState("");
+  const [value, setValue] = useState<ComposerValue>([]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const messageCount = chatMessages.length;
@@ -36,12 +45,12 @@ export const Chat = ({ readonly = false }: ChatT) => {
   }, [messageCount]);
 
   const sendDraft = () => {
-    if (!draft.length) {
+    if (!value.length) {
       return;
     }
-    send(draft);
+    send(getComposerText(value));
 
-    setDraft("");
+    setValue([]);
   };
 
   const uploadFile = async (file: File) => {
@@ -88,30 +97,37 @@ export const Chat = ({ readonly = false }: ChatT) => {
                 }
               }}
             />
-            <Button
-              variant="outline"
-              disabled={uploadProgress !== null}
-              onClick={() => fileInputRef.current?.click()}
-              title={m.chat_attach_file()}
+            <Composer
+              className="w-full min-w-80"
+              layout="adaptive"
+              submitDisabled={isSending}
+              value={value}
+              onValueChange={setValue}
+              onSubmit={sendDraft}
             >
-              {uploadProgress === null ? <Paperclip /> : `${Math.round(uploadProgress * 100)}%`}
-            </Button>
-            <Input
-              aria-label={m.chat_label()}
-              placeholder={m.chat_placeholder()}
-              type="text"
-              value={draft}
-              onChange={(e) => setDraft(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  sendDraft();
-                }
-              }}
-            />
-            <Button disabled={isSending} onClick={sendDraft} title={m.chat_send_message()}>
-              <Send />
-            </Button>
+              <ComposerInput aria-label={m.chat_label()} placeholder={m.chat_placeholder()} />
+              <ComposerActions>
+                <ComposerActionGroup>
+                  <Button
+                    variant="outline"
+                    disabled={uploadProgress !== null}
+                    onClick={() => fileInputRef.current?.click()}
+                    title={m.chat_attach_file()}
+                  >
+                    {uploadProgress === null ? <Paperclip /> : `${Math.round(uploadProgress * 100)}%`}
+                  </Button>
+                </ComposerActionGroup>
+                <ComposerActionGroup align="end">
+                  <ComposerSubmit
+                    render={
+                      <Button aria-label={m.chat_send_message()} size="icon">
+                        <ArrowUpIcon aria-hidden="true" />
+                      </Button>
+                    }
+                  />
+                </ComposerActionGroup>
+              </ComposerActions>
+            </Composer>
           </div>
         )}
       </div>

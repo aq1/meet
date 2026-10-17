@@ -133,7 +133,7 @@ const PianoKey = ({ note, callback }: PianoKeyPropsT) => {
 
 export const Keyboard = ({ callback }: KeyboardPropsT) => {
   return (
-    <ScrollArea fill>
+    <ScrollArea fill clampContentMinWidth={false}>
       <div className="flex h-full pb-2.5">
         {NOTES.map((note) => (
           <PianoKey key={note.label} note={note} callback={callback} />
