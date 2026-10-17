@@ -10,7 +10,6 @@ import { Piano } from "./piano/Piano";
 
 export const VocalRoom = () => {
   const isTablet = useIsTablet();
-  const showChat = useControls((state) => state.showChat);
   const showKeyboard = useControls((state) => state.showKeyboard);
   const setControls = useControls((state) => state.set);
 
