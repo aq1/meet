@@ -1,6 +1,6 @@
 import { useChat, useRoomContext } from "@livekit/components-react";
 import { useServerFn } from "@tanstack/react-start";
-import { Plus, Send } from "lucide-react";
+import { Paperclip, Send } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { presignChatUploadServerFn } from "@/apps/rooms/functions/presign-chat-upload";
@@ -94,7 +94,7 @@ export const Chat = ({ readonly = false }: ChatT) => {
               onClick={() => fileInputRef.current?.click()}
               title={m.chat_attach_file()}
             >
-              {uploadProgress === null ? <Plus /> : `${Math.round(uploadProgress * 100)}%`}
+              {uploadProgress === null ? <Paperclip /> : `${Math.round(uploadProgress * 100)}%`}
             </Button>
             <Input
               aria-label={m.chat_label()}
