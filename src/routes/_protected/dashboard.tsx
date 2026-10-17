@@ -211,7 +211,7 @@ function DashboardPage() {
                           </AlertDialogFooter>
                         </AlertDialogPopup>
                       </AlertDialog>
-                      <Button type="submit" loading={loading}>
+                      <Button type="submit" variant="outline" loading={loading}>
                         {m.dashboard_save()}
                       </Button>
                     </div>
