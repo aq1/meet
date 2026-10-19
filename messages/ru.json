@@ -117,5 +117,6 @@
   "chat_label": "Чат",
   "chat_placeholder": "Напишите сообщение...",
   "chat_attach_file": "Прикрепить файл",
-  "chat_send_message": "Отправить сообщение"
+  "chat_send_message": "Отправить сообщение",
+  "no_one_in_room": "Пока никого"
 }
