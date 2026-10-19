@@ -57,10 +57,7 @@ function pushText(parts: ComposerPart[], text: string): void {
   else parts.push({ type: "text", text });
 }
 
-function readValue(
-  root: HTMLElement,
-  ignoreTrailingPlaceholder = true,
-): ComposerValue {
+function readValue(root: HTMLElement, ignoreTrailingPlaceholder = true): ComposerValue {
   if (root instanceof HTMLTextAreaElement) {
     return root.value ? [{ type: "text", text: root.value }] : [];
   }
@@ -81,36 +78,20 @@ function readValue(
           label: node.dataset.label ?? "",
           trigger: node.dataset.trigger ?? "@",
           ...(node.dataset.kind ? { kind: node.dataset.kind } : {}),
-          ...(node.dataset.data !== undefined
-            ? { data: node.dataset.data }
-            : {}),
-          ...(node.dataset.text !== undefined
-            ? { text: node.dataset.text }
-            : {}),
+          ...(node.dataset.data !== undefined ? { data: node.dataset.data } : {}),
+          ...(node.dataset.text !== undefined ? { text: node.dataset.text } : {}),
         });
       } else if (node.tagName === "BR") {
         if (node.hasAttribute("data-composer-placeholder")) continue;
         // Browsers end empty lines with a placeholder BR, which is not another newline.
-        if (!ignoreTrailingPlaceholder || index !== nodes.length - 1)
-          pushText(parts, "\n");
+        if (!ignoreTrailingPlaceholder || index !== nodes.length - 1) pushText(parts, "\n");
       } else {
         const isBlock = node.tagName === "DIV" || node.tagName === "P";
-        if (
-          isBlock &&
-          index > 0 &&
-          !(nodes[index - 1] instanceof HTMLBRElement)
-        )
-          pushText(parts, "\n");
+        if (isBlock && index > 0 && !(nodes[index - 1] instanceof HTMLBRElement)) pushText(parts, "\n");
         children(node);
         if (isBlock && index < nodes.length - 1) {
           const next = nodes[index + 1];
-          if (
-            !(
-              next instanceof HTMLElement &&
-              (next.tagName === "DIV" || next.tagName === "P")
-            )
-          )
-            pushText(parts, "\n");
+          if (!(next instanceof HTMLElement && (next.tagName === "DIV" || next.tagName === "P"))) pushText(parts, "\n");
         }
       }
     }
@@ -135,8 +116,7 @@ function equalValue(left: ComposerValue, right: ComposerValue): boolean {
     a.length === b.length &&
     a.every((part, index) => {
       const other = b[index];
-      if (part.type === "text")
-        return other?.type === "text" && part.text === other.text;
+      if (part.type === "text") return other?.type === "text" && part.text === other.text;
       return (
         other?.type !== "text" &&
         other?.type === part.type &&
@@ -153,11 +133,7 @@ function equalValue(left: ComposerValue, right: ComposerValue): boolean {
 
 function getComposerText(value: ComposerValue): string {
   return value
-    .map((part) =>
-      part.type === "text"
-        ? part.text
-        : (part.text ?? `${part.trigger}${part.label}`),
-    )
+    .map((part) => (part.type === "text" ? part.text : (part.text ?? `${part.trigger}${part.label}`)))
     .join("");
 }
 
@@ -200,12 +176,7 @@ function writeValue(root: HTMLElement, value: ComposerValue): void {
 
 function insertPlainText(root: HTMLElement, text: string): void {
   const selection = window.getSelection();
-  if (
-    !selection?.rangeCount ||
-    !root.contains(selection.anchorNode) ||
-    !root.contains(selection.focusNode)
-  )
-    return;
+  if (!selection?.rangeCount || !root.contains(selection.anchorNode) || !root.contains(selection.focusNode)) return;
   const range = selection.getRangeAt(0);
   range.deleteContents();
   const node = document.createTextNode(text.replace(/\r\n?/g, "\n"));
@@ -216,53 +187,35 @@ function insertPlainText(root: HTMLElement, text: string): void {
   selection.addRange(range);
 }
 
-function placeCaretAfterToken(
-  root: HTMLElement,
-  selection: Selection | null,
-): void {
+function placeCaretAfterToken(root: HTMLElement, selection: Selection | null): void {
   if (!selection?.rangeCount) return;
   const range = selection.getRangeAt(0);
   if (!range.collapsed) return;
   const anchor = selection.anchorNode;
-  const token = (
-    anchor instanceof Element ? anchor : anchor?.parentElement
-  )?.closest("[data-composer-token]");
+  const token = (anchor instanceof Element ? anchor : anchor?.parentElement)?.closest("[data-composer-token]");
   if (token && root.contains(token)) {
     const next = token.nextSibling;
     if (next instanceof Text && /^\s/u.test(next.data)) {
       selection.collapse(next, 1);
     } else if (token.parentNode) {
-      selection.collapse(
-        token.parentNode,
-        Array.from(token.parentNode.childNodes).indexOf(token) + 1,
-      );
+      selection.collapse(token.parentNode, Array.from(token.parentNode.childNodes).indexOf(token) + 1);
     }
     return;
   }
   const { startContainer, startOffset } = range;
   if (startContainer instanceof Text) {
-    if (/^\s/u.test(startContainer.data.slice(startOffset)))
-      selection.collapse(startContainer, startOffset + 1);
+    if (/^\s/u.test(startContainer.data.slice(startOffset))) selection.collapse(startContainer, startOffset + 1);
   } else {
     const next = startContainer.childNodes[startOffset];
-    if (next instanceof Text && /^\s/u.test(next.data))
-      selection.collapse(next, 1);
+    if (next instanceof Text && /^\s/u.test(next.data)) selection.collapse(next, 1);
   }
 }
 
-function currentQuery(
-  root: HTMLElement,
-  triggers: readonly ComposerTrigger[],
-): ActiveQuery | null {
+function currentQuery(root: HTMLElement, triggers: readonly ComposerTrigger[]): ActiveQuery | null {
   const selection = window.getSelection();
-  if (!selection?.isCollapsed || !root.contains(selection.anchorNode))
-    return null;
+  if (!selection?.isCollapsed || !root.contains(selection.anchorNode)) return null;
   const node = selection.anchorNode;
-  if (
-    !(node instanceof Text) ||
-    node.parentElement?.closest("[data-composer-token]")
-  )
-    return null;
+  if (!(node instanceof Text) || node.parentElement?.closest("[data-composer-token]")) return null;
   let caret = selection.anchorOffset;
   let merged = false;
   // Paste and token deletion can leave one query split across adjacent text nodes.
@@ -288,15 +241,10 @@ function currentQuery(
   if (
     !query ||
     query.text.length >
-      (triggers.find((trigger) => trigger.character === query.character)
-        ?.maxQueryLength ?? Number.POSITIVE_INFINITY)
+      (triggers.find((trigger) => trigger.character === query.character)?.maxQueryLength ?? Number.POSITIVE_INFINITY)
   )
     return null;
-  if (
-    query.start === 0 &&
-    node.previousSibling?.textContent &&
-    !/\s$/u.test(node.previousSibling.textContent)
-  )
+  if (query.start === 0 && node.previousSibling?.textContent && !/\s$/u.test(node.previousSibling.textContent))
     return null;
   if (!queryNodeIds.has(node)) queryNodeIds.set(node, ++nextQueryNodeId);
   return {
@@ -321,30 +269,17 @@ function getFilteredItems(
     return [];
   if (trigger.filter === null) return trigger.items;
   return trigger.items.filter((item) =>
-    trigger.filter
-      ? trigger.filter(item, query.text)
-      : defaultFilter(item.label, query.text),
+    trigger.filter ? trigger.filter(item, query.text) : defaultFilter(item.label, query.text),
   );
 }
 
-function hasVisibleItems(
-  trigger: ComposerTrigger | undefined,
-  options: readonly ComposerItemValue[],
-): boolean {
+function hasVisibleItems(trigger: ComposerTrigger | undefined, options: readonly ComposerItemValue[]): boolean {
   return Boolean(
-    trigger &&
-      (options.length ||
-        trigger.showEmpty ||
-        trigger.status === "loading" ||
-        trigger.status === "error"),
+    trigger && (options.length || trigger.showEmpty || trigger.status === "loading" || trigger.status === "error"),
   );
 }
 
-function insertItem(
-  input: HTMLDivElement,
-  query: ActiveQuery,
-  suggestion: ComposerItemValue,
-): void {
+function insertItem(input: HTMLDivElement, query: ActiveQuery, suggestion: ComposerItemValue): void {
   const range = document.createRange();
   range.setStart(query.node, query.start);
   range.setEnd(query.node, query.end);
@@ -383,14 +318,8 @@ function readSelection(input: HTMLElement): ComposerSelection | null {
   if (input instanceof HTMLTextAreaElement) {
     return document.activeElement === input
       ? {
-          anchor:
-            input.selectionDirection === "backward"
-              ? input.selectionEnd
-              : input.selectionStart,
-          focus:
-            input.selectionDirection === "backward"
-              ? input.selectionStart
-              : input.selectionEnd,
+          anchor: input.selectionDirection === "backward" ? input.selectionEnd : input.selectionStart,
+          focus: input.selectionDirection === "backward" ? input.selectionStart : input.selectionEnd,
         }
       : null;
   }
@@ -416,10 +345,7 @@ function readSelection(input: HTMLElement): ComposerSelection | null {
   };
 }
 
-function restoreSelection(
-  input: HTMLElement,
-  selection: ComposerSelection | null,
-): void {
+function restoreSelection(input: HTMLElement, selection: ComposerSelection | null): void {
   if (!selection) return;
   if (input instanceof HTMLTextAreaElement) {
     input.setSelectionRange(
@@ -434,10 +360,7 @@ function restoreSelection(
     for (const [index, node] of Array.from(input.childNodes).entries()) {
       const length =
         node instanceof HTMLElement && node.dataset.composerToken
-          ? (
-              node.dataset.text ??
-              `${node.dataset.trigger ?? ""}${node.dataset.label ?? ""}`
-            ).length
+          ? (node.dataset.text ?? `${node.dataset.trigger ?? ""}${node.dataset.label ?? ""}`).length
           : (node.textContent ?? "").length;
       if (remaining <= length) {
         if (node instanceof Text) return [node, remaining];
@@ -449,9 +372,7 @@ function restoreSelection(
   }
   const [anchor, anchorOffset] = point(selection.anchor);
   const [focus, focusOffset] = point(selection.focus);
-  window
-    .getSelection()
-    ?.setBaseAndExtent(anchor, anchorOffset, focus, focusOffset);
+  window.getSelection()?.setBaseAndExtent(anchor, anchorOffset, focus, focusOffset);
 }
 
 type ComposerSnapshot = {

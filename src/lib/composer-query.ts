@@ -13,8 +13,7 @@ export function getComposerQuery(
       character = trigger;
     }
   }
-  if (start < 0 || (start > 0 && !/\s/u.test(text.charAt(start - 1))))
-    return null;
+  if (start < 0 || (start > 0 && !/\s/u.test(text.charAt(start - 1)))) return null;
 
   const beforeCaret = text.slice(start + character.length, caret);
   if (/^\s/u.test(beforeCaret)) return null;

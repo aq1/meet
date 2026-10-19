@@ -3,6 +3,7 @@ import { Chat } from "@/components/rooms/vocal/chat/Chat";
 import { SidePanel } from "@/components/side-panel/SidePanel";
 import { useIsTablet } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+import { m } from "@/paraglide/messages";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
@@ -19,14 +20,14 @@ export const VocalRoom = () => {
   }, [isTablet, setControls]);
 
   return (
-    <div className="h-dvh w-dvw lg:pt-4">
-      <div className="flex size-full flex-col lg:gap-2">
+    <div className="h-dvh w-dvw pt-2 lg:pt-4">
+      <div className="flex size-full flex-col lg:gap-4">
         <div className="order-last lg:order-0">
           <Controls />
         </div>
-        <div className="order-first flex size-full min-h-0 basis-full lg:order-0">
+        <div className="order-first flex gap-4 px-4 size-full min-h-0 basis-full lg:order-0 overflow-hidden">
           <Participants />
-          <SidePanel>
+          <SidePanel title={m.chat_label()}>
             <Chat />
           </SidePanel>
         </div>
