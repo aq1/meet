@@ -25,7 +25,8 @@ const keyVariant = cva(
       color: {
         white: [
           "mr-px",
-          "w-[60px]",
+          "min-w-15",
+          "w-[4vw]",
           "h-full",
           "bg-gray-100",
           "border",
@@ -39,11 +40,14 @@ const keyVariant = cva(
           "shadow-[0_2px_0_rgba(0,0,0,0.05)]",
         ],
         black: [
-          "w-[38px]",
+          "absolute",
+          "left-0",
+          "top-0",
+          "min-w-9.5",
+          "w-[2vw]",
           "h-4/7",
           "bg-gray-800",
-          "ml-[-19px]",
-          "mr-[-19px]",
+          "-translate-x-1/2",
           "z-10",
           "text-white",
           "rounded-b",
@@ -95,46 +99,48 @@ type PianoKeyPropsT = KeyboardPropsT & { note: Note };
 
 const PianoKey = ({ note, callback }: PianoKeyPropsT) => {
   return (
-    <button
-      type="button"
-      id={note.label}
-      title={note.label}
-      className={keyVariant({
-        color: note.color,
-      })}
-      onContextMenu={(e) => {
-        e.preventDefault();
-      }}
-      onMouseDown={() => callback("press", note.midi)}
-      onMouseUp={() => callback("release", note.midi)}
-      onMouseLeave={(e) => {
-        if (e.buttons) {
-          callback("release", note.midi);
-        }
-      }}
-      onMouseEnter={(e) => {
-        if (e.buttons) {
+    <div className="relative">
+      <button
+        type="button"
+        id={note.label}
+        title={note.label}
+        className={keyVariant({
+          color: note.color,
+        })}
+        onContextMenu={(e) => {
+          e.preventDefault();
+        }}
+        onMouseDown={() => callback("press", note.midi)}
+        onMouseUp={() => callback("release", note.midi)}
+        onMouseLeave={(e) => {
+          if (e.buttons) {
+            callback("release", note.midi);
+          }
+        }}
+        onMouseEnter={(e) => {
+          if (e.buttons) {
+            callback("press", note.midi);
+          }
+        }}
+        onTouchStart={() => {
+          // Prevent the simulated mouse events so addPress isn't called twice
           callback("press", note.midi);
-        }
-      }}
-      onTouchStart={() => {
-        // Prevent the simulated mouse events so addPress isn't called twice
-        callback("press", note.midi);
-      }}
-      onTouchEnd={() => {
-        callback("release", note.midi);
-      }}
-      onTouchCancel={() => callback("release", note.midi)}
-    >
-      <KeyOverlay note={note} />
-    </button>
+        }}
+        onTouchEnd={() => {
+          callback("release", note.midi);
+        }}
+        onTouchCancel={() => callback("release", note.midi)}
+      >
+        <KeyOverlay note={note} />
+      </button>
+    </div>
   );
 };
 
 export const Keyboard = ({ callback }: KeyboardPropsT) => {
   return (
     <ScrollArea fill clampContentMinWidth={false}>
-      <div className="flex h-full pb-2.5">
+      <div className="flex relative h-full pb-2.5">
         {NOTES.map((note) => (
           <PianoKey key={note.label} note={note} callback={callback} />
         ))}
