@@ -10,8 +10,8 @@ import {
 import type { Participant } from "livekit-client";
 import { ConnectionQuality, Track } from "livekit-client";
 import { MicOff, Signal, SignalHigh, SignalLow, SignalMedium, VideoOff } from "lucide-react";
+import { type SyntheticEvent, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 
@@ -46,38 +46,48 @@ const ParticipantTileContent = ({ trackRef }: { trackRef: TrackReferenceOrPlaceh
   const isSpeaking = useIsSpeaking(trackRef.participant);
   const facingMode = useFacingMode(trackRef);
 
+  const [aspect, setAspect] = useState(16 / 9);
+
   const isMirrored = facingMode === "user" && trackRef.participant?.isLocal && trackRef.source === Track.Source.Camera;
 
+  const updateAspect = (e: SyntheticEvent<HTMLVideoElement>) => {
+    const { videoWidth, videoHeight } = e.currentTarget;
+    if (videoWidth && videoHeight) setAspect(videoWidth / videoHeight);
+  };
+
   return (
-    <Card
-      data-speaking={isSpeaking}
-      className={cn(
-        "relative flex size-full flex-col items-center gap-1 overflow-hidden rounded-xl",
-        "ring-2 ring-transparent transition-colors",
-        isSpeaking && "ring-emerald-500",
-        hasVideo ? "bg-muted" : "bg-transparent",
-      )}
-    >
-      {hasVideo ? (
-        <VideoTrack
-          trackRef={trackRef}
-          className={cn("min-h-0 w-full flex-1 object-fit", isMirrored && "-scale-x-100")}
-        />
-      ) : (
-        <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-          <VideoOff className="size-8 text-muted-foreground" />
-        </div>
-      )}
-      <Badge className="absolute right-2 bottom-2 flex items-center gap-1">
-        {trackRef.participant && (
-          <>
-            <ConnectionQualityIndicator participant={trackRef.participant} />
-            <MicMutedIndicator participant={trackRef.participant} />
-          </>
+    <div className="flex size-full min-h-0 min-w-0 items-center justify-center [container-type:size]">
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-xl border bg-muted",
+          "ring-2 ring-transparent transition-colors",
+          isSpeaking && "ring-emerald-500",
         )}
-        <ParticipantName />
-      </Badge>
-    </Card>
+        style={{ aspectRatio: aspect, width: `min(100cqw, 100cqh * ${aspect})` }}
+      >
+        {hasVideo ? (
+          <VideoTrack
+            trackRef={trackRef}
+            onLoadedMetadata={updateAspect}
+            onResize={updateAspect}
+            className={cn("size-full object-cover", isMirrored && "-scale-x-100")}
+          />
+        ) : (
+          <div className="flex size-full items-center justify-center">
+            <VideoOff className="size-8 text-muted-foreground" />
+          </div>
+        )}
+        <Badge className="absolute right-2 bottom-2 flex items-center gap-1">
+          {trackRef.participant && (
+            <>
+              <ConnectionQualityIndicator participant={trackRef.participant} />
+              <MicMutedIndicator participant={trackRef.participant} />
+            </>
+          )}
+          <ParticipantName />
+        </Badge>
+      </div>
+    </div>
   );
 };
 

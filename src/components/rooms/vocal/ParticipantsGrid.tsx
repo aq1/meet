@@ -1,9 +1,10 @@
-import { GridLayout, useTracks } from "@livekit/components-react";
+import { TrackLoop, useTracks } from "@livekit/components-react";
 import { ParticipantKind, Track } from "livekit-client";
 import { Bird, Cat, Dog, Fish, Origami, Panda, Rabbit, Rat, Snail, Squirrel, Turtle } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { cn } from "@/lib/utils";
 import { m } from "@/paraglide/messages";
 import { ParticipantTile } from "./ParticipantTile";
 
@@ -47,12 +48,30 @@ export const ParticipantsGrid = () => {
       t.participant.kind !== ParticipantKind.EGRESS,
   );
 
+  const gridProps = (length: number) => {
+    if (length <= 1) {
+      return "grid-cols-1 grid-rows-1";
+    }
+    if (length === 2) {
+      return "grid-cols-1 grid-rows-2 lg:grid-cols-2 lg:grid-rows-1";
+    }
+    if (length === 4) {
+      return "grid-cols-2 grid-rows-2";
+    }
+    return "grid-cols-3 grid-rows-3";
+  };
+
+  if (!tracks.length) {
+    return <EmptyRoom />;
+  }
+
   return (
-    <GridLayout
-      tracks={tracks}
-      className="grid size-full auto-rows-fr grid-cols-[repeat(auto-fit,minmax(min(16rem,100%),1fr))] gap-1 rounded-xl bg-muted"
-    >
-      <ParticipantTile />
-    </GridLayout>
+    <div className="relative size-full flex justify-center items-center">
+      <div className={cn("size-full grid gap-2 place-items-center", gridProps(tracks.length))}>
+        <TrackLoop tracks={tracks}>
+          <ParticipantTile />
+        </TrackLoop>
+      </div>
+    </div>
   );
 };
