@@ -1,7 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, isNull } from "drizzle-orm";
 import { roomTokenOwnerMiddleware } from "@/apps/rooms/middleware/room-token-owner-middleware";
-import { room } from "@/apps/rooms/models/room";
 import { presignS3Upload } from "@/apps/storage/services/presign-upload";
 import { db } from "@/lib/db/client";
 
@@ -23,11 +21,10 @@ export const presignChatUploadServerFn = createServerFn({ method: "POST" })
     if (data.size > MAX_UPLOAD_SIZE) {
       throw new Response("File too large", { status: 413 });
     }
-    const [activeRoom] = await db
-      .select({ id: room.id })
-      .from(room)
-      .where(and(eq(room.publicId, data.roomId), isNull(room.finishedAt)))
-      .limit(1);
+    const activeRoom = await db.query.room.findFirst({
+      columns: { id: true },
+      where: { publicId: data.roomId, finishedAt: { isNull: true } },
+    });
     if (!activeRoom) {
       throw new Response("Room not found", { status: 404 });
     }

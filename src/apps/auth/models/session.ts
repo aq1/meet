@@ -1,15 +1,15 @@
-import { index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { index, integer, snakeCase, text, timestamp } from "drizzle-orm/pg-core";
 import { baseColumns } from "@/lib/db/columns";
 import { user } from "./user";
-export const session = pgTable(
+export const session = snakeCase.table(
   "auth_session",
   {
     ...baseColumns,
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    token: text("token").notNull().unique(),
-    ipAddress: text("ip_address"),
-    userAgent: text("user_agent"),
-    userId: integer("user_id")
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    token: text().notNull().unique(),
+    ipAddress: text(),
+    userAgent: text(),
+    userId: integer()
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
   },

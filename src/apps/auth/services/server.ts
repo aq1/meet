@@ -1,5 +1,5 @@
+import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { anonymous } from "better-auth/plugins";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { tanstackStartCookies } from "better-auth/tanstack-start";

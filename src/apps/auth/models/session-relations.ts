@@ -1,10 +1,9 @@
-import { relations } from "drizzle-orm";
+import { defineRelationsPart } from "drizzle-orm";
 import { session } from "./session";
 import { user } from "./user";
 
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
-  }),
+export const sessionRelations = defineRelationsPart({ session, user }, (r) => ({
+  session: {
+    user: r.one.user({ from: r.session.userId, to: r.user.id, optional: false }),
+  },
 }));

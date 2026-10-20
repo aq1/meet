@@ -1,16 +1,16 @@
-import { integer, pgTable, unique } from "drizzle-orm/pg-core";
+import { integer, snakeCase, unique } from "drizzle-orm/pg-core";
 import { user } from "@/apps/auth/models/user";
 import { baseColumns } from "@/lib/db/columns";
 import { room } from "./room";
 
-export const roomUser = pgTable(
+export const roomUser = snakeCase.table(
   "rooms_room_user",
   {
     ...baseColumns,
-    roomId: integer("room_id")
+    roomId: integer()
       .notNull()
       .references(() => room.id),
-    userId: integer("user_id")
+    userId: integer()
       .notNull()
       .references(() => user.id),
   },

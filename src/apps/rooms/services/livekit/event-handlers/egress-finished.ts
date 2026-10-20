@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { EgressStatus, type WebhookEvent } from "livekit-server-sdk";
-import { user } from "@/apps/auth/models/user";
 import { sendEmail } from "@/apps/notifications/services/send-email";
 import { room } from "@/apps/rooms/models/room";
 import { presignS3Download } from "@/apps/storage/services/presign-download";
@@ -10,12 +9,12 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!url) {
     return;
   }
-  const [owner] = await db
-    .select({ name: user.name, email: user.email })
-    .from(room)
-    .innerJoin(user, eq(user.id, room.createdBy))
-    .where(eq(room.publicId, roomId))
-    .limit(1);
+  const ownedRoom = await db.query.room.findFirst({
+    columns: {},
+    where: { publicId: roomId },
+    with: { creator: { columns: { name: true, email: true } } },
+  });
+  const owner = ownedRoom?.creator;
   if (!owner?.email) {
     return;
   }
