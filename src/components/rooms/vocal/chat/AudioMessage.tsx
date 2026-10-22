@@ -1,12 +1,8 @@
-import { useRoomContext } from "@livekit/components-react";
-import { useServerFn } from "@tanstack/react-start";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
-import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
 import { Button } from "@/components/ui/button";
 import { useControls } from "../controls/controls-state";
-import { useRoomToken } from "../room-token";
 import { useAudioSync } from "./audio-sync-state";
 
 type AudioMessageT = { payload: { url: string; fileName: string } };
@@ -19,11 +15,8 @@ const formatTime = (seconds: number) => {
 
 export const AudioMessage = ({ payload }: AudioMessageT) => {
   const { url } = payload;
-  const room = useRoomContext();
-  const token = useRoomToken();
   const waveRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
-  const presignDownload = useServerFn(presignChatDownloadServerFn);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -60,50 +53,39 @@ export const AudioMessage = ({ payload }: AudioMessageT) => {
     if (!container) {
       return;
     }
-    let cancelled = false;
 
-    const create = (src: string) => {
-      if (cancelled) {
-        return;
-      }
-      const ws = WaveSurfer.create({
-        container,
-        url: src,
-        height: 40,
-        waveColor: "rgba(148, 163, 184, 0.55)",
-        progressColor: getComputedStyle(container).color,
-        cursorWidth: 0,
-        barWidth: 3,
-        barGap: 2,
-        barRadius: 3,
-        normalize: true,
-        dragToSeek: true,
-      });
-      ws.setVolume(fileVolumeRef.current / 100);
-      ws.on("ready", (d) => {
-        setDuration(d);
-        setReady(true);
-      });
-      ws.on("timeupdate", setCurrentTime);
-      ws.on("play", () => setPlaying(true));
-      ws.on("pause", () => setPlaying(false));
-      ws.on("finish", () => setPlaying(false));
-      ws.on("interaction", (time) => {
-        useAudioSync.getState().control({ url, action: "play", time });
-      });
-      wsRef.current = ws;
-    };
-
-    presignDownload({ data: { roomId: room.name, token, url } })
-      .then(create)
-      .catch(() => {});
+    const ws = WaveSurfer.create({
+      container,
+      url,
+      height: 40,
+      waveColor: "rgba(148, 163, 184, 0.55)",
+      progressColor: getComputedStyle(container).color,
+      cursorWidth: 0,
+      barWidth: 3,
+      barGap: 2,
+      barRadius: 3,
+      normalize: true,
+      dragToSeek: true,
+    });
+    ws.setVolume(fileVolumeRef.current / 100);
+    ws.on("ready", (d) => {
+      setDuration(d);
+      setReady(true);
+    });
+    ws.on("timeupdate", setCurrentTime);
+    ws.on("play", () => setPlaying(true));
+    ws.on("pause", () => setPlaying(false));
+    ws.on("finish", () => setPlaying(false));
+    ws.on("interaction", (time) => {
+      useAudioSync.getState().control({ url, action: "play", time });
+    });
+    wsRef.current = ws;
 
     return () => {
-      cancelled = true;
       wsRef.current?.destroy();
       wsRef.current = null;
     };
-  }, [presignDownload, room.name, token, url]);
+  }, [url]);
 
   return (
     <div className="flex w-full items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2">

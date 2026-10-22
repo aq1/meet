@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { publicMiddleware } from "@/apps/auth/middleware/public-middleware";
-import { auth } from "@/apps/auth/services/server";
+import { sessionMiddleware } from "../middleware/session-middleware";
 
 export const getSession = createServerFn({ method: "GET" })
-  .middleware([publicMiddleware])
-  .handler(async () => await auth.api.getSession({ headers: getRequestHeaders() }));
+  .middleware([sessionMiddleware])
+  .handler(async ({ context }) => {
+    return context.session;
+  });

@@ -7,7 +7,6 @@ import { grantRoomTokenServerFn } from "@/apps/rooms/functions/grant-room-token"
 import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { VocalRoom } from "@/components/rooms/vocal/Room";
 import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
-import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
@@ -20,7 +19,6 @@ function RouteComponent() {
   const router = useRouter();
 
   const [joined, setJoined] = useState(false);
-  const [token, setToken] = useState("");
   const grant = useServerFn(grantRoomTokenServerFn);
   const cameraEnabled = useControls((s) => s.cameraEnabled);
   const micEnabled = useControls((s) => s.micEnabled);
@@ -71,7 +69,6 @@ function RouteComponent() {
       data: { username, roomId },
     });
     await room.connect(grantResult.wss, grantResult.token);
-    setToken(grantResult.token);
 
     try {
       if (micEnabled) {
@@ -92,10 +89,6 @@ function RouteComponent() {
   };
 
   return (
-    <RoomContext.Provider value={room}>
-      <RoomTokenContext.Provider value={token}>
-        {joined ? <VocalRoom /> : <RoomLobby onJoin={join} />}
-      </RoomTokenContext.Provider>
-    </RoomContext.Provider>
+    <RoomContext.Provider value={room}>{joined ? <VocalRoom /> : <RoomLobby onJoin={join} />}</RoomContext.Provider>
   );
 }

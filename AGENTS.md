@@ -33,3 +33,8 @@ Features:
 3. Teaching tools: live pitch display, lesson recordings with notes, shared sheet music/lyrics, metronome, homework.
 4. Coaching business: teacher/student roles, scheduling, student history, reminders, payments.
 5. Health: tests for sync and webhooks, media-quality monitoring, mobile Safari, recording retention.
+
+
+## Issues
+1. Decide how to deal with egress access.
+2. Clean up how files are uploaded and transfered in chat.

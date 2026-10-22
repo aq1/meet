@@ -4,7 +4,7 @@ import { presignS3Download } from "@/apps/storage/services/presign-download";
 
 export const presignChatDownloadServerFn = createServerFn({ method: "POST" })
   .middleware([roomFileMiddleware])
-  .validator((data: { roomId: string; token: string; url: string }) => data)
+  .validator((data: { roomId: string; url: string }) => data)
   .handler(async ({ data }) => {
     const url = presignS3Download(data.url);
     if (!url) {

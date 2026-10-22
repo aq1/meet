@@ -1,10 +1,10 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { sessionMiddleware } from "@/apps/auth/middleware/session-middleware";
+import { anyUserMiddleware } from "./any-user-middleware";
 
 export const authMiddleware = createMiddleware({ type: "function" })
-  .middleware([sessionMiddleware])
+  .middleware([anyUserMiddleware])
   .server(async ({ next, context }) => {
-    if (!context.session || context.session.user.isAnonymous) {
+    if (context.session.user.isAnonymous) {
       throw new Response("Unauthorized", { status: 401 });
     }
     return next({ context: { session: context.session } });

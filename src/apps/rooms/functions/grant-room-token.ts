@@ -1,22 +1,22 @@
 import { createServerFn } from "@tanstack/react-start";
-import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
 import { auth } from "@/apps/auth/services/server";
 import { randomUserColor } from "@/apps/auth/utils/colors";
 import { grantLivekitToken } from "@/apps/rooms/services/livekit/grant-livekit-token";
 import { db } from "@/lib/db/client";
+import { activeRoomMiddleware } from "../middleware/active-room-middleware";
+import { roomUser } from "../models";
 
 export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
-  .middleware([anyUserMiddleware])
-  .validator((data: { username: string; roomId: string }) => data)
+  .middleware([activeRoomMiddleware])
+  .validator((data: { username: string }) => data)
   .handler(async ({ data, context }) => {
-    const activeRoom = await db.query.room.findFirst({
-      columns: { id: true },
-      where: { publicId: data.roomId, finishedAt: { isNull: true } },
-    });
-    if (!activeRoom) {
-      throw new Response("Room not found", { status: 404 });
-    }
     const { user } = context.session;
+
+    await db
+      .insert(roomUser)
+      .values({ roomId: context.room.id, userId: Number(user.id) })
+      .onConflictDoNothing();
+
     const fieldsToUpdate: { name?: string; lang?: string; color?: string } = {};
     if (user.name !== data.username) {
       fieldsToUpdate.name = data.username;
@@ -32,5 +32,5 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
       const ctx = await auth.$context;
       await ctx.internalAdapter.updateUser(user.id, fieldsToUpdate);
     }
-    return await grantLivekitToken(user.id.toString(), data.username, data.roomId);
+    return await grantLivekitToken(user.id.toString(), data.username, context.room.publicId);
   });

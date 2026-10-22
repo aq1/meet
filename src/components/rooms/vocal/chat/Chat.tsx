@@ -7,6 +7,7 @@ import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
 import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
+import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
 import { presignChatUploadServerFn } from "@/apps/rooms/functions/presign-chat-upload";
 import type { ChatMessageT } from "@/apps/rooms/shared/types";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,6 @@ import { useIsTablet } from "@/hooks/use-media-query";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { m } from "@/paraglide/messages";
 import { useControls } from "../controls/controls-state";
-import { useRoomToken } from "../room-token";
 import { AudioSyncBridge } from "./AudioSyncBridge";
 import { useChatState } from "./chat-state";
 import { Message } from "./Message";
@@ -34,8 +34,8 @@ import { Message } from "./Message";
 const ChatInput = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const room = useRoomContext();
-  const token = useRoomToken();
   const presignUpload = useServerFn(presignChatUploadServerFn);
+  const presignDownload = useServerFn(presignChatDownloadServerFn);
   const send = useServerFn(postChatMessageFn);
 
   const [value, setValue] = useState<ComposerValue>([]);
@@ -53,10 +53,11 @@ const ChatInput = () => {
   const uploadFile = async (file: File) => {
     setUploadProgress(0);
     try {
-      const { url } = await presignUpload({
-        data: { roomId: room.name, token, name: file.name, type: file.type, size: file.size },
+      const { url: uploadUrl } = await presignUpload({
+        data: { roomId: room.name, name: file.name, type: file.type, size: file.size },
       });
-      await putWithProgress(url, file, setUploadProgress);
+      await putWithProgress(uploadUrl, file, setUploadProgress);
+      const url = await presignDownload({ data: { roomId: room.name, url: uploadUrl } });
       await send({ data: { roomId: room.name, kind: "audio", payload: { fileName: file.name, url } } });
     } catch {
     } finally {
@@ -171,9 +172,11 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const setMessages = useChatState((state) => state.setMessages);
   const getChatMessages = useServerFn(getChatMessagesFn);
   useEffect(() => {
-    getChatMessages({ data: { roomId: room.name } }).then((messages) => setMessages(messages));
+    if (!readonly) {
+      getChatMessages({ data: { roomId: room.name } }).then((messages) => setMessages(messages));
+    }
     return clear;
-  }, [clear, getChatMessages, room.name, setMessages]);
+  }, [clear, getChatMessages, room.name, setMessages, readonly]);
 
   return (
     <>

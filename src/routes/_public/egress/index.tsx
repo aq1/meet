@@ -7,7 +7,6 @@ import { Chat } from "@/components/rooms/vocal/chat/Chat";
 import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { ParticipantTile } from "@/components/rooms/vocal/ParticipantTile";
 import { usePiano } from "@/components/rooms/vocal/piano/usePiano";
-import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
 
 export const Route = createFileRoute("/_public/egress/")({
   validateSearch: z.object({
@@ -73,14 +72,12 @@ function EgressPage() {
 
   return (
     <RoomContext.Provider value={room}>
-      <RoomTokenContext.Provider value={token}>
-        <RoomAudioRenderer />
-        <PianoSound />
-        <div className="flex h-dvh w-dvw gap-2 p-4">
-          <Grid />
-          <Chat readonly />
-        </div>
-      </RoomTokenContext.Provider>
+      <RoomAudioRenderer />
+      <PianoSound />
+      <div className="flex h-dvh w-dvw gap-2 p-4">
+        <Grid />
+        <Chat readonly />
+      </div>
     </RoomContext.Provider>
   );
 }

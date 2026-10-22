@@ -12,5 +12,8 @@ export const participantJoinedEventHandler = async (event: WebhookEvent) => {
     return;
   }
 
-  await db.insert(roomUser).values({ roomId: joinedRoom.id, userId: Number(event.participant.identity) });
+  await db
+    .insert(roomUser)
+    .values({ roomId: joinedRoom.id, userId: Number(event.participant.identity) })
+    .onConflictDoNothing();
 };
