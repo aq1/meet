@@ -8,8 +8,6 @@ import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { ParticipantTile } from "@/components/rooms/vocal/ParticipantTile";
 import { usePiano } from "@/components/rooms/vocal/piano/usePiano";
 import { RoomTokenContext } from "@/components/rooms/vocal/room-token";
-import { SidePanel } from "@/components/side-panel/SidePanel";
-import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_public/egress/")({
   validateSearch: z.object({
@@ -80,9 +78,7 @@ function EgressPage() {
         <PianoSound />
         <div className="flex h-dvh w-dvw gap-2 p-4">
           <Grid />
-          <SidePanel title={m.chat_label()}>
-            <Chat readonly />
-          </SidePanel>
+          <Chat readonly />
         </div>
       </RoomTokenContext.Provider>
     </RoomContext.Provider>

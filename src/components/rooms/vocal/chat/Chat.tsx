@@ -1,10 +1,16 @@
-import { useChat, useRoomContext } from "@livekit/components-react";
+import type { ReceivedDataMessage } from "@livekit/components-core";
+
+import { useDataChannel, useRoomContext } from "@livekit/components-react";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowUpIcon, Paperclip } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
+import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
 import { presignChatUploadServerFn } from "@/apps/rooms/functions/presign-chat-upload";
+import type { ChatMessageT } from "@/apps/rooms/shared/types";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Composer,
   ComposerActionGroup,
@@ -14,28 +20,32 @@ import {
   type ComposerValue,
   getComposerText,
 } from "@/components/ui/composer";
+import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsTablet } from "@/hooks/use-media-query";
 import { putWithProgress } from "@/lib/s3/put-with-progress";
 import { m } from "@/paraglide/messages";
+import { useControls } from "../controls/controls-state";
 import { useRoomToken } from "../room-token";
 import { AudioSyncBridge } from "./AudioSyncBridge";
+import { useChatState } from "./chat-state";
 import { Message } from "./Message";
 
 const ChatInput = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { send, isSending } = useChat();
   const room = useRoomContext();
   const token = useRoomToken();
   const presignUpload = useServerFn(presignChatUploadServerFn);
+  const send = useServerFn(postChatMessageFn);
 
   const [value, setValue] = useState<ComposerValue>([]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
-  const sendDraft = () => {
+  const sendDraft = async () => {
     if (!value.length) {
       return;
     }
-    send(getComposerText(value));
+    await send({ data: { roomId: room.name, kind: "text", payload: { text: getComposerText(value) } } });
 
     setValue([]);
   };
@@ -47,7 +57,7 @@ const ChatInput = () => {
         data: { roomId: room.name, token, name: file.name, type: file.type, size: file.size },
       });
       await putWithProgress(url, file, setUploadProgress);
-      send(`audio:${url}`);
+      await send({ data: { roomId: room.name, kind: "audio", payload: { fileName: file.name, url } } });
     } catch {
     } finally {
       setUploadProgress(null);
@@ -73,7 +83,6 @@ const ChatInput = () => {
       <Composer
         className="w-full min-w-80"
         layout="adaptive"
-        submitDisabled={isSending}
         value={value}
         onValueChange={setValue}
         onSubmit={sendDraft}
@@ -105,37 +114,89 @@ const ChatInput = () => {
   );
 };
 
+const ChatMessages = () => {
+  const messages = useChatState((state) => state.messages);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (messages.length) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages.length]);
+
+  return (
+    <ScrollArea className="min-h-0 flex-1">
+      <div className="flex flex-col gap-1">
+        <AnimatePresence initial={false}>
+          {messages.map((m, index) => (
+            <Message key={m.id} message={m} previousMessage={index ? messages.at(index - 1) : null} />
+          ))}
+        </AnimatePresence>
+        <div ref={bottomRef} />
+      </div>
+    </ScrollArea>
+  );
+};
+
 type ChatT = {
   readonly?: boolean;
 };
 
-export const Chat = ({ readonly = false }: ChatT) => {
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const { chatMessages } = useChat();
-  const messageCount = chatMessages.length;
+export const ChatInner = ({ readonly = false }: ChatT) => {
+  return (
+    <div className="flex gap-4 size-full flex-col justify-between align-center">
+      <ChatMessages />
+      {readonly ? null : <ChatInput />}
+    </div>
+  );
+};
 
+const decoder = new TextDecoder();
+
+export const Chat = ({ readonly = false }: ChatT) => {
+  const isTablet = useIsTablet();
+  const showChat = useControls((state) => state.showChat);
+  const setControls = useControls((state) => state.set);
+  const closePanel = () => setControls("showChat", false);
+
+  const addMessage = useChatState((state) => state.addMessage);
+
+  useDataChannel("chat", (msg: ReceivedDataMessage) => {
+    const message = JSON.parse(decoder.decode(msg.payload)) as ChatMessageT;
+    addMessage(message);
+  });
+
+  const room = useRoomContext();
+  const clear = useChatState((state) => state.clear);
+  const setMessages = useChatState((state) => state.setMessages);
+  const getChatMessages = useServerFn(getChatMessagesFn);
   useEffect(() => {
-    if (messageCount) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [messageCount]);
+    getChatMessages({ data: { roomId: room.name } }).then((messages) => setMessages(messages));
+    return clear;
+  }, [clear, getChatMessages, room.name, setMessages]);
 
   return (
-    <div className="size-full">
-      <AudioSyncBridge />
-      <div className="flex gap-4 size-full flex-col justify-between align-center">
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="flex flex-col gap-1">
-            <AnimatePresence initial={false}>
-              {chatMessages.map((m, index) => (
-                <Message key={m.id} message={m} previousMessage={index ? chatMessages.at(index - 1) : null} />
-              ))}
-            </AnimatePresence>
-            <div ref={bottomRef} />
+    <>
+      <Dialog open={isTablet && showChat} onOpenChange={closePanel}>
+        <DialogPopup portalProps={{ keepMounted: true }} className="h-full min-h-48" showCloseButton={true}>
+          <DialogHeader>
+            <DialogTitle>{m.chat_label()}</DialogTitle>
+          </DialogHeader>
+          <div className="flex min-h-40 p-6">
+            <div className="min-h-0 flex-1">
+              <ChatInner readonly={readonly} />
+            </div>
           </div>
-        </ScrollArea>
-        {readonly ? null : <ChatInput />}
-      </div>
-    </div>
+        </DialogPopup>
+      </Dialog>
+      {!isTablet && showChat ? (
+        <Card className="flex basis-1/4 size-full min-h-0 justify-end gap-4 py-4">
+          <div className="flex size-full min-h-0 flex-col px-4">
+            <ChatInner readonly={readonly} />
+          </div>
+        </Card>
+      ) : null}
+      <AudioSyncBridge />
+    </>
   );
 };

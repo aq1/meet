@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, isNull } from "drizzle-orm";
+import { DataPacket_Kind } from "livekit-server-sdk";
 import { z } from "zod";
-import { authMiddleware } from "@/apps/auth/middleware/auth-middleware";
+import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
 import { db } from "@/lib/db/client";
-import { roomTokenMiddleware } from "../middleware/room-token-middleware";
-import { chatMessage, room } from "../models";
+import { chatMessage } from "../models";
+import { roomServiceClient } from "../services/livekit/room-service-client";
+
+const encoder = new TextEncoder();
 
 const ChatMessageSchema = z.xor([
   z.object({
@@ -20,14 +22,13 @@ const ChatMessageSchema = z.xor([
 ]);
 
 export const postChatMessageFn = createServerFn({ method: "POST" })
-  .middleware([authMiddleware, roomTokenMiddleware])
+  .middleware([anyUserMiddleware])
   .validator(ChatMessageSchema)
   .handler(async ({ context, data }) => {
-    const [activeRoom] = await db
-      .select({ id: room.id })
-      .from(room)
-      .where(and(eq(room.publicId, data.roomId), isNull(room.finishedAt)))
-      .limit(1);
+    const activeRoom = await db.query.room.findFirst({
+      columns: { id: true, publicId: true },
+      where: { publicId: data.roomId, finishedAt: { isNull: true } },
+    });
     if (!activeRoom) {
       throw new Response("Room not found", { status: 404 });
     }
@@ -40,5 +41,23 @@ export const postChatMessageFn = createServerFn({ method: "POST" })
         payload: data.payload,
       })
       .returning();
+
+    await roomServiceClient.sendData(
+      activeRoom.publicId,
+      encoder.encode(
+        JSON.stringify({
+          id: message.id,
+          createdAt: message.createdAt.toISOString(),
+          from: Number(context.session.user.id),
+          kind: message.kind,
+          payload: message.payload,
+        }),
+      ),
+      DataPacket_Kind.RELIABLE,
+      {
+        topic: "chat",
+      },
+    );
+
     return message;
   });

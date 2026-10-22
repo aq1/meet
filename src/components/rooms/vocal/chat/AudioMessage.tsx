@@ -9,7 +9,7 @@ import { useControls } from "../controls/controls-state";
 import { useRoomToken } from "../room-token";
 import { useAudioSync } from "./audio-sync-state";
 
-type AudioMessageT = { url: string };
+type AudioMessageT = { payload: { url: string; fileName: string } };
 
 const formatTime = (seconds: number) => {
   const m = Math.floor(seconds / 60);
@@ -17,7 +17,8 @@ const formatTime = (seconds: number) => {
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
 
-export const AudioMessage = ({ url }: AudioMessageT) => {
+export const AudioMessage = ({ payload }: AudioMessageT) => {
+  const { url } = payload;
   const room = useRoomContext();
   const token = useRoomToken();
   const waveRef = useRef<HTMLDivElement>(null);

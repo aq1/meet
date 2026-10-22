@@ -1,15 +1,17 @@
-import type { ReceivedChatMessage } from "@livekit/components-react";
+import { useParticipants } from "@livekit/components-react";
 import { motion } from "motion/react";
 import { memo } from "react";
-import { MessageContent } from "./MessageContent";
+import type { ChatMessageT } from "@/apps/rooms/shared/types";
+import { AudioMessage } from "./AudioMessage";
+import { TextMessage } from "./TextMessage";
 
-type MessageT = {
-  message: ReceivedChatMessage;
-  previousMessage?: ReceivedChatMessage | null;
-};
+type MessageT = { message: ChatMessageT; previousMessage?: ChatMessageT | null };
 
 export const Message = memo(({ message, previousMessage }: MessageT) => {
-  const fromSameParticipant = previousMessage?.from?.identity === message.from?.identity;
+  const participant = useParticipants()
+    .filter((p) => p.identity === message.from.toString())
+    .at(0);
+  const fromSameParticipant = previousMessage?.from === message.from;
 
   return (
     <motion.div
@@ -21,11 +23,15 @@ export const Message = memo(({ message, previousMessage }: MessageT) => {
       className="flex items-center justify-between gap-2 text-sm"
     >
       <div className="flex min-w-0 flex-1 flex-col">
-        <span className={message.from?.isLocal ? "text-green-500" : "text-blue-500"}>
-          {fromSameParticipant ? null : message.from?.name}
+        <span className={participant?.isLocal ? "text-green-500" : "text-blue-500"}>
+          {fromSameParticipant ? null : participant?.name}
         </span>
         <div className="w-full">
-          <MessageContent message={message} />
+          {message.kind === "audio" ? (
+            <AudioMessage payload={message.payload} />
+          ) : (
+            <TextMessage payload={message.payload} />
+          )}
         </div>
       </div>
     </motion.div>

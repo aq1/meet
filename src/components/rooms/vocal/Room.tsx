@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { Chat } from "@/components/rooms/vocal/chat/Chat";
-import { SidePanel } from "@/components/side-panel/SidePanel";
 import { useIsTablet } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
-import { m } from "@/paraglide/messages";
 import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
@@ -27,9 +25,7 @@ export const VocalRoom = () => {
         </div>
         <div className="order-first flex gap-4 px-4 size-full min-h-0 basis-full lg:order-0 overflow-hidden">
           <Participants />
-          <SidePanel title={m.chat_label()}>
-            <Chat />
-          </SidePanel>
+          <Chat />
         </div>
         <div className={cn("w-full min-h-50 h-50 basis-1/3", !showKeyboard && "hidden")}>
           <Piano />
