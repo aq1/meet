@@ -7,5 +7,5 @@ export const anyUserMiddleware = createMiddleware({ type: "function" })
     if (!context.session) {
       throw new Response("Unauthorized", { status: 401 });
     }
-    return next({ context: { session: context.session } });
+    return next({ context: { session: context.session, userId: Number(context.session.user.id) } });
   });

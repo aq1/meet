@@ -7,5 +7,5 @@ export const authMiddleware = createMiddleware({ type: "function" })
     if (context.session.user.isAnonymous) {
       throw new Response("Unauthorized", { status: 401 });
     }
-    return next({ context: { session: context.session } });
+    return next({ context: { session: context.session, userId: context.userId } });
   });

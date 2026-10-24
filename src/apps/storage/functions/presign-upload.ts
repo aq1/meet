@@ -35,5 +35,5 @@ export const presignUploadFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator(UploadSchema)
   .handler(async ({ data, context }) => {
-    return await createUpload({ ...data, userId: Number(context.session.user.id) });
+    return await createUpload({ ...data, userId: context.userId });
   });

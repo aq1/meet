@@ -40,12 +40,12 @@ export const postChatMessageFn = createServerFn({ method: "POST" })
   .middleware([activeRoomParticipantMiddleware])
   .validator(ChatMessageSchema)
   .handler(async ({ context, data }) => {
-    const payload = await serializePayload(data, Number(context.session.user.id));
+    const payload = await serializePayload(data, context.userId);
     const [message] = await db
       .insert(chatMessage)
       .values({
         roomId: context.room.id,
-        userId: Number(context.session.user.id),
+        userId: context.userId,
         kind: data.kind,
         payload,
       })

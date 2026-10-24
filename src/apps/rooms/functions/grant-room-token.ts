@@ -12,10 +12,7 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { user } = context.session;
 
-    await db
-      .insert(roomUser)
-      .values({ roomId: context.room.id, userId: Number(user.id) })
-      .onConflictDoNothing();
+    await db.insert(roomUser).values({ roomId: context.room.id, userId: context.userId }).onConflictDoNothing();
 
     const fieldsToUpdate: { name?: string; lang?: string; color?: string } = {};
     if (user.name !== data.username) {
@@ -32,5 +29,5 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
       const ctx = await auth.$context;
       await ctx.internalAdapter.updateUser(user.id, fieldsToUpdate);
     }
-    return await grantLivekitToken(user.id.toString(), data.username, context.room.publicId);
+    return await grantLivekitToken(context.userId.toString(), data.username, context.room.publicId);
   });

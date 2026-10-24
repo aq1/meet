@@ -6,7 +6,7 @@ export const listMyRoomsServerFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
     const rows = await db.query.room.findMany({
-      where: { roomUsers: { userId: Number(context.session.user.id) } },
+      where: { roomUsers: { userId: context.userId } },
       orderBy: { createdAt: "desc" },
       limit: 100,
       with: {

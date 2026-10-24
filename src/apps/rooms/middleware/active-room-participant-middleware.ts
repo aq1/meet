@@ -10,7 +10,7 @@ export const activeRoomParticipantMiddleware = createMiddleware({ type: "functio
       where: {
         publicId: data.roomId,
         finishedAt: { isNull: true },
-        roomUsers: { userId: Number(context.session.user.id) },
+        roomUsers: { userId: context.userId },
       },
     });
 
