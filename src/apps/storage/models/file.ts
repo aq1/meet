@@ -10,7 +10,7 @@ export const file = snakeCase.table(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     filename: varchar({ length: 255 }).notNull(),
-    content_type: varchar({ length: 255 }).notNull(),
+    contentType: varchar({ length: 255 }).notNull(),
     size: integer().notNull(),
     bucket: varchar({ length: 255 }).notNull(),
     key: text().notNull(),

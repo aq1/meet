@@ -27,12 +27,12 @@ const serializePayload = async (data: z.output<typeof ChatMessageSchema>, userId
     case "audio": {
       const record = await db.query.file.findFirst({ where: { id: data.payload.id, userId } });
       if (!record) {
-        throw new Error("Unkown file");
+        throw new Error("Unknown file");
       }
       return { key: record.key, fileName: record.filename };
     }
     default:
-      throw new Error("Unkown message kind");
+      throw new Error("Unknown message kind");
   }
 };
 

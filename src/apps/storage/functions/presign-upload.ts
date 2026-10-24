@@ -25,13 +25,13 @@ const UploadSchema = z
   .transform((data, ctx) => {
     const ext = contentTypesDb[data.type.split(";")[0].trim().toLowerCase()].extensions?.at(0);
     if (!ext) {
-      ctx.addIssue({ code: "custom", path: ["type"], message: "Unkown content type" });
+      ctx.addIssue({ code: "custom", path: ["type"], message: "Unknown content type" });
       return z.NEVER;
     }
     return { ...data, ext };
   });
 
-export const presignUpload = createServerFn({ method: "POST" })
+export const presignUploadFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator(UploadSchema)
   .handler(async ({ data, context }) => {

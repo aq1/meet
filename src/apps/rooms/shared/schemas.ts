@@ -4,7 +4,7 @@ import { z } from "zod";
 const MessageBaseSchema = z.object({
   id: z.number(),
   createdAt: z.date(),
-  from: z.number(),
+  userId: z.number(),
 });
 
 export const MessageSchema = z.discriminatedUnion("kind", [

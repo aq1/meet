@@ -9,9 +9,9 @@ type MessageT = { message: ChatMessageT; previousMessage?: ChatMessageT | null }
 
 export const Message = memo(({ message, previousMessage }: MessageT) => {
   const participant = useParticipants()
-    .filter((p) => p.identity === message.from.toString())
+    .filter((p) => p.identity === message.userId.toString())
     .at(0);
-  const fromSameParticipant = previousMessage?.from === message.from;
+  const fromSameParticipant = previousMessage?.userId === message.userId;
 
   return (
     <motion.div

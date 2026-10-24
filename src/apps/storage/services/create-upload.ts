@@ -27,7 +27,7 @@ export const createUpload = async (data: CreateUploadT) => {
       userId: Number(data.userId),
       filename: data.name,
       size: data.size,
-      content_type: data.type,
+      contentType: data.type,
       ...s3Fields,
     })
     .returning();
