@@ -48,11 +48,14 @@ const ChatInput = () => {
 
   const uploadFile = async (file: File) => {
     setProgress(0);
-    const { ok, record } = await upload("teacher-audio", file);
-    if (ok) {
-      await send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } });
+    try {
+      const { ok, record } = await upload("teacher-audio", file);
+      if (ok) {
+        await send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } });
+      }
+    } finally {
+      setProgress(null);
     }
-    setProgress(null);
   };
 
   return (

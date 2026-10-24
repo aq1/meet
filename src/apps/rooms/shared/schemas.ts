@@ -3,7 +3,7 @@ import { z } from "zod";
 
 const MessageBaseSchema = z.object({
   id: z.number(),
-  createdAt: z.date(),
+  createdAt: z.date().transform((v) => v.toISOString()),
   userId: z.number(),
 });
 
