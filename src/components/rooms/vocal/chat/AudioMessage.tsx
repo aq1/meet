@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useControls } from "../controls/controls-state";
 import { useAudioSync } from "./audio-sync-state";
 
-type AudioMessageT = { payload: { url: string; fileName: string } };
+type AudioMessageT = { payload: { key: string; url: string; fileName: string } };
 
 const formatTime = (seconds: number) => {
   const m = Math.floor(seconds / 60);
@@ -14,14 +14,14 @@ const formatTime = (seconds: number) => {
 };
 
 export const AudioMessage = ({ payload }: AudioMessageT) => {
-  const { url } = payload;
+  const { key, url } = payload;
   const waveRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WaveSurfer | null>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const sync = useAudioSync((state) => (state.sync?.url === url ? state.sync : null));
+  const sync = useAudioSync((state) => (state.sync?.key === key ? state.sync : null));
   const control = useAudioSync((state) => state.control);
   const fileVolume = useControls((state) => state.fileVolume);
   const fileVolumeRef = useRef(fileVolume);
@@ -77,7 +77,7 @@ export const AudioMessage = ({ payload }: AudioMessageT) => {
     ws.on("pause", () => setPlaying(false));
     ws.on("finish", () => setPlaying(false));
     ws.on("interaction", (time) => {
-      useAudioSync.getState().control({ url, action: "play", time });
+      useAudioSync.getState().control({ key, action: "play", time });
     });
     wsRef.current = ws;
 
@@ -85,7 +85,7 @@ export const AudioMessage = ({ payload }: AudioMessageT) => {
       wsRef.current?.destroy();
       wsRef.current = null;
     };
-  }, [url]);
+  }, [key, url]);
 
   return (
     <div className="flex w-full items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2">
@@ -99,7 +99,7 @@ export const AudioMessage = ({ payload }: AudioMessageT) => {
           if (!ws) {
             return;
           }
-          control({ url, action: ws.isPlaying() ? "pause" : "play", time: ws.getCurrentTime() });
+          control({ key, action: ws.isPlaying() ? "pause" : "play", time: ws.getCurrentTime() });
         }}
       >
         {playing ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}

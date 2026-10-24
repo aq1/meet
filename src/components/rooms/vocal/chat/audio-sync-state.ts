@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AudioSync = { url: string; action: "play" | "pause"; time: number };
+export type AudioSync = { key: string; action: "play" | "pause"; time: number };
 
 interface AudioSyncState {
   sync: AudioSync | null;
