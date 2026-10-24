@@ -8,7 +8,7 @@ export const useUploadFile = () => {
   const presignUpload = useServerFn(presignUploadFn);
 
   const putWithProgress = (url: string, file: File) =>
-    new Promise<boolean>((resolve, reject) => {
+    new Promise<boolean>((resolve) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url);
       xhr.setRequestHeader("Content-Type", file.type);
@@ -18,12 +18,9 @@ export const useUploadFile = () => {
         }
       };
       xhr.onload = () => {
-        if (xhr.status < 300) {
-          resolve(true);
-        }
-        reject(false);
+        resolve(xhr.status < 300);
       };
-      xhr.onerror = () => reject(false);
+      xhr.onerror = () => resolve(false);
       xhr.send(file);
     });
 

@@ -7,7 +7,7 @@ import { createUpload } from "../services/create-upload";
 const MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
 
 const UploadBaseSchema = z.object({
-  name: z.string(),
+  name: z.string().max(255),
   size: z.number().lte(MAX_UPLOAD_SIZE),
 });
 
@@ -23,7 +23,7 @@ const UploadSchema = z
     }),
   ])
   .transform((data, ctx) => {
-    const ext = contentTypesDb[data.type.split(";")[0].trim().toLowerCase()].extensions?.at(0);
+    const ext = contentTypesDb[data.type.split(";")[0].trim().toLowerCase()]?.extensions?.at(0);
     if (!ext) {
       ctx.addIssue({ code: "custom", path: ["type"], message: "Unknown content type" });
       return z.NEVER;
@@ -35,9 +35,5 @@ export const presignUploadFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
   .validator(UploadSchema)
   .handler(async ({ data, context }) => {
-    const result = await createUpload({ ...data, userId: Number(context.session.user.id) });
-    if (!result.url) {
-      throw new Response("Failed to presign upload", { status: 500 });
-    }
-    return result;
+    return await createUpload({ ...data, userId: Number(context.session.user.id) });
   });

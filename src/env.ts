@@ -13,7 +13,6 @@ export const env = createEnv({
     S3_BUCKET: z.string().default("meet"),
     S3_REGION: z.string(),
     S3_PUBLIC_BUCKET: z.string().default("meet-public"),
-    S3_PUBLIC_URL: z.string().url().optional(),
     AWS_ACCESS_KEY_ID: z.string(),
     AWS_SECRET_ACCESS_KEY: z.string(),
     DATABASE_URL: z.string().url(),

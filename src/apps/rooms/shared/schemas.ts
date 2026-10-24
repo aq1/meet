@@ -19,7 +19,7 @@ export const MessageSchema = z.discriminatedUnion("kind", [
         ...data.payload,
         url: s3.presign(data.payload.key, {
           method: "GET",
-          expiresIn: 60 * 60,
+          expiresIn: 24 * 60 * 60,
         }),
       },
     };
