@@ -1,4 +1,3 @@
-import { s3 } from "bun";
 import { z } from "zod";
 
 const MessageBaseSchema = z.object({
@@ -9,19 +8,5 @@ const MessageBaseSchema = z.object({
 
 export const MessageSchema = z.discriminatedUnion("kind", [
   MessageBaseSchema.extend({ kind: z.literal("text"), payload: z.object({ text: z.string() }) }),
-  MessageBaseSchema.extend({
-    kind: z.literal("audio"),
-    payload: z.object({ key: z.string(), fileName: z.string() }),
-  }).transform((data) => {
-    return {
-      ...data,
-      payload: {
-        ...data.payload,
-        url: s3.presign(data.payload.key, {
-          method: "GET",
-          expiresIn: 24 * 60 * 60,
-        }),
-      },
-    };
-  }),
+  MessageBaseSchema.extend({ kind: z.literal("audio"), payload: z.object({ key: z.string(), fileName: z.string() }) }),
 ]);

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db/client";
 import { activeRoomParticipantMiddleware } from "../middleware/active-room-participant-middleware";
 import { chatMessage } from "../models";
-import { prepareChatMessage } from "../services/chat/serializer-chat-payload";
+import { prepareChatMessage } from "../services/chat/prepare-chat-message";
 import { roomServiceClient } from "../services/livekit/room-service-client";
 
 const encoder = new TextEncoder();

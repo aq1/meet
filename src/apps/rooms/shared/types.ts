@@ -1,5 +1,4 @@
-import type { z } from "zod";
-import type { MessageSchema } from "./schemas";
+import type { prepareChatMessage } from "../services/chat/prepare-chat-message";
 
 type ChatMessageTextT = {
   kind: "text";
@@ -16,4 +15,4 @@ type ChatMessageAudioT = {
 
 export type ChatMessagePayloadT = (ChatMessageTextT | ChatMessageAudioT)["payload"];
 
-export type ChatMessageT = z.output<typeof MessageSchema>;
+export type ChatMessageT = ReturnType<typeof prepareChatMessage>;
