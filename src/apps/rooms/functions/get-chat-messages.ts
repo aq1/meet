@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "@/lib/db/client";
 import { activeRoomParticipantMiddleware } from "../middleware/active-room-participant-middleware";
-import type { ChatMessageT } from "../shared/types";
+import { prepareChatMessage } from "../services/chat/serializer-chat-payload";
 
 export const getChatMessagesFn = createServerFn({ method: "GET" })
   .middleware([activeRoomParticipantMiddleware])
@@ -11,14 +11,5 @@ export const getChatMessagesFn = createServerFn({ method: "GET" })
       orderBy: { id: "asc" },
     });
 
-    return messages.map(
-      (message) =>
-        ({
-          id: message.id,
-          createdAt: message.createdAt.toISOString(),
-          from: message.userId,
-          kind: message.kind,
-          payload: message.payload,
-        }) as ChatMessageT,
-    );
+    return messages.map(prepareChatMessage);
   });

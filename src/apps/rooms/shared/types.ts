@@ -1,3 +1,6 @@
+import type { z } from "zod";
+import type { MessageSchema } from "./schemas";
+
 type ChatMessageTextT = {
   kind: "text";
   payload: { text: string };
@@ -6,15 +9,11 @@ type ChatMessageTextT = {
 type ChatMessageAudioT = {
   kind: "audio";
   payload: {
-    url: string;
+    key: string;
     fileName: string;
   };
 };
 
 export type ChatMessagePayloadT = (ChatMessageTextT | ChatMessageAudioT)["payload"];
 
-export type ChatMessageT = {
-  id: number;
-  createdAt: string;
-  from: number;
-} & (ChatMessageTextT | ChatMessageAudioT);
+export type ChatMessageT = z.output<typeof MessageSchema>;

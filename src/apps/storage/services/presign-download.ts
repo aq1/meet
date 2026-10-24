@@ -3,7 +3,7 @@ import { env } from "@/env";
 
 const DOWNLOAD_URL_TTL = 24 * 60 * 60;
 
-export const s3KeyFromLocation = (location: string) => {
+const s3KeyFromLocation = (location: string) => {
   const decodedPath = decodeURIComponent(new URL(location).pathname).replace(/^\/+/, "");
   const bucketPrefix = `${env.S3_BUCKET}/`;
   return decodedPath.startsWith(bucketPrefix) ? decodedPath.slice(bucketPrefix.length) : decodedPath;

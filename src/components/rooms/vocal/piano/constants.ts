@@ -1,5 +1,4 @@
 export type Note = (typeof NOTES)[number];
-export type Midi = Note["midi"];
 
 export const NOTES = [
   {

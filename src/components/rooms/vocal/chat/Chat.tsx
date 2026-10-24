@@ -7,8 +7,6 @@ import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
 import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
-import { presignChatDownloadServerFn } from "@/apps/rooms/functions/presign-chat-download";
-import { presignChatUploadServerFn } from "@/apps/rooms/functions/presign-chat-upload";
 import type { ChatMessageT } from "@/apps/rooms/shared/types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,7 +22,7 @@ import {
 import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsTablet } from "@/hooks/use-media-query";
-import { putWithProgress } from "@/lib/s3/put-with-progress";
+import { useUploadFile } from "@/lib/s3/use-upload-file";
 import { m } from "@/paraglide/messages";
 import { useControls } from "../controls/controls-state";
 import { AudioSyncBridge } from "./AudioSyncBridge";
@@ -34,12 +32,10 @@ import { Message } from "./Message";
 const ChatInput = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const room = useRoomContext();
-  const presignUpload = useServerFn(presignChatUploadServerFn);
-  const presignDownload = useServerFn(presignChatDownloadServerFn);
+  const { upload, progress, setProgress } = useUploadFile();
   const send = useServerFn(postChatMessageFn);
 
   const [value, setValue] = useState<ComposerValue>([]);
-  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const sendDraft = async () => {
     if (!value.length) {
@@ -51,18 +47,12 @@ const ChatInput = () => {
   };
 
   const uploadFile = async (file: File) => {
-    setUploadProgress(0);
-    try {
-      const { url: uploadUrl } = await presignUpload({
-        data: { roomId: room.name, name: file.name, type: file.type, size: file.size },
-      });
-      await putWithProgress(uploadUrl, file, setUploadProgress);
-      const url = await presignDownload({ data: { roomId: room.name, url: uploadUrl } });
-      await send({ data: { roomId: room.name, kind: "audio", payload: { fileName: file.name, url } } });
-    } catch {
-    } finally {
-      setUploadProgress(null);
+    setProgress(0);
+    const { ok, record } = await upload("teacher-audio", file);
+    if (ok) {
+      await send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } });
     }
+    setProgress(null);
   };
 
   return (
@@ -93,11 +83,11 @@ const ChatInput = () => {
           <ComposerActionGroup>
             <Button
               variant="outline"
-              disabled={uploadProgress !== null}
+              disabled={progress !== null}
               onClick={() => fileInputRef.current?.click()}
               title={m.chat_attach_file()}
             >
-              {uploadProgress === null ? <Paperclip /> : `${Math.round(uploadProgress * 100)}%`}
+              {progress === null ? <Paperclip /> : `${Math.round(progress * 100)}%`}
             </Button>
           </ComposerActionGroup>
           <ComposerActionGroup align="end">
@@ -143,7 +133,7 @@ type ChatT = {
   readonly?: boolean;
 };
 
-export const ChatInner = ({ readonly = false }: ChatT) => {
+const ChatInner = ({ readonly = false }: ChatT) => {
   return (
     <div className="flex gap-4 size-full flex-col justify-between align-center">
       <ChatMessages />

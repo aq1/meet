@@ -38,7 +38,7 @@ const EmptyRoom = () => {
   );
 };
 
-export const ParticipantsGrid = () => {
+const ParticipantsGrid = () => {
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },

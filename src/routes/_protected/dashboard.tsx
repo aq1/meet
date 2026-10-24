@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, useRouteContext } from "@tanstack/react-r
 import { useServerFn } from "@tanstack/react-start";
 import { DownloadIcon, PlusIcon, RouteIcon, UserIcon, VideoIcon } from "lucide-react";
 import { type ChangeEvent, type SubmitEvent, useRef, useState } from "react";
-import { presignAvatarUploadServerFn } from "@/apps/auth/functions/presign-avatar-upload";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
 import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import {
@@ -32,7 +31,7 @@ import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toastManager } from "@/components/ui/toast";
 import { authClient } from "@/lib/auth/client";
-import { putWithProgress } from "@/lib/s3/put-with-progress";
+import { useUploadFile } from "@/lib/s3/use-upload-file";
 import { m } from "@/paraglide/messages";
 
 export const Route = createFileRoute("/_protected/dashboard")({
@@ -43,7 +42,7 @@ export const Route = createFileRoute("/_protected/dashboard")({
 function DashboardPage() {
   const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
-  const presignAvatarUpload = useServerFn(presignAvatarUploadServerFn);
+  const { upload } = useUploadFile();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const rooms = Route.useLoaderData();
   const { user: authUser } = useRouteContext({ from: "/_protected" });
@@ -75,8 +74,10 @@ function DashboardPage() {
     setLoading(true);
     setError("");
     try {
-      const { url, publicUrl } = await presignAvatarUpload({ data: { type: file.type, size: file.size } });
-      await putWithProgress(url, file, () => {});
+      const { ok, publicUrl } = await upload("avatar", file);
+      if (!ok) {
+        throw new Error();
+      }
       setUser((p) => {
         return { ...p, image: publicUrl };
       });
