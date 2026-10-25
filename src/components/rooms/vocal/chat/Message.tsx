@@ -28,7 +28,7 @@ export const Message = memo(({ message, previousMessage }: MessageT) => {
         )}
         <div className="w-full">
           {message.kind === "audio" ? (
-            <AudioMessage payload={message.payload} />
+            <AudioMessage id={message.id} payload={message.payload} />
           ) : (
             <TextMessage payload={message.payload} />
           )}

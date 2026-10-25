@@ -16,7 +16,7 @@ export const AudioSyncSchema = z
   })
   .pipe(
     z.object({
-      key: z.string().min(1),
+      id: z.number().int().positive(),
       action: z.enum(["play", "pause"]),
       time: z.number().nonnegative(),
     }),

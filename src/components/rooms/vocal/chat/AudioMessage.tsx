@@ -2,11 +2,11 @@ import { AudioPlayer } from "@/components/audio/AudioPlayer";
 import { useControls } from "../controls/controls-state";
 import { useAudioSync } from "./audio-sync-state";
 
-type AudioMessageT = { payload: { key: string; url: string; fileName: string } };
+type AudioMessageT = { id: number; payload: { url: string; fileName: string } };
 
-export const AudioMessage = ({ payload }: AudioMessageT) => {
-  const { key, url } = payload;
-  const sync = useAudioSync((state) => (state.sync?.key === key ? state.sync : null));
+export const AudioMessage = ({ id, payload }: AudioMessageT) => {
+  const { url } = payload;
+  const sync = useAudioSync((state) => (state.sync?.id === id ? state.sync : null));
   const fileVolume = useControls((state) => state.fileVolume);
 
   return (
@@ -15,7 +15,7 @@ export const AudioMessage = ({ payload }: AudioMessageT) => {
         url={url}
         volume={fileVolume}
         sync={sync}
-        onControl={(state) => useAudioSync.getState().control({ key, ...state })}
+        onControl={(state) => useAudioSync.getState().control({ id, ...state })}
       />
       <p className="text-xs text-muted-foreground">
         <span>{payload.fileName}</span>
