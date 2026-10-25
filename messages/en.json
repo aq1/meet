@@ -64,6 +64,8 @@
   "dashboard_files_title": "Files",
   "dashboard_no_files_title": "No files yet",
   "dashboard_no_files_description": "Files shared in your calls will appear here.",
+  "dashboard_upload_file": "Upload file",
+  "dashboard_file_upload_error": "Failed to upload file",
 
   "device_microphone": "Microphone",
   "device_camera": "Camera",

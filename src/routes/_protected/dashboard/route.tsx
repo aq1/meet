@@ -1,38 +1,24 @@
-import { createFileRoute, Link, useNavigate, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { PlusIcon } from "lucide-react";
-import { z } from "zod";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
-import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
-import { AccountPanel } from "@/components/dashboard/AccountPanel";
-import { CallsPanel } from "@/components/dashboard/CallsPanel";
-import { FilesPanel } from "@/components/dashboard/FilesPanel";
 import { Button } from "@/components/ui/button";
 import { SegmentedControl, SegmentedControlItem } from "@/components/ui/segmented-control";
 import { m } from "@/paraglide/messages";
 
-const tabs = ["calls", "files", "account"] as const;
-
-const tabLabels = {
-  calls: m.dashboard_calls_title,
-  files: m.dashboard_files_title,
-  account: m.dashboard_account,
-};
+const tabs = [
+  { to: "/dashboard", label: m.dashboard_calls_title },
+  { to: "/dashboard/files", label: m.dashboard_files_title },
+  { to: "/dashboard/account", label: m.dashboard_account },
+] as const;
 
 export const Route = createFileRoute("/_protected/dashboard")({
-  validateSearch: z.object({
-    tab: z.enum(tabs).optional().catch(undefined),
-  }),
-  component: DashboardPage,
-  loader: () => listMyRoomsServerFn(),
+  component: DashboardLayout,
 });
 
-function DashboardPage() {
+function DashboardLayout() {
   const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
-  const rooms = Route.useLoaderData();
-  const { user } = useRouteContext({ from: "/_protected" });
-  const { tab: current = "calls" } = Route.useSearch();
 
   const createRoom = async () => {
     const { roomId } = await createRoomFn();
@@ -55,25 +41,15 @@ function DashboardPage() {
         <SegmentedControl aria-label={m.dashboard_description()} render={<nav />} size="lg" className="w-full">
           {tabs.map((tab) => (
             <SegmentedControlItem
-              key={tab}
+              key={tab.to}
               className="grow"
-              render={
-                <Link
-                  to="/dashboard"
-                  search={{ tab }}
-                  activeOptions={{ exact: true }}
-                  resetScroll={false}
-                  aria-current={tab === current ? "page" : undefined}
-                />
-              }
+              render={<Link to={tab.to} activeOptions={{ exact: true }} resetScroll={false} />}
             >
-              {tabLabels[tab]()}
+              {tab.label()}
             </SegmentedControlItem>
           ))}
         </SegmentedControl>
-        {current === "calls" && <CallsPanel rooms={rooms} viewerId={Number(user.id)} />}
-        {current === "files" && <FilesPanel />}
-        {current === "account" && <AccountPanel user={user} />}
+        <Outlet />
       </div>
     </div>
   );

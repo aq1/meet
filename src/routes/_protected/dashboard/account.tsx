@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { UserIcon } from "lucide-react";
 import { type ChangeEvent, type SubmitEvent, useRef, useState } from "react";
 import {
@@ -21,15 +21,12 @@ import { authClient } from "@/lib/auth/client";
 import { useUploadFile } from "@/lib/s3/use-upload-file";
 import { m } from "@/paraglide/messages";
 
-type AccountPanelT = {
-  user: {
-    name: string;
-    email: string;
-    image?: string | null;
-  };
-};
+export const Route = createFileRoute("/_protected/dashboard/account")({
+  component: AccountPage,
+});
 
-export function AccountPanel({ user: authUser }: AccountPanelT) {
+function AccountPage() {
+  const { user: authUser } = Route.useRouteContext();
   const navigate = useNavigate();
   const { upload } = useUploadFile();
   const photoInputRef = useRef<HTMLInputElement>(null);

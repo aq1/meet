@@ -1,30 +1,24 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { DownloadIcon, RouteIcon, VideoIcon } from "lucide-react";
+import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardPanel } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { m } from "@/paraglide/messages";
 
-type Room = {
-  id: number;
-  createdAt: Date;
-  createdBy: number;
-  egressUrl: string | null;
-  finishedAt: Date | null;
-  publicId: string;
-  users: {
-    id: number;
-    name: string;
-    image: string | null;
-  }[];
-};
+export const Route = createFileRoute("/_protected/dashboard/")({
+  component: CallsPage,
+  loader: () => listMyRoomsServerFn(),
+});
 
-type CallsPanelT = {
-  rooms: Room[];
-  viewerId: number;
-};
+type Room = Awaited<ReturnType<typeof listMyRoomsServerFn>>[number];
 
-export function CallsPanel({ rooms, viewerId }: CallsPanelT) {
+function CallsPage() {
+  const rooms = Route.useLoaderData();
+  const { user } = Route.useRouteContext();
+  const viewerId = Number(user.id);
+
   return (
     <Card>
       <CardPanel>

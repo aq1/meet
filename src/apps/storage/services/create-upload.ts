@@ -28,6 +28,7 @@ export const createUpload = async (data: CreateUploadT) => {
       filename: data.name,
       size: data.size,
       contentType: data.type,
+      kind: data.kind,
       ...s3Fields,
     })
     .returning();

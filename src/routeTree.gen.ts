@@ -10,9 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
-import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
+import { Route as ProtectedDashboardRouteRouteImport } from './routes/_protected/dashboard/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as ProtectedDashboardAccountRouteImport } from './routes/_protected/dashboard/account'
+import { Route as ProtectedDashboardFilesRouteImport } from './routes/_protected/dashboard/files'
 import { Route as ProtectedDebugSentryRouteImport } from './routes/_protected/debug/sentry'
 import { Route as PublicEgressIndexRouteImport } from './routes/_public/egress/index'
 import { Route as PublicRoomRoomIdRouteImport } from './routes/_public/room/$roomId'
@@ -23,7 +26,7 @@ const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
+const ProtectedDashboardRouteRoute = ProtectedDashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => ProtectedRouteRoute,
@@ -37,6 +40,22 @@ const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProtectedDashboardRouteRoute,
+} as any)
+const ProtectedDashboardAccountRoute =
+  ProtectedDashboardAccountRouteImport.update({
+    id: '/account',
+    path: '/account',
+    getParentRoute: () => ProtectedDashboardRouteRoute,
+  } as any)
+const ProtectedDashboardFilesRoute = ProtectedDashboardFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => ProtectedDashboardRouteRoute,
 } as any)
 const ProtectedDebugSentryRoute = ProtectedDebugSentryRouteImport.update({
   id: '/debug/sentry',
@@ -66,34 +85,42 @@ const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof ProtectedDashboardRoute
+  '/dashboard': typeof ProtectedDashboardRouteRouteWithChildren
   '/login': typeof PublicLoginRoute
+  '/dashboard/account': typeof ProtectedDashboardAccountRoute
+  '/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/dashboard/': typeof ProtectedDashboardIndexRoute
   '/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
-  '/dashboard': typeof ProtectedDashboardRoute
   '/login': typeof PublicLoginRoute
+  '/dashboard/account': typeof ProtectedDashboardAccountRoute
+  '/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
   '/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/dashboard': typeof ProtectedDashboardIndexRoute
   '/egress': typeof PublicEgressIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
-  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/dashboard': typeof ProtectedDashboardRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRoute
   '/_public/': typeof PublicIndexRoute
+  '/_protected/dashboard/account': typeof ProtectedDashboardAccountRoute
+  '/_protected/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/_protected/debug/sentry': typeof ProtectedDebugSentryRoute
   '/_public/room/$roomId': typeof PublicRoomRoomIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/webhooks/livekit': typeof ApiWebhooksLivekitRoute
+  '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
   '/_public/egress/': typeof PublicEgressIndexRoute
 }
 export interface FileRouteTypes {
@@ -102,20 +129,25 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/dashboard/account'
+    | '/dashboard/files'
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/dashboard/'
     | '/egress/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/login'
+    | '/dashboard/account'
+    | '/dashboard/files'
     | '/debug/sentry'
     | '/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/dashboard'
     | '/egress'
   id:
     | '__root__'
@@ -123,10 +155,13 @@ export interface FileRouteTypes {
     | '/_protected/dashboard'
     | '/_public/login'
     | '/_public/'
+    | '/_protected/dashboard/account'
+    | '/_protected/dashboard/files'
     | '/_protected/debug/sentry'
     | '/_public/room/$roomId'
     | '/api/auth/$'
     | '/api/webhooks/livekit'
+    | '/_protected/dashboard/'
     | '/_public/egress/'
   fileRoutesById: FileRoutesById
 }
@@ -153,7 +188,7 @@ declare module '@tanstack/react-router' {
       id: '/_protected/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof ProtectedDashboardRouteImport
+      preLoaderRoute: typeof ProtectedDashboardRouteRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
     '/_public/': {
@@ -169,6 +204,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_protected/dashboard/': {
+      id: '/_protected/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
+      parentRoute: typeof ProtectedDashboardRouteRoute
+    }
+    '/_protected/dashboard/account': {
+      id: '/_protected/dashboard/account'
+      path: '/account'
+      fullPath: '/dashboard/account'
+      preLoaderRoute: typeof ProtectedDashboardAccountRouteImport
+      parentRoute: typeof ProtectedDashboardRouteRoute
+    }
+    '/_protected/dashboard/files': {
+      id: '/_protected/dashboard/files'
+      path: '/files'
+      fullPath: '/dashboard/files'
+      preLoaderRoute: typeof ProtectedDashboardFilesRouteImport
+      parentRoute: typeof ProtectedDashboardRouteRoute
     }
     '/_protected/debug/sentry': {
       id: '/_protected/debug/sentry'
@@ -208,13 +264,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ProtectedDashboardRouteRouteChildren {
+  ProtectedDashboardAccountRoute: typeof ProtectedDashboardAccountRoute
+  ProtectedDashboardFilesRoute: typeof ProtectedDashboardFilesRoute
+  ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+}
+
+const ProtectedDashboardRouteRouteChildren: ProtectedDashboardRouteRouteChildren =
+  {
+    ProtectedDashboardAccountRoute: ProtectedDashboardAccountRoute,
+    ProtectedDashboardFilesRoute: ProtectedDashboardFilesRoute,
+    ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  }
+
+const ProtectedDashboardRouteRouteWithChildren =
+  ProtectedDashboardRouteRoute._addFileChildren(
+    ProtectedDashboardRouteRouteChildren,
+  )
+
 interface ProtectedRouteRouteChildren {
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedDashboardRouteRoute: typeof ProtectedDashboardRouteRouteWithChildren
   ProtectedDebugSentryRoute: typeof ProtectedDebugSentryRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedDashboardRouteRoute: ProtectedDashboardRouteRouteWithChildren,
   ProtectedDebugSentryRoute: ProtectedDebugSentryRoute,
 }
 
