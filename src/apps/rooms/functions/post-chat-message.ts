@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DataPacket_Kind } from "livekit-server-sdk";
 import { z } from "zod";
+import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
 import { db } from "@/lib/db/client";
 import { activeRoomParticipantMiddleware } from "../middleware/active-room-participant-middleware";
 import { chatMessage } from "../models";
@@ -37,7 +38,7 @@ const serializePayload = async (data: z.output<typeof ChatMessageSchema>, userId
 };
 
 export const postChatMessageFn = createServerFn({ method: "POST" })
-  .middleware([activeRoomParticipantMiddleware])
+  .middleware([activeRoomParticipantMiddleware, anyUserMiddleware])
   .validator(ChatMessageSchema)
   .handler(async ({ context, data }) => {
     const payload = await serializePayload(data, context.userId);

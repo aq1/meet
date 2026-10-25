@@ -76,7 +76,7 @@ function EgressPage() {
       <PianoSound />
       <div className="flex h-dvh w-dvw gap-2 p-4">
         <Grid />
-        <Chat readonly />
+        <Chat readonly token={token} />
       </div>
     </RoomContext.Provider>
   );

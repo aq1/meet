@@ -134,6 +134,7 @@ const ChatMessages = () => {
 
 type ChatT = {
   readonly?: boolean;
+  token?: string;
 };
 
 const ChatInner = ({ readonly = false }: ChatT) => {
@@ -147,7 +148,7 @@ const ChatInner = ({ readonly = false }: ChatT) => {
 
 const decoder = new TextDecoder();
 
-export const Chat = ({ readonly = false }: ChatT) => {
+export const Chat = ({ readonly = false, token }: ChatT) => {
   const isTablet = useIsTablet();
   const showChat = useControls((state) => state.showChat);
   const setControls = useControls((state) => state.set);
@@ -170,11 +171,9 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const setMessages = useChatState((state) => state.setMessages);
   const getChatMessages = useServerFn(getChatMessagesFn);
   useEffect(() => {
-    if (!readonly) {
-      getChatMessages({ data: { roomId: room.name } }).then((messages) => setMessages(messages));
-    }
+    getChatMessages({ data: { roomId: room.name, token } }).then((messages) => setMessages(messages));
     return clear;
-  }, [clear, getChatMessages, room.name, setMessages, readonly]);
+  }, [clear, getChatMessages, room.name, setMessages, token]);
 
   return (
     <>

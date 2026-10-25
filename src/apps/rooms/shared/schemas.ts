@@ -40,4 +40,7 @@ export const ChatMessageSchema = z
     ]),
   );
 
-export const RoomInputSchema = z.looseObject({ roomId: z.string().min(1).max(64) });
+export const RoomInputSchema = z.looseObject({
+  token: z.string().min(1).optional(),
+  roomId: z.string().min(1).max(64),
+});
