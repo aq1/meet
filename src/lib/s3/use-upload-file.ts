@@ -1,10 +1,18 @@
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import { completeUploadFn } from "@/apps/storage/functions/complete-upload";
 import { presignUploadFn } from "@/apps/storage/functions/presign-upload";
 import type { UploadKindT } from "@/apps/storage/shared/types";
 
-export const useUploadFile = () => {
+type UploadResultT = Awaited<ReturnType<typeof presignUploadFn>>;
+
+type UseUploadFileT = {
+  kind: UploadKindT;
+  onSuccess?: (result: UploadResultT) => unknown;
+  onError?: () => unknown;
+};
+
+export const useUploadFile = ({ kind, onSuccess, onError }: UseUploadFileT) => {
   const [progress, setProgress] = useState<number | null>(null);
   const presignUpload = useServerFn(presignUploadFn);
   const completeUpload = useServerFn(completeUploadFn);
@@ -26,16 +34,26 @@ export const useUploadFile = () => {
       xhr.send(file);
     });
 
-  const upload = async (kind: UploadKindT, file: File) => {
-    const result = await presignUpload({
-      data: { kind, name: file.name, size: file.size, type: file.type },
-    });
-    if (!(await putWithProgress(result.url, file))) {
-      return { ...result, ok: false };
+  const upload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setProgress(0);
+    try {
+      const result = await presignUpload({
+        data: { kind, name: file.name, size: file.size, type: file.type },
+      });
+      if (!(await putWithProgress(result.url, file))) {
+        throw new Error();
+      }
+      const record = await completeUpload({ data: { fileId: result.record.id } });
+      await onSuccess?.({ ...result, record });
+    } catch {
+      await onError?.();
+    } finally {
+      setProgress(null);
     }
-    const record = await completeUpload({ data: { fileId: result.record.id } }).catch(() => null);
-    return { ...result, ok: !!record, record: record ?? result.record };
   };
 
-  return { progress, setProgress, upload };
+  return { progress, upload };
 };

@@ -32,8 +32,11 @@ import { Message } from "./Message";
 const ChatInput = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const room = useRoomContext();
-  const { upload, progress, setProgress } = useUploadFile();
   const send = useServerFn(postChatMessageFn);
+  const { upload, progress } = useUploadFile({
+    kind: "teacher-audio",
+    onSuccess: ({ record }) => send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } }),
+  });
 
   const [value, setValue] = useState<ComposerValue>([]);
 
@@ -46,34 +49,9 @@ const ChatInput = () => {
     setValue([]);
   };
 
-  const uploadFile = async (file: File) => {
-    setProgress(0);
-    try {
-      const { ok, record } = await upload("teacher-audio", file);
-      if (ok) {
-        await send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } });
-      }
-    } finally {
-      setProgress(null);
-    }
-  };
-
   return (
     <div className="flex items-center gap-2">
-      <input
-        ref={fileInputRef}
-        type="file"
-        id="file-select"
-        accept="audio/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.currentTarget.files?.[0];
-          e.currentTarget.value = "";
-          if (file) {
-            uploadFile(file);
-          }
-        }}
-      />
+      <input ref={fileInputRef} type="file" id="file-select" accept="audio/*" className="hidden" onChange={upload} />
       <Composer
         className="w-full min-w-80"
         layout="adaptive"

@@ -28,11 +28,20 @@ export const Route = createFileRoute("/_protected/dashboard/account")({
 function AccountPage() {
   const { user: authUser } = Route.useRouteContext();
   const navigate = useNavigate();
-  const { upload } = useUploadFile();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState(authUser);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { upload, progress } = useUploadFile({
+    kind: "avatar",
+    onSuccess: ({ publicUrl }) => {
+      setError("");
+      setUser((p) => {
+        return { ...p, image: publicUrl };
+      });
+    },
+    onError: () => setError(m.dashboard_photo_upload_error()),
+  });
 
   const maskedEmail = user.email.replace(/^(.)[^@]*/, "$1***");
 
@@ -44,26 +53,6 @@ function AccountPage() {
 
   const changePhoto = () => {
     photoInputRef.current?.click();
-  };
-
-  const uploadPhoto = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setLoading(true);
-    setError("");
-    try {
-      const { ok, publicUrl } = await upload("avatar", file);
-      if (!ok) {
-        throw new Error();
-      }
-      setUser((p) => {
-        return { ...p, image: publicUrl };
-      });
-    } catch {
-      setError(m.dashboard_photo_upload_error());
-    }
-    setLoading(false);
   };
 
   const changeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +96,7 @@ function AccountPage() {
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
                 className="hidden"
-                onChange={uploadPhoto}
+                onChange={upload}
               />
               <Avatar className="size-20">
                 <AvatarImage alt={m.dashboard_avatar_alt()} src={user.image ?? ""} />
@@ -166,7 +155,7 @@ function AccountPage() {
                 </AlertDialogFooter>
               </AlertDialogPopup>
             </AlertDialog>
-            <Button type="submit" variant="outline" loading={loading}>
+            <Button type="submit" variant="outline" loading={loading || progress !== null}>
               {m.dashboard_save()}
             </Button>
           </div>
