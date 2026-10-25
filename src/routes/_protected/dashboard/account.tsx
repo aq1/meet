@@ -105,7 +105,6 @@ function AccountPage() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col gap-2 text-sm w-full">
-                <span className="text-base">{m.dashboard_account()}</span>
                 <span className="text-muted-foreground">{maskedEmail}</span>
                 <div className="flex gap-2 text-nowrap">
                   {user.image ? (

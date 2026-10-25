@@ -1,6 +1,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckIcon, ChevronRight, FolderIcon, PencilIcon, UploadIcon, XIcon } from "lucide-react";
+import { CheckIcon, ChevronRight, FolderIcon, PencilIcon, SearchIcon, UploadIcon, XIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import type { listFilesFn } from "@/apps/storage/functions/list-files";
 import { renameFileFn } from "@/apps/storage/functions/rename-file";
@@ -13,6 +14,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toastManager } from "@/components/ui/toast";
 import { useUploadFile } from "@/lib/s3/use-upload-file";
 import { m } from "@/paraglide/messages";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
+import { Separator } from "../ui/separator";
 
 type FilesPanelProps = {
   files: Awaited<ReturnType<typeof listFilesFn>>;
@@ -22,10 +25,13 @@ type FilesPanelProps = {
 
 export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [filter, setFilter] = useState("");
   const [error, setError] = useState("");
+  const query = filter.trim().toLocaleLowerCase();
+  const filteredFiles = query ? files.filter((file) => file.filename.toLocaleLowerCase().includes(query)) : files;
   const { progress, upload } = useUploadFile({
     kind: "teacher-audio",
-    onSuccess: ({ record }) => {
+    onSuccess: () => {
       setError("");
       return onFilesChange();
     },
@@ -50,8 +56,23 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
       </div>
       {progress !== null ? <Progress value={progress * 100} /> : null}
       {error ? <span className="text-sm text-destructive-foreground">{error}</span> : null}
-      <ScrollArea scrollFade className="min-h-0 flex-1">
+      <Separator />
+      <ScrollArea scrollFade className="min-h-0 flex-1 pt-4">
         <div className="flex flex-col gap-4">
+          {files.length > 3 ? (
+            <InputGroup>
+              <InputGroupInput
+                aria-label={m.files_search_label()}
+                placeholder={m.files_search_placeholder()}
+                type="search"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              />
+              <InputGroupAddon>
+                <SearchIcon aria-hidden="true" />
+              </InputGroupAddon>
+            </InputGroup>
+          ) : null}
           {files.length ? null : (
             <Empty>
               <EmptyHeader>
@@ -63,16 +84,26 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
               </EmptyHeader>
             </Empty>
           )}
-          {files.map((file) => (
-            <FileRow
-              key={file.id}
-              fileId={file.id}
-              filename={file.filename}
-              url={file.url}
-              createdAt={file.createdAt}
-              onSelect={onSelect}
-            />
-          ))}
+          <AnimatePresence initial={false} mode="popLayout">
+            {filteredFiles.map((file) => (
+              <motion.div
+                key={file.id}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <FileRow
+                  fileId={file.id}
+                  filename={file.filename}
+                  url={file.url}
+                  createdAt={file.createdAt}
+                  onSelect={onSelect}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </ScrollArea>
     </div>
@@ -105,13 +136,13 @@ function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
       toastManager.add({
         type: "success",
         id: `file-rename-success-${fileId}`,
-        title: "File renamed",
+        title: m.files_rename_success(),
       });
     } catch {
       toastManager.add({
         type: "error",
-        id: `file-rename-error-{fileId}`,
-        title: "Could not rename file",
+        id: `file-rename-error-${fileId}`,
+        title: m.files_rename_error(),
       });
     }
     setEditing(false);
