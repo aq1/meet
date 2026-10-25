@@ -1,6 +1,6 @@
 import { ClientOnly, createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckIcon, FolderIcon, PencilIcon, UploadIcon, XIcon } from "lucide-react";
+import { CheckIcon, FolderIcon, PencilIcon, UploadIcon, XIcon, ZapIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { listFilesFn } from "@/apps/storage/functions/list-files";
 import { renameFileFn } from "@/apps/storage/functions/rename-file";
@@ -142,7 +142,21 @@ function FileRow({ fileId, filename, url, createdAt }: FileRowT) {
           </span>
         </div>
       )}
-      <AudioPlayer url={url} />
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <AudioPlayer url={url} />
+        </div>
+        <Button
+          variant="outline"
+          aria-label="Mock action"
+          title="Mock action"
+          onClick={() =>
+            toastManager.add({ type: "info", id: `file-mock-action-${fileId}`, title: `Mock action: ${name}` })
+          }
+        >
+          Выбрать
+        </Button>
+      </div>
     </div>
   );
 }

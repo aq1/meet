@@ -109,7 +109,7 @@ export const AudioPlayer = ({ url, volume = 100, sync, onControl }: AudioPlayerT
   }, [url]);
 
   return (
-    <div className="flex w-full items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2">
+    <div className="flex w-full items-center gap-3 rounded-xl bg-transparent px-3 py-2">
       <Button
         type="button"
         size="icon"
