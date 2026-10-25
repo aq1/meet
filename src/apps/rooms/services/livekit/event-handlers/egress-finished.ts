@@ -19,10 +19,13 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
     return;
   }
   const greeting = owner.name ? `Hi ${owner.name},` : "Hi,";
+  const htmlGreeting = owner.name ? `Hi ${Bun.escapeHTML(owner.name)},` : "Hi,";
+  const htmlRoomId = Bun.escapeHTML(roomId);
+  const htmlUrl = Bun.escapeHTML(url);
   await sendEmail({
     to: owner.email,
     subject: "Your call recording is here",
-    html: `<p>${greeting}</p><p>The recording of your call ${roomId} is ready.</p><p>Download it here (link expires in 24 hours):<br><a href="${url}">${url}</a></p>`,
+    html: `<p>${htmlGreeting}</p><p>The recording of your call ${htmlRoomId} is ready.</p><p>Download it here (link expires in 24 hours):<br><a href="${htmlUrl}">${htmlUrl}</a></p>`,
     text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 24 hours):\n${url}`,
     idempotencyKey: `egress-finished/${roomId}`,
   });
