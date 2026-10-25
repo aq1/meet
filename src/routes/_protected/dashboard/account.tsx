@@ -76,7 +76,7 @@ function AccountPage() {
       if (!result.error) {
         toastManager.add({
           id: "profile-save",
-          title: "Profile Saved",
+          title: m.dashboard_profile_saved(),
         });
       }
     } catch {

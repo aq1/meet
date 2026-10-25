@@ -24,7 +24,7 @@ export const createUpload = async (data: CreateUploadT) => {
   const [record] = await db
     .insert(file)
     .values({
-      userId: Number(data.userId),
+      userId: data.userId,
       filename: data.name,
       size: data.size,
       contentType: data.type,
@@ -37,6 +37,7 @@ export const createUpload = async (data: CreateUploadT) => {
     method: "PUT",
     type: data.type,
     bucket: s3Fields.bucket,
+    expiresIn: 15 * 60,
   });
 
   return { url, record, publicUrl: `${env.S3_ENDPOINT}/${record.bucket}/${record.key}` };

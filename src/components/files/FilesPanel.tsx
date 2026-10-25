@@ -59,19 +59,28 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
       <Separator />
       <ScrollArea scrollFade className="min-h-0 flex-1 pt-4">
         <div className="flex flex-col gap-4">
-          {files.length > 3 ? (
-            <InputGroup>
-              <InputGroupInput
-                aria-label={m.files_search_label()}
-                placeholder={m.files_search_placeholder()}
-                type="search"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              />
-              <InputGroupAddon>
-                <SearchIcon aria-hidden="true" />
-              </InputGroupAddon>
-            </InputGroup>
+          <InputGroup>
+            <InputGroupInput
+              aria-label={m.files_search_label()}
+              placeholder={m.files_search_placeholder()}
+              type="search"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon aria-hidden="true" />
+            </InputGroupAddon>
+          </InputGroup>
+          {files.length && !filteredFiles.length ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <SearchIcon />
+                </EmptyMedia>
+                <EmptyTitle>{m.files_not_found_title()}</EmptyTitle>
+                <EmptyDescription>{m.files_not_found_description()}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : null}
           {files.length ? null : (
             <Empty>
