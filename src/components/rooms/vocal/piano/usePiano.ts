@@ -2,12 +2,20 @@ import type { ReceivedDataMessage } from "@livekit/components-core";
 import { useDataChannel, useLocalParticipant } from "@livekit/components-react";
 import type { Participant } from "livekit-client";
 import { useCallback, useEffect } from "react";
+import { z } from "zod";
 import { useKeysStore } from "./keys";
 import { useMidiStore } from "./midi";
 import { useSamplerStore } from "./sampler";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+
+const MidiNoteSchema = z.number().int().min(0).max(127);
+
+const parseMidi = (payload: Uint8Array) => {
+  const result = MidiNoteSchema.safeParse(Number(decoder.decode(payload)));
+  return result.success ? result.data : null;
+};
 
 export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
   const { localParticipant } = useLocalParticipant();
@@ -45,7 +53,11 @@ export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
       if (!msg.from) {
         return;
       }
-      onPress(Number(decoder.decode(msg.payload)), msg.from);
+      const midi = parseMidi(msg.payload);
+      if (midi === null) {
+        return;
+      }
+      onPress(midi, msg.from);
     },
     [onPress],
   );
@@ -55,7 +67,11 @@ export const usePiano = ({ midi = true }: { midi?: boolean } = {}) => {
       if (!msg.from) {
         return;
       }
-      onRelease(Number(decoder.decode(msg.payload)), msg.from);
+      const midi = parseMidi(msg.payload);
+      if (midi === null) {
+        return;
+      }
+      onRelease(midi, msg.from);
     },
     [onRelease],
   );

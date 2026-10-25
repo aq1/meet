@@ -7,7 +7,7 @@ import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
 import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
-import type { ChatMessageT } from "@/apps/rooms/shared/types";
+import { ChatMessageSchema } from "@/apps/rooms/shared/schemas";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -159,8 +159,10 @@ export const Chat = ({ readonly = false }: ChatT) => {
     if (msg.from) {
       return;
     }
-    const message = JSON.parse(decoder.decode(msg.payload)) as ChatMessageT;
-    addMessage(message);
+    const result = ChatMessageSchema.safeParse(decoder.decode(msg.payload));
+    if (result.success) {
+      addMessage(result.data);
+    }
   });
 
   const room = useRoomContext();

@@ -1,13 +1,16 @@
 import type { ReceivedDataMessage } from "@livekit/components-core";
 import { useDataChannel } from "@livekit/components-react";
 import { useEffect } from "react";
-import { type AudioSync, useAudioSync } from "./audio-sync-state";
+import { AudioSyncSchema, useAudioSync } from "./audio-sync-state";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 const onMessage = (msg: ReceivedDataMessage<"audio-sync">) => {
-  useAudioSync.getState().receive(JSON.parse(decoder.decode(msg.payload)) as AudioSync);
+  const result = AudioSyncSchema.safeParse(decoder.decode(msg.payload));
+  if (result.success) {
+    useAudioSync.getState().receive(result.data);
+  }
 };
 
 export const AudioSyncBridge = () => {

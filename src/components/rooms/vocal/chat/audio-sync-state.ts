@@ -1,6 +1,28 @@
+import { z } from "zod";
 import { create } from "zustand";
 
-export type AudioSync = { key: string; action: "play" | "pause"; time: number };
+export const AudioSyncSchema = z
+  .string()
+  .transform((str, ctx) => {
+    try {
+      return JSON.parse(str);
+    } catch {
+      ctx.addIssue({
+        code: "custom",
+        message: "Invalid JSON",
+      });
+      return z.NEVER;
+    }
+  })
+  .pipe(
+    z.object({
+      key: z.string().min(1),
+      action: z.enum(["play", "pause"]),
+      time: z.number().nonnegative(),
+    }),
+  );
+
+export type AudioSync = z.infer<typeof AudioSyncSchema>;
 
 interface AudioSyncState {
   sync: AudioSync | null;
