@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
+import { authMiddleware } from "@/apps/auth/middleware/auth-middleware";
 import { db } from "@/lib/db/client";
 import { presignFileDownload } from "../services/presign-download";
 
 export const listFilesFn = createServerFn({ method: "GET" })
-  .middleware([anyUserMiddleware])
+  .middleware([authMiddleware])
   .handler(async ({ context }) => {
     const files = await db.query.file.findMany({
       where: { userId: context.userId, kind: "teacher-audio", status: "uploaded" },

@@ -1,10 +1,11 @@
 import type { ReceivedDataMessage } from "@livekit/components-core";
 
 import { useDataChannel, useRoomContext } from "@livekit/components-react";
+import { useRouteContext } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowUpIcon, Paperclip } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
 import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
 import { ChatMessageSchema } from "@/apps/rooms/shared/schemas";
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/composer";
 import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toastManager } from "@/components/ui/toast";
 import { useIsTablet } from "@/hooks/use-media-query";
 import { m } from "@/paraglide/messages";
 import { useControls } from "../controls/controls-state";
@@ -40,13 +42,21 @@ const AttachFileDialog = ({ open, onOpenChange, onSelect }: AttachFileDialogT) =
   const listFiles = useServerFn(listFilesFn);
   const [files, setFiles] = useState<Awaited<ReturnType<typeof listFilesFn>>>([]);
 
-  const refresh = () => listFiles().then(setFiles);
+  const refresh = useCallback(
+    () =>
+      listFiles()
+        .then(setFiles)
+        .catch(() => {
+          toastManager.add({ type: "error", id: "files-load-error", title: m.files_load_error() });
+        }),
+    [listFiles],
+  );
 
   useEffect(() => {
     if (open) {
-      listFiles().then(setFiles);
+      refresh();
     }
-  }, [open, listFiles]);
+  }, [open, refresh]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -64,12 +74,18 @@ const AttachFileDialog = ({ open, onOpenChange, onSelect }: AttachFileDialogT) =
 
 const ChatInput = () => {
   const room = useRoomContext();
+  const { user } = useRouteContext({ from: "__root__" });
+  const canAttach = Boolean(user && !user.isAnonymous);
   const send = useServerFn(postChatMessageFn);
   const [attachOpen, setAttachOpen] = useState(false);
 
   const sendFile = async (fileId: number) => {
-    await send({ data: { roomId: room.name, kind: "audio", payload: { id: fileId } } });
-    setAttachOpen(false);
+    try {
+      await send({ data: { roomId: room.name, kind: "audio", payload: { id: fileId } } });
+      setAttachOpen(false);
+    } catch {
+      toastManager.add({ type: "error", id: "chat-attach-file-error", title: m.chat_attach_file_error() });
+    }
   };
 
   const [value, setValue] = useState<ComposerValue>([]);
@@ -85,7 +101,7 @@ const ChatInput = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <AttachFileDialog open={attachOpen} onOpenChange={setAttachOpen} onSelect={sendFile} />
+      {canAttach ? <AttachFileDialog open={attachOpen} onOpenChange={setAttachOpen} onSelect={sendFile} /> : null}
       <Composer
         className="w-full min-w-80"
         layout="adaptive"
@@ -95,11 +111,13 @@ const ChatInput = () => {
       >
         <ComposerInput aria-label={m.chat_label()} placeholder={m.chat_placeholder()} />
         <ComposerActions>
-          <ComposerActionGroup>
-            <Button variant="outline" onClick={() => setAttachOpen(true)} title={m.chat_attach_file()}>
-              <Paperclip />
-            </Button>
-          </ComposerActionGroup>
+          {canAttach ? (
+            <ComposerActionGroup>
+              <Button variant="outline" onClick={() => setAttachOpen(true)} title={m.chat_attach_file()}>
+                <Paperclip />
+              </Button>
+            </ComposerActionGroup>
+          ) : null}
           <ComposerActionGroup align="end">
             <ComposerSubmit
               render={

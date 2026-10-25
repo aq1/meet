@@ -129,6 +129,8 @@
   "chat_label": "Chat",
   "chat_placeholder": "Write a message...",
   "chat_attach_file": "Attach file",
+  "chat_attach_file_error": "Could not send file",
+  "files_load_error": "Could not load files",
   "chat_send_message": "Send message",
   "no_one_in_room": "No one in the room."
 }

@@ -129,6 +129,8 @@
   "chat_label": "Чат",
   "chat_placeholder": "Напишите сообщение...",
   "chat_attach_file": "Прикрепить файл",
+  "chat_attach_file_error": "Не удалось отправить файл",
+  "files_load_error": "Не удалось загрузить файлы",
   "chat_send_message": "Отправить сообщение",
   "no_one_in_room": "Пока никого"
 }
