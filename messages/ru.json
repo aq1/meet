@@ -60,6 +60,10 @@
   "dashboard_room_ended": "Завершён",
   "dashboard_room_active": "Активен",
   "dashboard_download_recording": "Скачать запись",
+  "dashboard_calls_title": "Звонки",
+  "dashboard_files_title": "Файлы",
+  "dashboard_no_files_title": "Файлов пока нет",
+  "dashboard_no_files_description": "Здесь появятся файлы из ваших звонков.",
 
   "device_microphone": "Микрофон",
   "device_camera": "Камера",
