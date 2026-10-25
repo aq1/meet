@@ -61,6 +61,7 @@
   "dashboard_room_active": "Active",
   "dashboard_download_recording": "Download recording",
   "dashboard_calls_title": "Calls",
+  "files_select": "Select",
   "dashboard_files_title": "Files",
   "dashboard_no_files_title": "No files yet",
   "dashboard_no_files_description": "Files shared in your calls will appear here.",

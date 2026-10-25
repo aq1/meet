@@ -8,6 +8,8 @@ import { useEffect, useRef, useState } from "react";
 import { getChatMessagesFn } from "@/apps/rooms/functions/get-chat-messages";
 import { postChatMessageFn } from "@/apps/rooms/functions/post-chat-message";
 import { ChatMessageSchema } from "@/apps/rooms/shared/schemas";
+import { listFilesFn } from "@/apps/storage/functions/list-files";
+import { FilesPanel } from "@/components/files/FilesPanel";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -22,21 +24,53 @@ import {
 import { Dialog, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsTablet } from "@/hooks/use-media-query";
-import { useUploadFile } from "@/lib/s3/use-upload-file";
 import { m } from "@/paraglide/messages";
 import { useControls } from "../controls/controls-state";
 import { AudioSyncBridge } from "./AudioSyncBridge";
 import { useChatState } from "./chat-state";
 import { Message } from "./Message";
 
+type AttachFileDialogT = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelect: (fileId: number) => unknown;
+};
+
+const AttachFileDialog = ({ open, onOpenChange, onSelect }: AttachFileDialogT) => {
+  const listFiles = useServerFn(listFilesFn);
+  const [files, setFiles] = useState<Awaited<ReturnType<typeof listFilesFn>>>([]);
+
+  const refresh = () => listFiles().then(setFiles);
+
+  useEffect(() => {
+    if (open) {
+      listFiles().then(setFiles);
+    }
+  }, [open, listFiles]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogPopup className="max-h-[80dvh]">
+        <DialogHeader>
+          <DialogTitle>{m.chat_attach_file()}</DialogTitle>
+        </DialogHeader>
+        <div className="flex min-h-0 flex-1 flex-col p-6 pt-1">
+          <FilesPanel files={files} onFilesChange={refresh} onSelect={onSelect} />
+        </div>
+      </DialogPopup>
+    </Dialog>
+  );
+};
+
 const ChatInput = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const room = useRoomContext();
   const send = useServerFn(postChatMessageFn);
-  const { upload, progress } = useUploadFile({
-    kind: "teacher-audio",
-    onSuccess: ({ record }) => send({ data: { roomId: room.name, kind: "audio", payload: { id: record.id } } }),
-  });
+  const [attachOpen, setAttachOpen] = useState(false);
+
+  const sendFile = async (fileId: number) => {
+    await send({ data: { roomId: room.name, kind: "audio", payload: { id: fileId } } });
+    setAttachOpen(false);
+  };
 
   const [value, setValue] = useState<ComposerValue>([]);
 
@@ -51,7 +85,7 @@ const ChatInput = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <input ref={fileInputRef} type="file" id="file-select" accept="audio/*" className="hidden" onChange={upload} />
+      <AttachFileDialog open={attachOpen} onOpenChange={setAttachOpen} onSelect={sendFile} />
       <Composer
         className="w-full min-w-80"
         layout="adaptive"
@@ -62,13 +96,8 @@ const ChatInput = () => {
         <ComposerInput aria-label={m.chat_label()} placeholder={m.chat_placeholder()} />
         <ComposerActions>
           <ComposerActionGroup>
-            <Button
-              variant="outline"
-              disabled={progress !== null}
-              onClick={() => fileInputRef.current?.click()}
-              title={m.chat_attach_file()}
-            >
-              {progress === null ? <Paperclip /> : `${Math.round(progress * 100)}%`}
+            <Button variant="outline" onClick={() => setAttachOpen(true)} title={m.chat_attach_file()}>
+              <Paperclip />
             </Button>
           </ComposerActionGroup>
           <ComposerActionGroup align="end">
