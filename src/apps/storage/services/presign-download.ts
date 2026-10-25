@@ -9,6 +9,9 @@ const s3KeyFromLocation = (location: string) => {
   return decodedPath.startsWith(bucketPrefix) ? decodedPath.slice(bucketPrefix.length) : decodedPath;
 };
 
+export const presignFileDownload = (file: { bucket: string; key: string }, ttl = DOWNLOAD_URL_TTL) =>
+  s3.presign(file.key, { method: "GET", bucket: file.bucket, expiresIn: ttl });
+
 export const presignS3Download = (location: string, ttl?: number) => {
   try {
     return s3.presign(s3KeyFromLocation(location), {

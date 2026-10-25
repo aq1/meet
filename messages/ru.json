@@ -66,6 +66,7 @@
   "dashboard_no_files_description": "Здесь появятся файлы из ваших звонков.",
   "dashboard_upload_file": "Загрузить файл",
   "dashboard_file_upload_error": "Не удалось загрузить файл",
+  "dashboard_rename_file": "Переименовать файл",
 
   "device_microphone": "Микрофон",
   "device_camera": "Камера",

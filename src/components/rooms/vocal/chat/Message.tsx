@@ -22,10 +22,10 @@ export const Message = memo(({ message, previousMessage }: MessageT) => {
       transition={{ duration: 0.2 }}
       className="flex items-center justify-between gap-2 text-sm"
     >
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className={participant?.isLocal ? "text-green-500" : "text-blue-500"}>
-          {fromSameParticipant ? null : participant?.name}
-        </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        {fromSameParticipant ? null : (
+          <span className={participant?.isLocal ? "text-green-500" : "text-blue-500"}>{participant?.name}</span>
+        )}
         <div className="w-full">
           {message.kind === "audio" ? (
             <AudioMessage payload={message.payload} />

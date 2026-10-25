@@ -1,116 +1,25 @@
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import WaveSurfer from "wavesurfer.js";
-import { Button } from "@/components/ui/button";
+import { AudioPlayer } from "@/components/audio/AudioPlayer";
 import { useControls } from "../controls/controls-state";
 import { useAudioSync } from "./audio-sync-state";
 
 type AudioMessageT = { payload: { key: string; url: string; fileName: string } };
 
-const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-};
-
 export const AudioMessage = ({ payload }: AudioMessageT) => {
   const { key, url } = payload;
-  const waveRef = useRef<HTMLDivElement>(null);
-  const wsRef = useRef<WaveSurfer | null>(null);
-  const [ready, setReady] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const sync = useAudioSync((state) => (state.sync?.key === key ? state.sync : null));
-  const control = useAudioSync((state) => state.control);
   const fileVolume = useControls((state) => state.fileVolume);
-  const fileVolumeRef = useRef(fileVolume);
-
-  useEffect(() => {
-    fileVolumeRef.current = fileVolume;
-    wsRef.current?.setVolume(fileVolume / 100);
-  }, [fileVolume]);
-
-  useEffect(() => {
-    const ws = wsRef.current;
-    if (!ready || !ws) {
-      return;
-    }
-    if (!sync) {
-      ws.pause();
-      return;
-    }
-    ws.setTime(sync.time);
-    if (sync.action === "play") {
-      ws.play().catch(() => {});
-    } else {
-      ws.pause();
-    }
-  }, [sync, ready]);
-
-  useEffect(() => {
-    const container = waveRef.current;
-    if (!container) {
-      return;
-    }
-
-    const ws = WaveSurfer.create({
-      container,
-      url,
-      height: 40,
-      waveColor: "rgba(148, 163, 184, 0.55)",
-      progressColor: getComputedStyle(container).color,
-      cursorWidth: 0,
-      barWidth: 3,
-      barGap: 2,
-      barRadius: 3,
-      normalize: true,
-      dragToSeek: true,
-    });
-    ws.setVolume(fileVolumeRef.current / 100);
-    ws.on("ready", (d) => {
-      setDuration(d);
-      setReady(true);
-    });
-    ws.on("timeupdate", setCurrentTime);
-    ws.on("play", () => setPlaying(true));
-    ws.on("pause", () => setPlaying(false));
-    ws.on("finish", () => setPlaying(false));
-    ws.on("interaction", (time) => {
-      useAudioSync.getState().control({ key, action: "play", time });
-    });
-    wsRef.current = ws;
-
-    return () => {
-      wsRef.current?.destroy();
-      wsRef.current = null;
-    };
-  }, [key, url]);
 
   return (
-    <div className="flex w-full items-center gap-3 rounded-xl border bg-muted/40 px-3 py-2">
-      <Button
-        type="button"
-        size="icon"
-        className="size-9 shrink-0 rounded-full"
-        disabled={!ready}
-        onClick={() => {
-          const ws = wsRef.current;
-          if (!ws) {
-            return;
-          }
-          control({ key, action: ws.isPlaying() ? "pause" : "play", time: ws.getCurrentTime() });
-        }}
-      >
-        {playing ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}
-      </Button>
-      <div className="relative min-w-0 flex-1">
-        <div ref={waveRef} className="w-full cursor-pointer text-primary" />
-        {!ready && <div className="absolute inset-0 animate-pulse rounded-md bg-muted" />}
-      </div>
-      <span className="w-10 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-        {formatTime(playing || currentTime > 0 ? currentTime : duration)}
-      </span>
+    <div className="flex flex-col gap-1 w-full items-end pb-2">
+      <AudioPlayer
+        url={url}
+        volume={fileVolume}
+        sync={sync}
+        onControl={(state) => useAudioSync.getState().control({ key, ...state })}
+      />
+      <p className="text-xs text-muted-foreground">
+        <span>{payload.fileName}</span>
+      </p>
     </div>
   );
 };
