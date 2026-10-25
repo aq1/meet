@@ -1,10 +1,11 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
+import { RoomInputSchema } from "@/apps/rooms/shared/schemas";
 import { db } from "@/lib/db/client";
 
 export const activeRoomMiddleware = createMiddleware({ type: "function" })
   .middleware([anyUserMiddleware])
-  .validator((data: { roomId: string }) => data)
+  .validator(RoomInputSchema)
   .server(async ({ next, data }) => {
     const room = await db.query.room.findFirst({
       where: {

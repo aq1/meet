@@ -156,6 +156,9 @@ export const Chat = ({ readonly = false }: ChatT) => {
   const addMessage = useChatState((state) => state.addMessage);
 
   useDataChannel("chat", (msg: ReceivedDataMessage) => {
+    if (msg.from) {
+      return;
+    }
     const message = JSON.parse(decoder.decode(msg.payload)) as ChatMessageT;
     addMessage(message);
   });

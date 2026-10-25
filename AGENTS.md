@@ -21,6 +21,7 @@ Features:
     - Functions are Tanstack server functions. Each funciton lives in it's own file. Each function should have auth middleware explicitly set. If function is public and has no auth checks at all, it should have publicMiddleware anyway. publicMiddleware is a do-nothing function.
     - Middleware should be in middleware dir in app
     - Access checks live in middleware. Every check that is similar to Django Rest Framework permission classes should live in middleware.
+    - All server functions and middleware inputs should be validated with zod.  
     - Services are business logic that does not have to be exposed to api via functions. But it still can. Notifications, webhook handlers, s3 signing etc.
 - lk usually means livekit
 - Generate migrations with bun run db:generate, don't generate them yourself

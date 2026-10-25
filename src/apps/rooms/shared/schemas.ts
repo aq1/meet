@@ -10,3 +10,5 @@ export const MessageSchema = z.discriminatedUnion("kind", [
   MessageBaseSchema.extend({ kind: z.literal("text"), payload: z.object({ text: z.string() }) }),
   MessageBaseSchema.extend({ kind: z.literal("audio"), payload: z.object({ key: z.string(), fileName: z.string() }) }),
 ]);
+
+export const RoomInputSchema = z.looseObject({ roomId: z.string().min(1).max(64) });

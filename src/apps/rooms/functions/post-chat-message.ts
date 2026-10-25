@@ -12,7 +12,7 @@ const encoder = new TextEncoder();
 const ChatMessageSchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("text"),
-    payload: z.object({ text: z.string() }),
+    payload: z.object({ text: z.string().max(3000) }),
   }),
   z.object({
     kind: z.literal("audio"),

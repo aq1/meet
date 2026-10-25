@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { auth } from "@/apps/auth/services/server";
 import { randomUserColor } from "@/apps/auth/utils/colors";
 import { grantLivekitToken } from "@/apps/rooms/services/livekit/grant-livekit-token";
@@ -6,9 +7,11 @@ import { db } from "@/lib/db/client";
 import { activeRoomMiddleware } from "../middleware/active-room-middleware";
 import { roomUser } from "../models";
 
+const GrantRoomTokenSchema = z.object({ username: z.string().trim().min(1).max(64) });
+
 export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
   .middleware([activeRoomMiddleware])
-  .validator((data: { username: string }) => data)
+  .validator(GrantRoomTokenSchema)
   .handler(async ({ data, context }) => {
     const { user } = context.session;
 
