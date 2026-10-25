@@ -122,23 +122,32 @@ type FileRowT = {
 
 function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
   const [editing, setEditing] = useState(false);
+  const [savedName, setSavedName] = useState(filename);
   const [name, setName] = useState(filename);
   const renameFile = useServerFn(renameFileFn);
 
   const cancel = () => {
-    setName(filename);
+    setName(savedName);
     setEditing(false);
   };
 
   const save = async () => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed === savedName) {
+      cancel();
+      return;
+    }
     try {
-      await renameFile({ data: { fileId, filename: name } });
+      const { record } = await renameFile({ data: { fileId, filename: trimmed } });
+      setSavedName(record.filename);
+      setName(record.filename);
       toastManager.add({
         type: "success",
         id: `file-rename-success-${fileId}`,
         title: m.files_rename_success(),
       });
     } catch {
+      setName(savedName);
       toastManager.add({
         type: "error",
         id: `file-rename-error-${fileId}`,
