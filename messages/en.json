@@ -90,6 +90,10 @@
   "lobby_name_placeholder": "Your name",
   "lobby_join": "Join",
   "lobby_join_error": "Could not join the room. Please try again.",
+  "lobby_join_error_auth": "Could not sign you in as a guest. Reload the page and try again.",
+  "lobby_join_error_token": "Could not get access to the room. The room may be closed or the link may be wrong.",
+  "lobby_join_error_connect": "Could not connect to the media server. Check your internet connection, VPN or firewall and try again.",
+  "lobby_join_error_details": "Details: {details}",
 
   "room_waiting_for_others": "Waiting for others to join…",
   "room_microphone_muted": "Microphone muted",

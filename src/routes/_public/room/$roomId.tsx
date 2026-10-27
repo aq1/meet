@@ -5,6 +5,7 @@ import { Room } from "livekit-client";
 import { useEffect, useState } from "react";
 import { grantRoomTokenServerFn } from "@/apps/rooms/functions/grant-room-token";
 import { useControls } from "@/components/rooms/vocal/controls/controls-state";
+import { joinStage } from "@/components/rooms/vocal/join-room-error";
 import { VocalRoom } from "@/components/rooms/vocal/Room";
 import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
 import { authClient } from "@/lib/auth/client";
@@ -62,13 +63,20 @@ function RouteComponent() {
     }
     room.startAudio();
     if (!user) {
-      await authClient.signIn.anonymous();
-      await router.invalidate();
+      await joinStage("auth", async () => {
+        const { error } = await authClient.signIn.anonymous();
+        if (error) {
+          throw new Error(error.message || error.statusText || `HTTP ${error.status}`);
+        }
+        await router.invalidate();
+      });
     }
-    const grantResult = await grant({
-      data: { username, roomId },
-    });
-    await room.connect(grantResult.wss, grantResult.token);
+    const grantResult = await joinStage("token", () =>
+      grant({
+        data: { username, roomId },
+      }),
+    );
+    await joinStage("connect", () => room.connect(grantResult.wss, grantResult.token));
 
     try {
       if (micEnabled) {

@@ -8,8 +8,17 @@ import { Field } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { captureException } from "@/lib/sentry/capture-exception";
 import { m } from "@/paraglide/messages";
 import { useControls } from "./controls/controls-state";
+import { JoinRoomError, type JoinRoomStage } from "./join-room-error";
+
+const joinErrorMessages: Record<JoinRoomStage | "unknown", () => string> = {
+  auth: m.lobby_join_error_auth,
+  token: m.lobby_join_error_token,
+  connect: m.lobby_join_error_connect,
+  unknown: m.lobby_join_error,
+};
 
 type DeviceSelectorT = {
   kind: MediaDeviceKind;
@@ -95,7 +104,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
   const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
 
   const [permissionError, setPermissionError] = useState(false);
-  const [joinError, setJoinError] = useState(false);
+  const [joinError, setJoinError] = useState<{ stage: JoinRoomStage | "unknown"; detail: string } | null>(null);
 
   const previewOptions = useMemo(
     () => ({
@@ -132,11 +141,16 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
   const join = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setState("joining");
-    setJoinError(false);
+    setJoinError(null);
     try {
       await onJoin(username);
-    } catch {
-      setJoinError(true);
+    } catch (error) {
+      const stage = error instanceof JoinRoomError ? error.stage : "unknown";
+      captureException(error, { tags: { feature: "join_room", join_stage: stage } });
+      setJoinError({
+        stage,
+        detail: error instanceof JoinRoomError && error.cause instanceof Error ? error.cause.message : String(error),
+      });
     }
     setState("idle");
   };
@@ -215,8 +229,11 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
           </div>
         ) : null}
         {joinError ? (
-          <div className="w-full">
-            <p className="text-destructive text-sm">{m.lobby_join_error()}</p>
+          <div className="w-full flex flex-col gap-1">
+            <p className="text-destructive text-sm">{joinErrorMessages[joinError.stage]()}</p>
+            <p className="text-muted-foreground text-xs break-all">
+              {m.lobby_join_error_details({ details: joinError.detail })}
+            </p>
           </div>
         ) : null}
         <div className="w-full flex gap-2 items-center justify-end">
