@@ -109,12 +109,10 @@ const deploy = async () => {
   await $`bun run build`.quiet();
   await $`bun run db:build`.quiet();
 
-  if (process.env.SENTRY_AUTH_TOKEN) {
-    const version = (await Bun.file("VERSION").text()).trim();
-    log(`Uploading source maps (${version})...`);
-    await $`glitchtip-cli sourcemaps inject .output`.quiet();
-    await $`glitchtip-cli sourcemaps upload .output --release ${version}`.quiet();
-  }
+  const version = (await Bun.file("VERSION").text()).trim();
+  log(`Uploading source maps (${version})...`);
+  await $`glitchtip-cli sourcemaps inject .output`.quiet();
+  await $`glitchtip-cli sourcemaps upload .output --release ${version}`.quiet();
 
   log(`Building image (${CONTAINER}) @ ${commit}...`);
   await $`docker compose build ${CONTAINER}`.quiet();
