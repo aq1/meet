@@ -48,10 +48,9 @@ export const handleLivekitWebhook = async (request: Request) => {
         break;
     }
   } catch (e) {
-    Sentry.logger.warn("livekit webhook action failed", {
-      event: event.event,
-      roomName,
-      error: e instanceof Error ? e.message : String(e),
+    Sentry.captureException(e, {
+      tags: { feature: "livekit_webhook", livekit_event: event.event },
+      extra: { roomName, eventId: event.id },
     });
   }
   return new Response(JSON.stringify({ ok: true }));
