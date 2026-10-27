@@ -52,11 +52,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        SENTRY_ORG: ${SENTRY_ORG:-}
-        SENTRY_PROJECT: ${SENTRY_PROJECT:-}
-      secrets:
-        - sentry_auth_token
     image: meet
     container_name: meet
     env_file:
@@ -64,10 +59,6 @@ services:
     restart: unless-stopped
     networks:
       - bond
-
-secrets:
-  sentry_auth_token:
-    environment: SENTRY_AUTH_TOKEN
 
 networks:
   bond:

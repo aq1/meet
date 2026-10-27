@@ -1,13 +1,4 @@
-node_modules
-.output
-.tanstack
-.git
-.vscode
-.env
-.env.*
-compose.yml
-configs
-README.md
-CLAUDE.md
-scripts
-!scripts/migrate.ts
+*
+!.output
+!drizzle
+**/*.map

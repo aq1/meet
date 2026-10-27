@@ -10,11 +10,11 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 const version = readFileSync("VERSION", "utf8").trim();
-const sentryUpload = Boolean(process.env.SENTRY_AUTH_TOKEN);
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true, dedupe: ["react", "react-dom"] },
   define: { __APP_VERSION__: JSON.stringify(version) },
+  build: { sourcemap: "hidden" },
   optimizeDeps: {
     // "bun" is a runtime builtin, so the dev dependency scanner should not try to resolve it
     exclude: ["bun"],
@@ -23,15 +23,15 @@ const config = defineConfig({
   plugins: [
     paraglideVitePlugin({ project: "./project.inlang", outdir: "./src/paraglide" }),
     devtools(),
-    nitro({ preset: "bun" }),
+    nitro({ preset: "bun", sourcemap: true }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
     sentryTanstackStart({
       telemetry: false,
-      release: { name: version, create: sentryUpload },
-      sourcemaps: { disable: !sentryUpload, filesToDeleteAfterUpload: [".output/**/*.map"] },
+      release: { create: false },
+      sourcemaps: { disable: true },
       tunnelRoute: true,
     }),
   ],

@@ -14,6 +14,7 @@
     "livekit-dev": "livekit-server --dev --config ~/.config/livekit/livekit.yml",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:build": "bun build scripts/migrate.ts --target=bun --outfile=.output/migrate.js",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

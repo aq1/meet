@@ -102,11 +102,25 @@ const deploy = async () => {
     return;
   }
 
+  log("Installing dependencies...");
+  await $`bun install --frozen-lockfile`.quiet();
+
+  log(`Building app @ ${commit}...`);
+  await $`bun run build`.quiet();
+  await $`bun run db:build`.quiet();
+
+  if (process.env.SENTRY_AUTH_TOKEN) {
+    const version = (await Bun.file("VERSION").text()).trim();
+    log(`Uploading source maps (${version})...`);
+    await $`glitchtip-cli sourcemaps inject .output`.quiet();
+    await $`glitchtip-cli sourcemaps upload .output --release ${version}`.quiet();
+  }
+
   log(`Building image (${CONTAINER}) @ ${commit}...`);
   await $`docker compose build ${CONTAINER}`.quiet();
 
   log("Migrating database...");
-  await $`docker compose run --rm --no-deps ${CONTAINER} bun migrate.js`;
+  await $`docker compose run --rm --no-deps ${CONTAINER} bun .output/migrate.js`;
 
   log(`Starting container (${CONTAINER})...`);
   await $`docker compose up -d --quiet-pull`.quiet();
