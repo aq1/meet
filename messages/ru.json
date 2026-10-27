@@ -34,6 +34,12 @@
   "otp_email_html": "<p>Ваш код для входа: <strong style=\"font-size:1.5em;letter-spacing:0.1em\">{otp}</strong>.</p><p>Код действует 10 минут. Если вы его не запрашивали, просто проигнорируйте это письмо.</p>",
   "otp_email_text": "Ваш код для входа: {otp}. Код действует 10 минут.",
 
+  "recording_email_subject": "Запись вашего звонка готова",
+  "recording_email_greeting": "Здравствуйте!",
+  "recording_email_greeting_named": "Здравствуйте, {name}!",
+  "recording_email_ready": "Запись звонка {roomId} готова.",
+  "recording_email_download": "Скачать её можно по ссылке (ссылка действует 24 часа):",
+
   "dashboard_welcome": "Добро пожаловать",
   "dashboard_description": "Ваш личный кабинет",
   "dashboard_avatar_alt": "Пользователь",

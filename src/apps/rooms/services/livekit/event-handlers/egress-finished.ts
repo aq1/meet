@@ -4,6 +4,7 @@ import { sendEmail } from "@/apps/notifications/services/send-email";
 import { room } from "@/apps/rooms/models/room";
 import { presignS3Download } from "@/apps/storage/services/presign-download";
 import { db } from "@/lib/db/client";
+import { m } from "@/paraglide/messages";
 
 const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!url) {
@@ -12,21 +13,28 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   const ownedRoom = await db.query.room.findFirst({
     columns: {},
     where: { publicId: roomId },
-    with: { creator: { columns: { name: true, email: true } } },
+    with: { creator: { columns: { name: true, email: true, lang: true } } },
   });
   const owner = ownedRoom?.creator;
   if (!owner?.email) {
     return;
   }
-  const greeting = owner.name ? `Hi ${owner.name},` : "Hi,";
-  const htmlGreeting = owner.name ? `Hi ${Bun.escapeHTML(owner.name)},` : "Hi,";
-  const htmlRoomId = Bun.escapeHTML(roomId);
+  const locale = owner.lang;
+  const greeting = owner.name
+    ? m.recording_email_greeting_named({ name: owner.name }, { locale })
+    : m.recording_email_greeting({}, { locale });
+  const htmlGreeting = owner.name
+    ? m.recording_email_greeting_named({ name: Bun.escapeHTML(owner.name) }, { locale })
+    : m.recording_email_greeting({}, { locale });
+  const ready = m.recording_email_ready({ roomId }, { locale });
+  const htmlReady = m.recording_email_ready({ roomId: Bun.escapeHTML(roomId) }, { locale });
+  const download = m.recording_email_download({}, { locale });
   const htmlUrl = Bun.escapeHTML(url);
   await sendEmail({
     to: owner.email,
-    subject: "Your call recording is here",
-    html: `<p>${htmlGreeting}</p><p>The recording of your call ${htmlRoomId} is ready.</p><p>Download it here (link expires in 24 hours):<br><a href="${htmlUrl}">${htmlUrl}</a></p>`,
-    text: `${greeting}\n\nThe recording of your call ${roomId} is ready.\n\nDownload it here (link expires in 24 hours):\n${url}`,
+    subject: m.recording_email_subject({}, { locale }),
+    html: `<p>${htmlGreeting}</p><p>${htmlReady}</p><p>${download}<br><a href="${htmlUrl}">${htmlUrl}</a></p>`,
+    text: `${greeting}\n\n${ready}\n\n${download}\n${url}`,
     idempotencyKey: `egress-finished/${roomId}`,
   });
 };
