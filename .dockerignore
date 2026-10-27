@@ -2,3 +2,5 @@
 !.output
 !drizzle
 **/*.map
+.sentryclirc
+

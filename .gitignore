@@ -20,4 +20,4 @@ todos.json
 .env.sentry-build-plugin
 postgres-language-server.jsonc
 
-# local mock of s3 uploads
+.sentryclirc
