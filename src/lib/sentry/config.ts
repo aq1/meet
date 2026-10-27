@@ -1,1 +1,1 @@
-export const SENTRY_DSN = "https://75aeb57a82aec8e1d801e68e368c11b1@o233978.ingest.us.sentry.io/4512034310062080";
+export const SENTRY_DSN = "https://66b6500375f64931b9c9bef7f37e2a82@monitoring.snek.sh/1";
