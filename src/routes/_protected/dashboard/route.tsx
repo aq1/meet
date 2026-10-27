@@ -50,6 +50,7 @@ function DashboardLayout() {
           ))}
         </SegmentedControl>
         <Outlet />
+        <span className="text-muted-foreground text-xs text-center">{__APP_VERSION__}</span>
       </div>
     </div>
   );
