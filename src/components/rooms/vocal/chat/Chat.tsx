@@ -196,7 +196,11 @@ export const Chat = ({ readonly = false, token }: ChatT) => {
   const setMessages = useChatState((state) => state.setMessages);
   const getChatMessages = useServerFn(getChatMessagesFn);
   useEffect(() => {
-    getChatMessages({ data: { roomId: room.name, token } }).then((messages) => setMessages(messages));
+    getChatMessages({ data: { roomId: room.name, token } })
+      .then((messages) => setMessages(messages))
+      .catch(() => {
+        toastManager.add({ type: "error", id: "chat-load-error", title: m.chat_load_error() });
+      });
     return clear;
   }, [clear, getChatMessages, room.name, setMessages, token]);
 

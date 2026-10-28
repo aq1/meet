@@ -48,6 +48,7 @@ function EgressPage() {
   const { url, token } = Route.useSearch();
   const setControls = useControls((state) => state.set);
   const [room] = useState(() => new Room({ adaptiveStream: false, dynacast: false }));
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setControls("showChat", true);
@@ -61,6 +62,7 @@ function EgressPage() {
       .connect(url, token)
       .then(() => {
         room.once(RoomEvent.Disconnected, onDisconnected);
+        setReady(true);
         console.log("START_RECORDING");
       })
       .catch((e) => console.error("egress: room.connect failed", url, e));
@@ -72,12 +74,16 @@ function EgressPage() {
 
   return (
     <RoomContext.Provider value={room}>
-      <RoomAudioRenderer />
       <PianoSound />
-      <div className="flex h-dvh w-dvw gap-2 p-4">
-        <Grid />
-        <Chat readonly token={token} />
-      </div>
+      {ready ? (
+        <>
+          <RoomAudioRenderer />
+          <div className="flex h-dvh w-dvw gap-2 p-4">
+            <Grid />
+            <Chat readonly token={token} />
+          </div>
+        </>
+      ) : null}
     </RoomContext.Provider>
   );
 }
