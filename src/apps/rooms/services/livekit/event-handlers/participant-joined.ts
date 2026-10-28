@@ -7,13 +7,15 @@ export const participantJoinedEventHandler = async (event: WebhookEvent) => {
     return;
   }
 
+  const userId = Number(event.participant.identity);
+  if (!Number.isInteger(userId)) {
+    return;
+  }
+
   const joinedRoom = await db.query.room.findFirst({ columns: { id: true }, where: { publicId: event.room.name } });
   if (!joinedRoom) {
     return;
   }
 
-  await db
-    .insert(roomUser)
-    .values({ roomId: joinedRoom.id, userId: Number(event.participant.identity) })
-    .onConflictDoNothing();
+  await db.insert(roomUser).values({ roomId: joinedRoom.id, userId }).onConflictDoNothing();
 };
