@@ -1,0 +1,24 @@
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/admin")({
+  beforeLoad: ({ context, location }) => {
+    if (!context.user || context.user.isAnonymous) {
+      throw redirect({ to: "/login", search: { redirect: location.href } });
+    }
+    if (context.user.role !== "admin") {
+      throw new Response("", { status: 404 });
+    }
+    return { user: context.user };
+  },
+  component: AdminLayout,
+});
+
+function AdminLayout() {
+  return (
+    <div className="w-full flex justify-center p-4">
+      <div className="w-full lg:w-1/2">
+        <Outlet />
+      </div>
+    </div>
+  );
+}

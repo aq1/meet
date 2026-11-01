@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ProtectedDashboardRouteRouteImport } from './routes/_protected/dashboard/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedDashboardAccountRouteImport } from './routes/_protected/dashboard/account'
 import { Route as ProtectedDashboardFilesRouteImport } from './routes/_protected/dashboard/files'
@@ -24,6 +26,11 @@ import { Route as ApiWebhooksLivekitRouteImport } from './routes/api/webhooks/li
 
 const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
   id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProtectedDashboardRouteRoute = ProtectedDashboardRouteRouteImport.update({
@@ -40,6 +47,11 @@ const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/_public/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/',
@@ -85,8 +97,10 @@ const ApiWebhooksLivekitRoute = ApiWebhooksLivekitRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/dashboard': typeof ProtectedDashboardRouteRouteWithChildren
   '/login': typeof PublicLoginRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/account': typeof ProtectedDashboardAccountRoute
   '/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
@@ -99,6 +113,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/login': typeof PublicLoginRoute
+  '/admin': typeof AdminIndexRoute
   '/dashboard/account': typeof ProtectedDashboardAccountRoute
   '/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/debug/sentry': typeof ProtectedDebugSentryRoute
@@ -111,9 +126,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
   '/_protected/dashboard': typeof ProtectedDashboardRouteRouteWithChildren
   '/_public/login': typeof PublicLoginRoute
   '/_public/': typeof PublicIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/_protected/dashboard/account': typeof ProtectedDashboardAccountRoute
   '/_protected/dashboard/files': typeof ProtectedDashboardFilesRoute
   '/_protected/debug/sentry': typeof ProtectedDebugSentryRoute
@@ -127,8 +144,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/login'
+    | '/admin/'
     | '/dashboard/account'
     | '/dashboard/files'
     | '/debug/sentry'
@@ -141,6 +160,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/admin'
     | '/dashboard/account'
     | '/dashboard/files'
     | '/debug/sentry'
@@ -152,9 +172,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_protected'
+    | '/admin'
     | '/_protected/dashboard'
     | '/_public/login'
     | '/_public/'
+    | '/admin/'
     | '/_protected/dashboard/account'
     | '/_protected/dashboard/files'
     | '/_protected/debug/sentry'
@@ -167,6 +189,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   PublicLoginRoute: typeof PublicLoginRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicRoomRoomIdRoute: typeof PublicRoomRoomIdRoute
@@ -182,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof ProtectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected/dashboard': {
@@ -204,6 +234,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof PublicLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/_protected/dashboard/': {
       id: '/_protected/dashboard/'
@@ -296,8 +333,21 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
   ProtectedRouteRouteChildren,
 )
 
+interface AdminRouteRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   PublicLoginRoute: PublicLoginRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicRoomRoomIdRoute: PublicRoomRoomIdRoute,
