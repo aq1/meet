@@ -4,7 +4,7 @@ import { DateTime } from "@/components/datetime/DateTime";
 import { Duration } from "@/components/datetime/Duration";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export const Route = createFileRoute("/admin/")({
+export const Route = createFileRoute("/hq/")({
   component: RouteComponent,
   loader: async () => {
     return await getLkInfoFn();
