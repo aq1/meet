@@ -1,6 +1,13 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
+const envArray = z.string().transform((v) =>
+  v
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
 export const env = createEnv({
   server: {
     LIVEKIT_URL: z.string(),
@@ -19,14 +26,10 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.string().url(),
     RESEND_API_KEY: z.string(),
+    ADMIN_USER_IDS: envArray.optional(),
     EMAIL_FROM: z.string().default("meet@snek.sh"),
     TELEGRAM_TOKEN: z.string(),
-    TELEGRAM_ADMINS: z.string().transform((v) =>
-      v
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-    ),
+    TELEGRAM_ADMINS: envArray.optional(),
   },
 
   /**

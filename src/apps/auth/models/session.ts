@@ -12,6 +12,7 @@ export const session = snakeCase.table(
     userId: integer()
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    impersonatedBy: text().notNull().default(""),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );

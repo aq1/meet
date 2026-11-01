@@ -1,16 +1,14 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { betterAuth } from "better-auth";
-import { anonymous } from "better-auth/plugins";
+import { admin, anonymous } from "better-auth/plugins";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
-import { eq } from "drizzle-orm";
 import { account } from "@/apps/auth/models/account";
 import { session } from "@/apps/auth/models/session";
 import { user } from "@/apps/auth/models/user";
 import { verification } from "@/apps/auth/models/verification";
 import { sendVerificationOTP } from "@/apps/auth/services/send-verification-otp";
 import { randomUserColor } from "@/apps/auth/utils/colors";
-import { roomUser } from "@/apps/rooms/models/room-user";
 import { env } from "@/env";
 import { db } from "@/lib/db/client";
 
@@ -44,13 +42,9 @@ export const auth = betterAuth({
       storeOTP: "hashed",
       sendVerificationOTP,
     }),
-    anonymous({
-      onLinkAccount: async ({ anonymousUser, newUser }) => {
-        await db
-          .update(roomUser)
-          .set({ userId: Number(newUser.user.id) })
-          .where(eq(roomUser.userId, Number(anonymousUser.user.id)));
-      },
+    anonymous(),
+    admin({
+      adminUserIds: env.ADMIN_USER_IDS,
     }),
     tanstackStartCookies(),
   ],
