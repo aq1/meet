@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/hq")({
   beforeLoad: ({ context, location }) => {
@@ -6,7 +6,7 @@ export const Route = createFileRoute("/hq")({
       throw redirect({ to: "/login", search: { redirect: location.href } });
     }
     if (context.user.role !== "admin") {
-      throw new Response("", { status: 404 });
+      throw notFound();
     }
     return { user: context.user };
   },
