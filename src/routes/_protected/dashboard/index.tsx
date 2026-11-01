@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DownloadIcon, RouteIcon, VideoIcon } from "lucide-react";
 import { listMyRoomsServerFn } from "@/apps/rooms/functions/list-my-rooms";
 import { DateTime } from "@/components/datetime/DateTime";
+import { Duration } from "@/components/datetime/Duration";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardPanel } from "@/components/ui/card";
@@ -47,12 +48,6 @@ function CallsPage() {
   );
 }
 
-function formatDuration(from: Date, to: Date) {
-  const minutes = Math.max(1, Math.round((to.getTime() - from.getTime()) / 60000));
-  if (minutes < 60) return m.dashboard_duration_minutes({ minutes });
-  return m.dashboard_duration_hours({ hours: Math.floor(minutes / 60), minutes: minutes % 60 });
-}
-
 type RoomRowT = {
   viewerId: number;
   room: Room;
@@ -77,7 +72,12 @@ function RoomRow({ room, viewerId }: RoomRowT) {
           <span className="truncate font-medium font-mono text-sm">{title}</span>
           <span className="text-muted-foreground text-xs">
             <DateTime value={createdAt} />
-            {finishedAt && ` · ${formatDuration(createdAt, finishedAt)}`}
+            {finishedAt && (
+              <>
+                {" · "}
+                <Duration from={createdAt} to={finishedAt} />
+              </>
+            )}
           </span>
         </div>
         {finishedAt ? (
