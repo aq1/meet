@@ -1,4 +1,3 @@
-import { ClientOnly } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckIcon, ChevronRight, FolderIcon, PencilIcon, SearchIcon, UploadIcon, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -6,6 +5,7 @@ import { useRef, useState } from "react";
 import type { listFilesFn } from "@/apps/storage/functions/list-files";
 import { renameFileFn } from "@/apps/storage/functions/rename-file";
 import { AudioPlayer } from "@/components/audio/AudioPlayer";
+import { DateTime } from "@/components/datetime/DateTime";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
@@ -119,8 +119,6 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
   );
 }
 
-const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
-
 type FileRowT = {
   fileId: number;
   filename: string;
@@ -201,7 +199,7 @@ function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
             <PencilIcon />
           </Button>
           <span className="ml-auto shrink-0 text-muted-foreground text-xs">
-            <ClientOnly>{dateFormat.format(new Date(createdAt))}</ClientOnly>
+            <DateTime value={createdAt} />
           </span>
         </div>
       )}
