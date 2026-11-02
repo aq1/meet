@@ -31,7 +31,7 @@ const participantKinds: Record<number, string> = {
   8: "bridge",
 };
 
-export const getLkInfoFn = createServerFn({ method: "POST" })
+export const getLkInfoFn = createServerFn({ method: "GET" })
   .middleware([adminMiddleware])
   .handler(async () => {
     const rooms: Array<RoomT> = [];

@@ -1,8 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { getLkInfoFn } from "@/apps/admin/functions/get-lk-info";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { getLkInfoFn } from "@/apps/hq/functions/get-lk-info";
 import { DateTime } from "@/components/datetime/DateTime";
 import { Duration } from "@/components/datetime/Duration";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteRoomFn } from "@/apps/hq/functions/delete-room";
 
 export const Route = createFileRoute("/hq/")({
   component: RouteComponent,
@@ -13,6 +25,12 @@ export const Route = createFileRoute("/hq/")({
 
 const LiveKitRooms = () => {
   const { rooms } = Route.useLoaderData();
+  const router = useRouter();
+  const deleteRoomAction = useServerFn(deleteRoomFn);
+  const deleteRoom = async (roomId: string) => {
+    await deleteRoomAction({ data: { roomId } });
+    router.invalidate();
+  };
 
   return (
     <Table>
@@ -22,6 +40,7 @@ const LiveKitRooms = () => {
           <TableHead>Name</TableHead>
           <TableHead>Duration</TableHead>
           <TableHead>Participants</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -55,6 +74,24 @@ const LiveKitRooms = () => {
                   );
                 })}
               </div>
+            </TableCell>
+            <TableCell>
+              <AlertDialog>
+                <AlertDialogTrigger render={<Button variant="outline" />}>Delete Room</AlertDialogTrigger>
+                <AlertDialogPopup>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogClose render={<Button variant="ghost" />}>Cancel</AlertDialogClose>
+                    <AlertDialogClose
+                      render={<Button onClick={async () => await deleteRoom(r.name)} variant="destructive" />}
+                    >
+                      Delete Room
+                    </AlertDialogClose>
+                  </AlertDialogFooter>
+                </AlertDialogPopup>
+              </AlertDialog>
             </TableCell>
           </TableRow>
         ))}
