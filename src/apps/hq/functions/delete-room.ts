@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { roomServiceClient } from "@/apps/rooms/services/livekit/room-service-client";
 import { adminMiddleware } from "../middleware/admin-middleware";
-import { z } from "zod";
 
 export const deleteRoomFn = createServerFn({ method: "POST" })
   .middleware([adminMiddleware])

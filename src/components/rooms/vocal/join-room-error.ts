@@ -1,3 +1,5 @@
+import { ROOM_NOT_FOUND_ERROR } from "@/apps/rooms/shared/errors";
+
 export type JoinRoomStage = "auth" | "token" | "connect";
 
 export class JoinRoomError extends Error {
@@ -17,4 +19,8 @@ export async function joinStage<T>(stage: JoinRoomStage, fn: () => Promise<T>): 
   } catch (error) {
     throw new JoinRoomError(stage, error);
   }
+}
+
+export function isRoomNotFoundError(error: unknown) {
+  return error instanceof JoinRoomError && error.cause instanceof Error && error.cause.message === ROOM_NOT_FOUND_ERROR;
 }

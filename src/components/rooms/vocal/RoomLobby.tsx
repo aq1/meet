@@ -11,7 +11,7 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/c
 import { captureException } from "@/lib/sentry/capture-exception";
 import { m } from "@/paraglide/messages";
 import { useControls } from "./controls/controls-state";
-import { JoinRoomError, type JoinRoomStage } from "./join-room-error";
+import { isRoomNotFoundError, JoinRoomError, type JoinRoomStage } from "./join-room-error";
 
 const joinErrorMessages: Record<JoinRoomStage | "unknown", () => string> = {
   auth: m.lobby_join_error_auth,
@@ -104,6 +104,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
   const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
 
   const [permissionError, setPermissionError] = useState(false);
+  const [roomNotFound, setRoomNotFound] = useState(false);
   const [joinError, setJoinError] = useState<{ stage: JoinRoomStage | "unknown"; detail: string } | null>(null);
 
   const previewOptions = useMemo(
@@ -142,9 +143,15 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
     event.preventDefault();
     setState("joining");
     setJoinError(null);
+    setRoomNotFound(false);
     try {
       await onJoin(username);
     } catch (error) {
+      if (isRoomNotFoundError(error)) {
+        setRoomNotFound(true);
+        setState("idle");
+        return;
+      }
       const stage = error instanceof JoinRoomError ? error.stage : "unknown";
       captureException(error, { tags: { feature: "join_room", join_stage: stage } });
       setJoinError({
@@ -226,6 +233,11 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
         {permissionError ? (
           <div className="w-full">
             <p className="text-destructive text-sm">{m.lobby_permission_error()}</p>
+          </div>
+        ) : null}
+        {roomNotFound ? (
+          <div className="w-full">
+            <p className="text-destructive text-sm">{m.lobby_room_not_found()}</p>
           </div>
         ) : null}
         {joinError ? (

@@ -1,5 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
+import { ROOM_NOT_FOUND_ERROR } from "@/apps/rooms/shared/errors";
 import { RoomInputSchema } from "@/apps/rooms/shared/schemas";
 import { db } from "@/lib/db/client";
 
@@ -15,7 +16,7 @@ export const activeRoomMiddleware = createMiddleware({ type: "function" })
     });
 
     if (!room) {
-      throw new Response("Room not found", { status: 404 });
+      throw new Error(ROOM_NOT_FOUND_ERROR);
     }
 
     return next({ context: { room } });
