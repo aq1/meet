@@ -58,7 +58,7 @@ function RouteComponent() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
     };
-  }, [room]);
+  }, [room, updateRoomStore]);
 
   const join = async (username: string) => {
     if (!room || !username) {
