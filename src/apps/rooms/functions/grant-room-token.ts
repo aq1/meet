@@ -32,5 +32,10 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
       const ctx = await auth.$context;
       await ctx.internalAdapter.updateUser(user.id, fieldsToUpdate);
     }
-    return await grantLivekitToken(context.userId.toString(), data.username, context.room.publicId);
+
+    const lkGrant = await grantLivekitToken(context.userId.toString(), data.username, context.room.publicId);
+    return {
+      room: { publicId: context.room.publicId, startedAt: context.room.startedAt },
+      ...lkGrant,
+    };
   });

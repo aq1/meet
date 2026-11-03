@@ -1,0 +1,3 @@
+ALTER TABLE "rooms_room" RENAME CONSTRAINT "rooms_room_created_by_auth_user_id_fk" TO "rooms_room_created_by_auth_user_id_fkey";--> statement-breakpoint
+ALTER TABLE "rooms_room" ADD COLUMN "started_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "rooms_room" DROP CONSTRAINT "rooms_room_created_by_auth_user_id_fkey", ADD CONSTRAINT "rooms_room_created_by_auth_user_id_fkey" FOREIGN KEY ("created_by") REFERENCES "auth_user"("id") ON DELETE RESTRICT;

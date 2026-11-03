@@ -8,6 +8,7 @@ import { useControls } from "@/components/rooms/vocal/controls/controls-state";
 import { joinStage } from "@/components/rooms/vocal/join-room-error";
 import { VocalRoom } from "@/components/rooms/vocal/Room";
 import { RoomLobby } from "@/components/rooms/vocal/RoomLobby";
+import { useRoomStore } from "@/components/rooms/vocal/room-state";
 import { authClient } from "@/lib/auth/client";
 
 export const Route = createFileRoute("/_public/room/$roomId")({
@@ -19,6 +20,7 @@ function RouteComponent() {
   const { user } = Route.useRouteContext();
   const router = useRouter();
 
+  const updateRoomStore = useRoomStore((state) => state.update);
   const [joined, setJoined] = useState(false);
   const grant = useServerFn(grantRoomTokenServerFn);
   const cameraEnabled = useControls((s) => s.cameraEnabled);
@@ -52,6 +54,7 @@ function RouteComponent() {
     window.addEventListener("pagehide", handlePageHide);
 
     return () => {
+      updateRoomStore({ publicId: "", startedAt: null });
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
     };
@@ -76,6 +79,8 @@ function RouteComponent() {
         data: { username, roomId },
       }),
     );
+
+    updateRoomStore(grantResult.room);
     await joinStage("connect", () => room.connect(grantResult.wss, grantResult.token));
 
     try {

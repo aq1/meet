@@ -9,7 +9,8 @@ export const room = snakeCase.table(
     publicId: text().notNull().unique(),
     createdBy: integer()
       .notNull()
-      .references(() => user.id, { onDelete: "set null" }),
+      .references(() => user.id, { onDelete: "restrict" }),
+    startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     finishedAt: timestamp({ withTimezone: true }),
     egressUrl: text().default(""),
   },
