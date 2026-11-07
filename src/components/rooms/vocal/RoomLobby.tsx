@@ -11,13 +11,16 @@ import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@/c
 import { captureException } from "@/lib/sentry/capture-exception";
 import { m } from "@/paraglide/messages";
 import { useControls } from "./controls/controls-state";
-import { isRoomNotFoundError, JoinRoomError, type JoinRoomStage } from "./join-room-error";
 
-const joinErrorMessages: Record<JoinRoomStage | "unknown", () => string> = {
-  auth: m.lobby_join_error_auth,
-  token: m.lobby_join_error_token,
-  connect: m.lobby_join_error_connect,
-  unknown: m.lobby_join_error,
+const getJoinErrorMessage = (error: unknown) => {
+  if (error instanceof Response && error.status === 404) {
+    return m.lobby_room_not_found();
+  }
+  if (error instanceof Response && error.status === 401) {
+    return m.lobby_session_expired();
+  }
+  captureException(error, { tags: { feature: "join_room" } });
+  return m.lobby_join_error();
 };
 
 type DeviceSelectorT = {
@@ -104,8 +107,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
   const setSpeakerDeviceId = useControls((s) => s.setSpeakerDeviceId);
 
   const [permissionError, setPermissionError] = useState(false);
-  const [roomNotFound, setRoomNotFound] = useState(false);
-  const [joinError, setJoinError] = useState<{ stage: JoinRoomStage | "unknown"; detail: string } | null>(null);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const previewOptions = useMemo(
     () => ({
@@ -143,21 +145,10 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
     event.preventDefault();
     setState("joining");
     setJoinError(null);
-    setRoomNotFound(false);
     try {
       await onJoin(username);
     } catch (error) {
-      if (isRoomNotFoundError(error)) {
-        setRoomNotFound(true);
-        setState("idle");
-        return;
-      }
-      const stage = error instanceof JoinRoomError ? error.stage : "unknown";
-      captureException(error, { tags: { feature: "join_room", join_stage: stage } });
-      setJoinError({
-        stage,
-        detail: error instanceof JoinRoomError && error.cause instanceof Error ? error.cause.message : String(error),
-      });
+      setJoinError(getJoinErrorMessage(error));
     }
     setState("idle");
   };
@@ -235,17 +226,9 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
             <p className="text-destructive text-sm">{m.lobby_permission_error()}</p>
           </div>
         ) : null}
-        {roomNotFound ? (
-          <div className="w-full">
-            <p className="text-destructive text-sm">{m.lobby_room_not_found()}</p>
-          </div>
-        ) : null}
         {joinError ? (
-          <div className="w-full flex flex-col gap-1">
-            <p className="text-destructive text-sm">{joinErrorMessages[joinError.stage]()}</p>
-            <p className="text-muted-foreground text-xs break-all">
-              {m.lobby_join_error_details({ details: joinError.detail })}
-            </p>
+          <div className="w-full">
+            <p className="text-destructive text-sm">{joinError}</p>
           </div>
         ) : null}
         <div className="w-full flex gap-2 items-center justify-end">
@@ -255,6 +238,7 @@ export function RoomLobby({ onJoin }: RoomLobbyT) {
                 className="h-full"
                 autoFocus
                 required
+                maxLength={64}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={m.lobby_name_placeholder()}
