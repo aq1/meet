@@ -6,7 +6,7 @@ const root = join(import.meta.dir, "..");
 process.chdir(root);
 $.cwd(root);
 
-const CONTAINER = "meet";
+const CONTAINER = "server";
 const STATE_FILE = ".last-deployed-commit";
 const LOCK_DIR = ".update.lock.d";
 const LOG_FILE = process.env.UPDATE_LOG ?? "/srv/logs/update.log";
