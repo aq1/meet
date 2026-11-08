@@ -1,21 +1,38 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { anyUserMiddleware } from "@/apps/auth/middleware/any-user-middleware";
 import { auth } from "@/apps/auth/services/server";
 import { randomUserColor } from "@/apps/auth/utils/colors";
 import { grantLivekitToken } from "@/apps/rooms/services/livekit/grant-livekit-token";
 import { db } from "@/lib/db/client";
-import { activeRoomMiddleware } from "../middleware/active-room-middleware";
-import { roomUser } from "../models";
+import { room, roomUser } from "../models";
 
-const GrantRoomTokenSchema = z.object({ username: z.string().trim().min(1).max(64) });
+const GrantRoomTokenSchema = z.object({ roomId: z.string().min(1), username: z.string().trim().min(1).max(64) });
 
 export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
-  .middleware([activeRoomMiddleware])
+  .middleware([anyUserMiddleware])
   .validator(GrantRoomTokenSchema)
   .handler(async ({ data, context }) => {
     const { user } = context.session;
 
-    await db.insert(roomUser).values({ roomId: context.room.id, userId: context.userId }).onConflictDoNothing();
+    let dbRoom = await db.query.room.findFirst({
+      where: {
+        publicId: data.roomId,
+      },
+    });
+
+    if (dbRoom?.finishedAt) {
+      throw new Response("Room not found", { status: 404 });
+    }
+
+    if (!dbRoom) {
+      if (context.session.user.isAnonymous) {
+        throw new Response("Room not found", { status: 404 });
+      }
+      [dbRoom] = await db.insert(room).values({ publicId: data.roomId, createdBy: context.userId }).returning();
+    }
+
+    await db.insert(roomUser).values({ roomId: dbRoom.id, userId: context.userId }).onConflictDoNothing();
 
     const fieldsToUpdate: { name?: string; lang?: string; color?: string } = {};
     if (user.name !== data.username) {
@@ -33,9 +50,9 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
       await ctx.internalAdapter.updateUser(user.id, fieldsToUpdate);
     }
 
-    const lkGrant = await grantLivekitToken(context.userId.toString(), data.username, context.room.publicId);
+    const lkGrant = await grantLivekitToken(context.userId.toString(), data.username, dbRoom.publicId);
     return {
-      room: { publicId: context.room.publicId, startedAt: context.room.startedAt },
+      room: { publicId: dbRoom.publicId, startedAt: dbRoom.startedAt },
       ...lkGrant,
     };
   });
