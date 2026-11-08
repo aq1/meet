@@ -3,6 +3,7 @@ import { accountRelations, sessionRelations, userRelations } from "@/apps/auth/m
 import { roomRelations, roomUserRelations } from "@/apps/rooms/models";
 import { chatRelations } from "@/apps/rooms/models/chat-relations";
 import { fileRelations } from "@/apps/storage/models";
+import { subscriptionRelations } from "@/apps/subscriptions/models";
 import * as schema from "./schema";
 
 export const relations = {
@@ -14,4 +15,5 @@ export const relations = {
   ...roomUserRelations,
   ...chatRelations,
   ...fileRelations,
+  ...subscriptionRelations,
 };
