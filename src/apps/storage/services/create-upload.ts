@@ -2,11 +2,11 @@ import { s3 } from "bun";
 import { env } from "@/env";
 import { db } from "@/lib/db/client";
 import { file } from "../models";
-import type { UploadKindT } from "../shared/types";
+import type { FileKindT } from "../shared/enums";
 
-type CreateUploadT = { kind: UploadKindT; ext: string; userId: number; name: string; size: number; type: string };
+type CreateUploadT = { kind: FileKindT; ext: string; userId: number; name: string; size: number; type: string };
 
-const getS3FieldsForFile = (kind: UploadKindT, ext: string) => {
+const getS3FieldsForFile = (kind: FileKindT, ext: string) => {
   const key = `${kind}/${crypto.randomUUID()}.${ext}`;
   switch (kind) {
     case "teacher-audio":

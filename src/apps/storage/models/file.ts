@@ -1,10 +1,10 @@
 import { integer, pgEnum, snakeCase, text, unique, varchar } from "drizzle-orm/pg-core";
 import { user } from "@/apps/auth/models";
 import { baseColumns } from "@/lib/db/columns";
-import { UPLOAD_KIND_LIST } from "../shared/types";
+import { FILE_KIND_VALUES, FILE_STATUS_VALUES } from "../shared/enums";
 
-export const fileKind = pgEnum("file_kind", UPLOAD_KIND_LIST);
-export const fileStatus = pgEnum("file_status", ["created", "uploaded"]);
+export const fileKindEnum = pgEnum("file_kind", FILE_KIND_VALUES);
+export const fileStatusEnum = pgEnum("file_status", FILE_STATUS_VALUES);
 
 export const file = snakeCase.table(
   "storage_file",
@@ -12,14 +12,14 @@ export const file = snakeCase.table(
     ...baseColumns,
     userId: integer()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "restrict" }),
     filename: varchar({ length: 255 }).notNull(),
     contentType: varchar({ length: 255 }).notNull(),
     size: integer().notNull(),
     bucket: varchar({ length: 255 }).notNull(),
     key: text().notNull(),
-    kind: fileKind().notNull(),
-    status: fileStatus().notNull().default("created"),
+    kind: fileKindEnum().notNull(),
+    status: fileStatusEnum().notNull().default("created"),
   },
   (table) => [unique().on(table.bucket, table.key)],
 );

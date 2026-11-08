@@ -1,7 +1,8 @@
 import { boolean, pgEnum, snakeCase, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { baseColumns } from "@/lib/db/columns";
+import { USER_LANG_VALUES } from "../shared/enums";
 
-export const langEnum = pgEnum("lang", ["ru", "en"]);
+export const userLangEnum = pgEnum("lang", USER_LANG_VALUES);
 
 export const user = snakeCase.table("auth_user", {
   ...baseColumns,
@@ -9,7 +10,7 @@ export const user = snakeCase.table("auth_user", {
   email: text().notNull().unique(),
   emailVerified: boolean().default(false).notNull(),
   image: text().notNull().default(""),
-  lang: langEnum().notNull().default("ru"),
+  lang: userLangEnum().notNull().default("ru"),
   color: varchar({ length: 255 }).notNull().default(""),
   role: text().notNull().default("user"),
   banned: boolean().notNull().default(false),

@@ -10,7 +10,7 @@ export const account = snakeCase.table(
     providerId: text().notNull(),
     userId: integer()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "restrict" }),
     accessToken: text(),
     refreshToken: text(),
     idToken: text(),

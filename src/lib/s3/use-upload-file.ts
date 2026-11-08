@@ -2,12 +2,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { type ChangeEvent, useState } from "react";
 import { completeUploadFn } from "@/apps/storage/functions/complete-upload";
 import { presignUploadFn } from "@/apps/storage/functions/presign-upload";
-import type { UploadKindT } from "@/apps/storage/shared/types";
+import type { FileKindT } from "@/apps/storage/shared/enums";
 
 type UploadResultT = Awaited<ReturnType<typeof presignUploadFn>>;
 
 type UseUploadFileT = {
-  kind: UploadKindT;
+  kind: FileKindT;
   onSuccess?: (result: UploadResultT) => unknown;
   onError?: () => unknown;
 };

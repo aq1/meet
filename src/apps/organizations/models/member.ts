@@ -9,10 +9,10 @@ export const member = snakeCase.table(
     ...baseColumns,
     organizationId: integer()
       .notNull()
-      .references(() => organization.id, { onDelete: "cascade" }),
+      .references(() => organization.id, { onDelete: "restrict" }),
     userId: integer()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "restrict" }),
     role: text().notNull().default("member"),
   },
   (table) => [index("member_organizationId_idx").on(table.organizationId), index("member_userId_idx").on(table.userId)],

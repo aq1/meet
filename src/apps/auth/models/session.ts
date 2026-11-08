@@ -12,7 +12,7 @@ export const session = snakeCase.table(
     userAgent: text(),
     userId: integer()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "restrict" }),
     impersonatedBy: text().notNull().default(""),
     activeOrganizationId: integer().references(() => organization.id, { onDelete: "set null" }),
   },
