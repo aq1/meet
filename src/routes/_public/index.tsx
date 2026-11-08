@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AudioLinesIcon, PianoIcon, PlusIcon, UsersIcon, VideoIcon } from "lucide-react";
 import { useState } from "react";
@@ -68,15 +68,13 @@ function Toolbar({ loggedIn }: { loggedIn: boolean }) {
 }
 
 function CreateRoomButton() {
-  const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
   const [pending, setPending] = useState(false);
 
   const createRoom = async () => {
     setPending(true);
     try {
-      const { roomId } = await createRoomFn();
-      await navigate({ to: "/room/$roomId", params: { roomId } });
+      await createRoomFn();
     } finally {
       setPending(false);
     }

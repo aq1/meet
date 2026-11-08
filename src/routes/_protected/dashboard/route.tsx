@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { PlusIcon } from "lucide-react";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
@@ -17,12 +17,10 @@ export const Route = createFileRoute("/_protected/dashboard")({
 });
 
 function DashboardLayout() {
-  const navigate = useNavigate();
   const createRoomFn = useServerFn(createRoomServerFn);
 
   const createRoom = async () => {
-    const { roomId } = await createRoomFn();
-    navigate({ to: "/room/$roomId", params: { roomId } });
+    await createRoomFn();
   };
 
   return (
