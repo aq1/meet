@@ -1,4 +1,3 @@
-import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
 
 const envArray = z.string().transform((v) =>
@@ -8,56 +7,27 @@ const envArray = z.string().transform((v) =>
     .filter(Boolean),
 );
 
-export const env = createEnv({
-  server: {
-    LIVEKIT_URL: z.string(),
-    LIVEKIT_API_KEY: z.string(),
-    LIVEKIT_API_SECRET: z.string(),
-    LIVEKIT_WEBHOOK_API_KEY: z.string(),
-    LIVEKIT_WEBHOOK_API_SECRET: z.string(),
-    EGRESS_TEMPLATE_URL: z.string().url().optional(),
-    S3_ENDPOINT: z.string().url(),
-    S3_BUCKET: z.string().default("meet"),
-    S3_REGION: z.string(),
-    S3_PUBLIC_BUCKET: z.string().default("meet-public"),
-    AWS_ACCESS_KEY_ID: z.string(),
-    AWS_SECRET_ACCESS_KEY: z.string(),
-    DATABASE_URL: z.string().url(),
-    BETTER_AUTH_SECRET: z.string().min(32),
-    BETTER_AUTH_URL: z.string().url(),
-    RESEND_API_KEY: z.string(),
-    ADMIN_USER_IDS: envArray.optional(),
-    EMAIL_FROM: z.string().default("meet@snek.sh"),
-    TELEGRAM_TOKEN: z.string(),
-    TELEGRAM_ADMINS: envArray.optional(),
-  },
-
-  /**
-   * The prefix that client-side variables must have. This is enforced both at
-   * a type-level and at runtime.
-   */
-  clientPrefix: "VITE_",
-
-  client: {},
-
-  /**
-   * What object holds the environment variables at runtime. This is usually
-   * `process.env` or `import.meta.env`.
-   */
-  runtimeEnv: process.env,
-
-  /**
-   * By default, this library will feed the environment variables directly to
-   * the Zod validator.
-   *
-   * This means that if you have an empty string for a value that is supposed
-   * to be a number (e.g. `PORT=` in a ".env" file), Zod will incorrectly flag
-   * it as a type mismatch violation. Additionally, if you have an empty string
-   * for a value that is supposed to be a string with a default value (e.g.
-   * `DOMAIN=` in an ".env" file), the default value will never be applied.
-   *
-   * In order to solve these issues, we recommend that all new projects
-   * explicitly specify this option as true.
-   */
-  emptyStringAsUndefined: true,
+const EnvSchema = z.object({
+  LIVEKIT_URL: z.string(),
+  LIVEKIT_API_KEY: z.string(),
+  LIVEKIT_API_SECRET: z.string(),
+  LIVEKIT_WEBHOOK_API_KEY: z.string(),
+  LIVEKIT_WEBHOOK_API_SECRET: z.string(),
+  EGRESS_TEMPLATE_URL: z.url().optional(),
+  S3_ENDPOINT: z.url(),
+  S3_BUCKET: z.string().default("meet"),
+  S3_REGION: z.string(),
+  S3_PUBLIC_BUCKET: z.string().default("meet-public"),
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY: z.string(),
+  DATABASE_URL: z.url(),
+  BETTER_AUTH_SECRET: z.string().min(32),
+  BETTER_AUTH_URL: z.url(),
+  RESEND_API_KEY: z.string(),
+  ADMIN_USER_IDS: envArray.optional(),
+  EMAIL_FROM: z.string().default("meet@snek.sh"),
+  TELEGRAM_TOKEN: z.string(),
+  TELEGRAM_ADMINS: envArray.optional(),
 });
+
+export const env = EnvSchema.parse(process.env);
