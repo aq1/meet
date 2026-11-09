@@ -110,8 +110,8 @@ const deploy = async () => {
   await $`bun run db:build`.quiet();
 
   log(`Uploading source maps (${commit})...`);
-  await $`glitchtip-cli sourcemaps inject .output`.quiet();
-  await $`glitchtip-cli sourcemaps upload .output --release ${commit}`.quiet();
+  await $`bunx sentry-cli sourcemaps inject .output`.quiet();
+  await $`bunx sentry-cli sourcemaps upload .output --release ${commit}`.quiet();
 
   log(`Building image (${CONTAINER}) @ ${commit}...`);
   await $`docker compose build ${CONTAINER}`.quiet();
