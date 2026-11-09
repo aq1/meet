@@ -6,7 +6,7 @@ const isDev = import.meta.env.DEV;
 Sentry.init({
   dsn: SENTRY_DSN,
   environment: import.meta.env.MODE,
-  release: __APP_VERSION__,
+  release: __COMMIT_HASH__,
   tracesSampleRate: isDev ? 0 : 0.2,
   sendClientReports: false,
   beforeSend(event, hint) {

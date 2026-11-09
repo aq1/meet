@@ -11,7 +11,7 @@ Features:
 
 
 ## Code rules
-- Use bun to run project build and scripts.
+- Use bun to run project build and scripts. Use bun API instead of node's. Use node only when there is no bun option.
 - Do not write comments unless they are 100% necessary.
 - Edit files only when explicitly asked.
 - UI dir is a component library. It is readonly.

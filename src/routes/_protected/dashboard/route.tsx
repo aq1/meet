@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 import { createRoomServerFn } from "@/apps/rooms/functions/create-room";
 import { Button } from "@/components/ui/button";
 import { SegmentedControl, SegmentedControlItem } from "@/components/ui/segmented-control";
+import { APP_VERSION } from "@/lib/version";
 import { m } from "@/paraglide/messages";
 
 const tabs = [
@@ -48,7 +49,7 @@ function DashboardLayout() {
           ))}
         </SegmentedControl>
         <Outlet />
-        <span className="text-muted-foreground text-xs text-center">{__APP_VERSION__}</span>
+        <span className="text-muted-foreground text-xs text-center">{APP_VERSION}</span>
       </div>
     </div>
   );
