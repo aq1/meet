@@ -33,6 +33,11 @@ export const Route = createRootRoute({
         href: appCss,
       },
     ],
+    scripts: [
+      {
+        children: "window.TONE_SILENCE_LOGGING = true",
+      },
+    ],
   }),
   shellComponent: RootDocument,
   notFoundComponent: () => <p>{m.not_found()}</p>,
