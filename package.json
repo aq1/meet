@@ -60,6 +60,7 @@
     "@biomejs/biome": "2.4.5",
     "@inlang/paraglide-js": "^2.29.3",
     "@rolldown/plugin-babel": "^0.2.4",
+    "@sentry/cli": "^3.8.2",
     "@tailwindcss/typography": "^0.5.20",
     "@tanstack/devtools-vite": "latest",
     "@testing-library/dom": "^10.4.2",
