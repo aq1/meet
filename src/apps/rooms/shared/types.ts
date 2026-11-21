@@ -8,7 +8,7 @@ type ChatMessageTextT = {
 type ChatMessageAudioT = {
   kind: "audio";
   payload: {
-    key: string;
+    url: string;
     fileName: string;
   };
 };

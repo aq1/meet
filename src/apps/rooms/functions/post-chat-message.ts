@@ -7,6 +7,7 @@ import { activeRoomParticipantMiddleware } from "../middleware/active-room-parti
 import { chatMessage } from "../models";
 import { prepareChatMessage } from "../services/chat/prepare-chat-message";
 import { roomServiceClient } from "../services/livekit/room-service-client";
+import { getPublicDownloadUrl } from "@/apps/storage/services/get-public-download-url";
 
 const encoder = new TextEncoder();
 
@@ -30,7 +31,7 @@ const serializePayload = async (data: z.output<typeof ChatMessageSchema>, userId
       if (!record) {
         throw new Error("Unknown file");
       }
-      return { key: record.key, fileName: record.filename };
+      return { url: getPublicDownloadUrl(record), fileName: record.filename };
     }
     default:
       throw new Error("Unknown message kind");
