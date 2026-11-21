@@ -18,8 +18,8 @@ const EnvSchema = z.object({
 
   S3_ENDPOINT: z.url(),
   S3_REGION: z.string(),
-  S3_RECORDINGS_BUCKET: z.string().default("meet"),
-  S3_UPLOADS_BUCKET: z.string().default("meet-public"),
+  S3_RECORDINGS_BUCKET: z.string().default("recordings"),
+  S3_UPLOADS_BUCKET: z.string().default("uploads"),
 
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),

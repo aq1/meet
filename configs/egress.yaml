@@ -18,7 +18,7 @@ redis:
 storage:
   s3:
     endpoint: https://s3.snek.sh
-    bucket: meet
+    bucket: recordings
     force_path_style: true
     max_retries: 3
 
