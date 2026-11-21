@@ -103,13 +103,7 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.2 }}
               >
-                <FileRow
-                  fileId={file.id}
-                  filename={file.filename}
-                  url={file.url}
-                  createdAt={file.createdAt}
-                  onSelect={onSelect}
-                />
+                <FileRow file={file} onSelect={onSelect} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -120,17 +114,14 @@ export function FilesPanel({ files, onFilesChange, onSelect }: FilesPanelProps) 
 }
 
 type FileRowT = {
-  fileId: number;
-  filename: string;
-  url: string;
-  createdAt: Date;
+  file: Awaited<ReturnType<typeof listFilesFn>>[number];
   onSelect?: (fileId: number) => unknown;
 };
 
-function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
+function FileRow({ file, onSelect }: FileRowT) {
   const [editing, setEditing] = useState(false);
-  const [savedName, setSavedName] = useState(filename);
-  const [name, setName] = useState(filename);
+  const [savedName, setSavedName] = useState(file.filename);
+  const [name, setName] = useState(file.filename);
   const renameFile = useServerFn(renameFileFn);
 
   const cancel = () => {
@@ -145,19 +136,19 @@ function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
       return;
     }
     try {
-      const { record } = await renameFile({ data: { fileId, filename: trimmed } });
+      const { record } = await renameFile({ data: { fileId: file.id, filename: trimmed } });
       setSavedName(record.filename);
       setName(record.filename);
       toastManager.add({
         type: "success",
-        id: `file-rename-success-${fileId}`,
+        id: `file-rename-success-${file.id}`,
         title: m.files_rename_success(),
       });
     } catch {
       setName(savedName);
       toastManager.add({
         type: "error",
-        id: `file-rename-error-${fileId}`,
+        id: `file-rename-error-${file.id}`,
         title: m.files_rename_error(),
       });
     }
@@ -199,16 +190,16 @@ function FileRow({ fileId, filename, url, createdAt, onSelect }: FileRowT) {
             <PencilIcon />
           </Button>
           <span className="ml-auto shrink-0 text-muted-foreground text-xs">
-            <DateTime value={createdAt} />
+            <DateTime value={file.createdAt} />
           </span>
         </div>
       )}
       <div className="flex items-center gap-2">
         <div className="min-w-0 flex-1">
-          <AudioPlayer url={url} />
+          <AudioPlayer url={file.url} />
         </div>
         {onSelect ? (
-          <Button variant="outline" onClick={() => onSelect(fileId)}>
+          <Button variant="outline" onClick={() => onSelect(file.id)}>
             {m.files_select()}
             <ChevronRight />
           </Button>
