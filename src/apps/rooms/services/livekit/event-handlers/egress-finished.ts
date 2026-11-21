@@ -2,11 +2,11 @@ import { eq } from "drizzle-orm";
 import { EgressStatus, type WebhookEvent } from "livekit-server-sdk";
 import { sendEmail } from "@/apps/notifications/services/send-email";
 import { room } from "@/apps/rooms/models/room";
-import { presignS3Download } from "@/apps/storage/services/presign-download";
+import { presignRecordingDownload } from "@/apps/storage/services/presign-recording-download";
 import { db } from "@/lib/db/client";
 import { m } from "@/paraglide/messages";
 
-const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
+const _sendEmailWithEgressUrl = async (roomId: string, url: string) => {
   if (!url) {
     return;
   }
@@ -41,16 +41,16 @@ const sendEmailWithEgressUrl = async (roomId: string, url: string) => {
 
 export const egressFinishedEventHandler = async (event: WebhookEvent) => {
   const info = event.egressInfo;
-  if (!event.room?.name || !info) {
+  const egressUrl = info?.fileResults[0]?.filename;
+
+  if (!event.room?.name || !info || !egressUrl) {
     return;
   }
   if (info.status !== EgressStatus.EGRESS_COMPLETE) {
     return;
   }
-  const egressUrl = info.fileResults[0]?.location ?? info.segmentResults[0]?.playlistLocation ?? "";
 
-  const egressDownloadUrl = presignS3Download(egressUrl);
-  await sendEmailWithEgressUrl(info.roomName, egressDownloadUrl);
+  const egressDownloadUrl = presignRecordingDownload(egressUrl);
 
   await db
     .update(room)

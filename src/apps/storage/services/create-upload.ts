@@ -6,21 +6,9 @@ import type { FileKindT } from "../shared/enums";
 
 type CreateUploadT = { kind: FileKindT; ext: string; userId: number; name: string; size: number; type: string };
 
-const getS3FieldsForFile = (kind: FileKindT, ext: string) => {
-  const key = `${kind}/${crypto.randomUUID()}.${ext}`;
-  switch (kind) {
-    case "teacher-audio":
-      return { key, bucket: env.S3_BUCKET };
-    case "avatar":
-      return { key, bucket: env.S3_PUBLIC_BUCKET };
-    default:
-      throw new Error("Unexpected upload kind");
-  }
-};
-
 export const createUpload = async (data: CreateUploadT) => {
-  const s3Fields = getS3FieldsForFile(data.kind, data.ext);
-
+  const key = `${data.kind}/${crypto.randomUUID()}.${data.ext}`;
+  const bucket = env.S3_UPLOADS_BUCKET;
   const [record] = await db
     .insert(file)
     .values({
@@ -29,14 +17,15 @@ export const createUpload = async (data: CreateUploadT) => {
       size: data.size,
       contentType: data.type,
       kind: data.kind,
-      ...s3Fields,
+      key,
+      bucket,
     })
     .returning();
 
-  const url = s3.presign(s3Fields.key, {
+  const url = s3.presign(key, {
     method: "PUT",
     type: data.type,
-    bucket: s3Fields.bucket,
+    bucket: bucket,
     expiresIn: 15 * 60,
   });
 
