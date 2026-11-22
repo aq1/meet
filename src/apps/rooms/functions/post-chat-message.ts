@@ -7,51 +7,48 @@ import { activeRoomParticipantMiddleware } from "../middleware/active-room-parti
 import { chatMessage } from "../models";
 import { prepareChatMessage } from "../services/chat/prepare-chat-message";
 import { roomServiceClient } from "../services/livekit/room-service-client";
-import { getPublicDownloadUrl } from "@/apps/storage/services/get-public-download-url";
 
 const encoder = new TextEncoder();
 
 const ChatMessageSchema = z.discriminatedUnion("kind", [
-  z.object({
-    kind: z.literal("text"),
-    payload: z.object({ text: z.string().max(3000) }),
-  }),
-  z.object({
-    kind: z.literal("audio"),
-    payload: z.object({ id: z.number() }),
-  }),
+  z.object({ kind: z.literal("text"), text: z.string().min(1).max(3000) }),
+  z.object({ kind: z.literal("audio"), fileId: z.number().min(1) }),
 ]);
 
-const serializePayload = async (data: z.output<typeof ChatMessageSchema>, userId: number) => {
-  switch (data.kind) {
-    case "text":
-      return data.payload;
-    case "audio": {
-      const record = await db.query.file.findFirst({ where: { id: data.payload.id, userId } });
-      if (!record) {
-        throw new Error("Unknown file");
-      }
-      return { url: getPublicDownloadUrl(record), fileName: record.filename };
-    }
-    default:
-      throw new Error("Unknown message kind");
+const validateFileAttachment = async (data: z.output<typeof ChatMessageSchema>, userId: number) => {
+  if (data.kind !== "audio") {
+    return null;
   }
+  const found = await db.query.file.findFirst({
+    where: { id: data.fileId, userId: userId, status: "uploaded", kind: "teacher-audio" },
+    columns: { id: true },
+  });
+  if (!found) {
+    throw new Error("File not found");
+  }
+  return data.fileId;
 };
 
 export const postChatMessageFn = createServerFn({ method: "POST" })
   .middleware([activeRoomParticipantMiddleware, anyUserMiddleware])
   .validator(ChatMessageSchema)
   .handler(async ({ context, data }) => {
-    const payload = await serializePayload(data, context.userId);
-    const [message] = await db
+    const fileId = await validateFileAttachment(data, context.userId);
+    const [inserted] = await db
       .insert(chatMessage)
       .values({
         roomId: context.room.id,
         userId: context.userId,
         kind: data.kind,
-        payload,
+        text: data.kind === "text" ? data.text : "",
+        fileId,
       })
-      .returning();
+      .returning({ id: chatMessage.id });
+
+    const message = await db.query.chatMessage.findFirst({ where: { id: inserted.id }, with: { file: true } });
+    if (!message) {
+      throw new Error("Unexpected error");
+    }
 
     await roomServiceClient.sendData(
       context.room.publicId,
@@ -61,6 +58,4 @@ export const postChatMessageFn = createServerFn({ method: "POST" })
         topic: "chat",
       },
     );
-
-    return message;
   });

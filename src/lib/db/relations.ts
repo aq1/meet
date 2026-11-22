@@ -1,7 +1,7 @@
 import { defineRelations } from "drizzle-orm";
 import { accountRelations, sessionRelations, userRelations } from "@/apps/auth/models";
 import { roomRelations, roomUserRelations } from "@/apps/rooms/models";
-import { chatRelations } from "@/apps/rooms/models/chat-relations";
+import { chatMessageRelations } from "@/apps/rooms/models/chat-message-relations";
 import { fileRelations } from "@/apps/storage/models";
 import { subscriptionRelations } from "@/apps/subscriptions/models";
 import * as schema from "./schema";
@@ -13,7 +13,7 @@ export const relations = {
   ...sessionRelations,
   ...roomRelations,
   ...roomUserRelations,
-  ...chatRelations,
+  ...chatMessageRelations,
   ...fileRelations,
   ...subscriptionRelations,
 };

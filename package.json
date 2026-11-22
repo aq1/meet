@@ -9,7 +9,7 @@
     "test": "vitest run",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check --write . --unsafe && tsc --noEmit",
+    "check": "biome check --write . --unsafe && tsc --noEmit --pretty --noErrorTruncation",
     "deploy": "bun scripts/deploy.ts",
     "livekit-dev": "livekit-server --dev --config ~/.config/livekit/livekit.yml",
     "db:generate": "drizzle-kit generate",

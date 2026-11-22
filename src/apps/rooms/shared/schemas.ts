@@ -1,14 +1,18 @@
 import { z } from "zod";
 
-const MessageBaseSchema = z.object({
-  id: z.number(),
-  createdAt: z.date().transform((v) => v.toISOString()),
-  userId: z.number(),
-});
-
-export const MessageSchema = z.discriminatedUnion("kind", [
-  MessageBaseSchema.extend({ kind: z.literal("text"), payload: z.object({ text: z.string() }) }),
-  MessageBaseSchema.extend({ kind: z.literal("audio"), payload: z.object({ url: z.string(), fileName: z.string() }) }),
+const SerializedMessageSchema = z.discriminatedUnion("kind", [
+  z.object({
+    id: z.number(),
+    userId: z.number(),
+    kind: z.literal("text"),
+    text: z.string(),
+  }),
+  z.object({
+    id: z.number(),
+    userId: z.number(),
+    kind: z.literal("audio"),
+    file: z.object({ url: z.url(), filename: z.string() }),
+  }),
 ]);
 
 export const ChatMessageSchema = z
@@ -24,7 +28,7 @@ export const ChatMessageSchema = z
       return z.NEVER;
     }
   })
-  .pipe(MessageSchema);
+  .pipe(SerializedMessageSchema);
 
 export const RoomInputSchema = z.looseObject({
   token: z.string().min(1).optional(),

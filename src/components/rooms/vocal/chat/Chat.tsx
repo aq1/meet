@@ -81,7 +81,7 @@ const ChatInput = () => {
 
   const sendFile = async (fileId: number) => {
     try {
-      await send({ data: { roomId: room.name, kind: "audio", payload: { id: fileId } } });
+      await send({ data: { roomId: room.name, kind: "audio", fileId } });
       setAttachOpen(false);
     } catch {
       toastManager.add({ type: "error", id: "chat-attach-file-error", title: m.chat_attach_file_error() });
@@ -91,12 +91,18 @@ const ChatInput = () => {
   const [value, setValue] = useState<ComposerValue>([]);
 
   const sendDraft = async () => {
-    if (!value.length) {
+    const text = getComposerText(value).trim();
+
+    if (!text.length) {
       return;
     }
-    await send({ data: { roomId: room.name, kind: "text", payload: { text: getComposerText(value) } } });
 
-    setValue([]);
+    try {
+      await send({ data: { roomId: room.name, kind: "text", text } });
+      setValue([]);
+    } catch {
+      toastManager.add({ type: "error", id: "chat-send-message-error", title: m.chat_send_message_error() });
+    }
   };
 
   return (

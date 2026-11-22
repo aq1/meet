@@ -8,6 +8,7 @@ export const getChatMessagesFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const messages = await db.query.chatMessage.findMany({
       where: { roomId: context.room.id },
+      with: { file: true },
       orderBy: { id: "asc" },
     });
 

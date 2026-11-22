@@ -1,0 +1,2 @@
+ALTER TABLE "rooms_chat_message" ADD COLUMN "file_id" integer;--> statement-breakpoint
+ALTER TABLE "rooms_chat_message" ADD CONSTRAINT "rooms_chat_message_file_id_storage_file_id_fkey" FOREIGN KEY ("file_id") REFERENCES "storage_file"("id") ON DELETE RESTRICT;
