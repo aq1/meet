@@ -5,6 +5,8 @@ import { egressClient } from "@/apps/rooms/services/livekit/egress-client";
 import { env } from "@/env";
 import { db } from "@/lib/db/client";
 
+const isDev = import.meta.env.DEV;
+
 export const roomStartedEventHandler = async (event: WebhookEvent) => {
   if (!event.room) {
     return;
@@ -21,6 +23,10 @@ export const roomStartedEventHandler = async (event: WebhookEvent) => {
     .returning();
 
   if (!r.length) {
+    return;
+  }
+
+  if (isDev) {
     return;
   }
 

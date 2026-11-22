@@ -3,6 +3,7 @@ import { create } from "zustand";
 type RoomStoreDataT = {
   publicId: string;
   startedAt: Date | null;
+  isOwner: boolean;
 };
 
 type RoomStoreT = RoomStoreDataT & {
@@ -12,6 +13,7 @@ type RoomStoreT = RoomStoreDataT & {
 export const useRoomStore = create<RoomStoreT>()((set) => ({
   publicId: "",
   startedAt: null,
+  isOwner: false,
   update: (data) => {
     set(data);
   },

@@ -6,6 +6,7 @@ import { Controls } from "./controls";
 import { useControls } from "./controls/controls-state";
 import { Participants } from "./Participants";
 import { Piano } from "./piano/Piano";
+import RoomDeletedAlert from "./RoomDeletedAlert";
 
 export const VocalRoom = () => {
   const isTablet = useIsTablet();
@@ -31,6 +32,7 @@ export const VocalRoom = () => {
           <Piano />
         </div>
       </div>
+      <RoomDeletedAlert />
     </div>
   );
 };

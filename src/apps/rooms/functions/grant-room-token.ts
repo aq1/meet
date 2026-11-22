@@ -52,7 +52,7 @@ export const grantRoomTokenServerFn = createServerFn({ method: "POST" })
 
     const lkGrant = await grantLivekitToken(context.userId.toString(), data.username, dbRoom.publicId);
     return {
-      room: { publicId: dbRoom.publicId, startedAt: dbRoom.startedAt },
+      room: { publicId: dbRoom.publicId, startedAt: dbRoom.startedAt, isOwner: dbRoom.createdBy === context.userId },
       ...lkGrant,
     };
   });

@@ -28,17 +28,16 @@ function RouteComponent() {
   const micDeviceId = useControls((s) => s.micDeviceId);
   const speakerDeviceId = useControls((s) => s.speakerDeviceId);
 
-  const [room] = useState(
-    () =>
-      new Room({
-        adaptiveStream: true,
-        dynacast: true,
-        disconnectOnPageLeave: false,
-        publishDefaults: {
-          videoCodec: "vp8",
-        },
-      }),
-  );
+  const [room] = useState(() => {
+    return new Room({
+      adaptiveStream: true,
+      dynacast: true,
+      disconnectOnPageLeave: false,
+      publishDefaults: {
+        videoCodec: "vp8",
+      },
+    });
+  });
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -53,7 +52,7 @@ function RouteComponent() {
     window.addEventListener("pagehide", handlePageHide);
 
     return () => {
-      updateRoomStore({ publicId: "", startedAt: null });
+      updateRoomStore({ publicId: "", startedAt: null, isOwner: false });
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
     };

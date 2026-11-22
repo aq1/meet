@@ -127,6 +127,9 @@
   "controls_leave": "Leave",
   "controls_leave_title": "Leave the room?",
   "controls_leave_description": "You'll be disconnected from this room. You can rejoin at any time.",
+  "controls_leave_owner": "End call",
+  "controls_leave_title_owner": "Finish the call?",
+  "controls_leave_description_owner": "All participants will be disconnected.",
 
   "settings_title": "Settings",
   "settings_volume": "Volume",
@@ -145,5 +148,8 @@
   "chat_load_error": "Could not load chat messages",
   "files_load_error": "Could not load files",
   "chat_send_message": "Send message",
-  "no_one_in_room": "No one in the room."
+  "no_one_in_room": "No one in the room.",
+  "room_deleted_title": "The call has ended",
+  "room_deleted_description": "The host ended the call for everyone. You have been disconnected.",
+  "room_deleted_ok": "OK"
 }
