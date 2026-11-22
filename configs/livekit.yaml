@@ -8,7 +8,7 @@ rtc:
     use_external_ip: true
     enable_loopback_candidate: false
 redis:
-    address: localhost:6380
+    address: localhost:6379
     db: 0
     use_tls: false
     sentinel_master_name: ""
