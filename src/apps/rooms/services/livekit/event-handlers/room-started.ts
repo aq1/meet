@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { EncodedFileOutput, EncodedFileType, type WebhookEvent } from "livekit-server-sdk";
+import { EncodedFileOutput, EncodedFileType, S3Upload, type WebhookEvent } from "livekit-server-sdk";
 import { room } from "@/apps/rooms/models";
 import { egressClient } from "@/apps/rooms/services/livekit/egress-client";
 import { env } from "@/env";
@@ -32,6 +32,17 @@ export const roomStartedEventHandler = async (event: WebhookEvent) => {
       file: new EncodedFileOutput({
         fileType: EncodedFileType.MP4,
         filepath: `${prefix}/{time}.mp4`,
+        output: {
+          case: "s3",
+          value: new S3Upload({
+            accessKey: env.AWS_ACCESS_KEY_ID,
+            secret: env.AWS_SECRET_ACCESS_KEY,
+            region: env.S3_REGION,
+            endpoint: env.S3_ENDPOINT,
+            bucket: env.S3_RECORDINGS_BUCKET,
+            forcePathStyle: true,
+          }),
+        },
       }),
     },
     {
