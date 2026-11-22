@@ -9,7 +9,7 @@ rtc:
     enable_loopback_candidate: false
 redis:
     address: localhost:6379
-    db: 0
+    db: 5
     use_tls: false
     sentinel_master_name: ""
     sentinel_username: ""

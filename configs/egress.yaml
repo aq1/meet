@@ -4,7 +4,7 @@ health_port: 8080
 
 redis:
     address: 127.0.0.1:6379
-    db: 0
+    db: 5
     use_tls: false
     sentinel_master_name: ""
     sentinel_username: ""
