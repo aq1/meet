@@ -25,13 +25,13 @@ services:
     volumes:
       - ./configs/livekit.yaml:/etc/livekit.yaml
 
-  redis:
-    image: redis:7-alpine
-    command: redis-server /etc/redis.conf
-    restart: unless-stopped
-    network_mode: "host"
-    volumes:
-      - ./configs/redis.conf:/etc/redis.conf
+  # redis:
+  #   image: redis:7-alpine
+  #   command: redis-server /etc/redis.conf
+  #   restart: unless-stopped
+  #   network_mode: "host"
+  #   volumes:
+  #     - ./configs/redis.conf:/etc/redis.conf
 
   egress:
     image: livekit/egress:latest
